@@ -47,9 +47,9 @@ $logo-text
   color: #000
   font-weight: 300
   text-shadow: 0 1px 4px rgba(0, 0, 0, 0.3)
-  background-color: white
+  background-color: rgba(255, 255, 255, 0.65)
   border-radius: 10px
-  opacity: 0.65
+
 
 #logo
   @extend $logo-text
@@ -68,12 +68,11 @@ $logo-text
 
 #main-nav
   float: left
-  margin-left: -15px
+  margin-left: 0
 
 $nav-link
   float: left
   color: #fff
-  opacity: 0.6
   text-decoration: none
   text-shadow: 0 1px rgba(0, 0, 0, 0.2)
   transition: opacity 0.2s
@@ -97,6 +96,8 @@ $nav-link
   @extend $nav-link
   font-weight: 300
   letter-spacing: 1px
+  color: #000
+  background-color: rgba(210, 60, 60, 0.5)
   @media mq-mobile
     display: none
 
