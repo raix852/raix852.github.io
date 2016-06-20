@@ -1,6 +1,6 @@
 ---
 title: 使用 Openssl 建立憑證
-date: 2016-06-07 17:10:37
+date: 2016-06-20 21:00:00
 tags: [linux, tls]
 ---
 
@@ -13,16 +13,17 @@ TLS 在建立連線時，會經過以下的步驟：
 
 1. client 送出 ClientHello 訊息給 server ，裡面包含可支援的 TLS protocol，一個由 client 端隨機產生的數字(隨機數字只用在此次連線期間，避免被封包重播攻擊)，以及支援的加密和壓縮演算法。
 2. server 回應 ServerHello 訊息，提供要使用的 TLS protocol ，一個由 server 端隨機產生的數字，以及要使用的加密和壓縮演算法。
-3. server 根據上一部選擇的方式，提供憑證給 client
+3. server 根據上面選擇的 TLS protocol 和加密及壓縮演算法，提供憑證給 client
 4. client 驗證 server 提供的憑證，將憑證內的 public key 取出
 5. 利用 server 提供的 public key ，將 client 的憑證，沒有憑證則隨機產生的 public key ，加密送回。
 6. 雙方使用交換出來的資訊，產生一組通訊用的加解密方式，有對稱式或非對稱式，取決於採用哪種演算法。
+7. 連線建立。
 
 ## 使用 Openssl 產生憑證
-以下開始描述使用 openssl 來產生可供 TLS 連線所需的憑證，主要參考 [OpenSSL Certificate Authority](https://jamielinux.com/docs/openssl-certificate-authority/index.html) 這個網站的步驟來一步一步執行，根據自己的需求修改設定。
+以下描述使用 openssl 來產生可供 TLS 連線所需的憑證，主要參考 [OpenSSL Certificate Authority](https://jamielinux.com/docs/openssl-certificate-authority/index.html) 這個網站的步驟來一步一步執行，根據自己的需求修改設定。
 
 ### 建立 root 憑證
-一般公開網路上憑證不會是自己產生的。因為網路傳輸過程中誰也不曉得會不會被惡意修改。因此為了有可靠的信任機制，於是就有了憑證機構 (Certificate Authority, CA) ，由憑證機構產生憑證。最上層憑證機構通常由被信任的第三方公正機關來擔任，然後對個人或公司團體產生的憑證簽章，如此才能確保憑證可以偵測出來被修改過。
+一般公開網路上憑證不會是自己產生的，因為網路傳輸過程中不能確保會不會被偽造或修改。因此為了有可靠的信任機制，於是就有了憑證機構 (Certificate Authority, CA) ，由憑證機構產生憑證。最上層憑證機構通常由被信任的第三方公正機關來擔任，然後對個人或公司團體產生憑證簽章，如此才能確保憑證可以不被修改。
 
 以瀏覽器為例，存有一串信任的憑證機構，藉由檢視連線網站的憑證是否由這些憑證機構產生，來判別網站可否受信任，不信任情況下就會出現不安全連線的提示。
 
@@ -37,7 +38,8 @@ TLS 在建立連線時，會經過以下的步驟：
 	openssl genrsa -aes256 -out private/ca.key.pem 4096 
 	chmod 400 private/ca.key.pem
 	```
-2. 產生自我簽章的 root 憑證。
+2. 參照 [config](https://jamielinux.com/docs/openssl-certificate-authority/appendix/root-configuration-file.html) 產生 openssl.cnf
+3. 產生自我簽章的 root 憑證。
 
 	```sh
 	openssl req -config openssl.cnf \
@@ -47,11 +49,11 @@ TLS 在建立連線時，會經過以下的步驟：
       -out certs/ca.cert.pem 
 	chmod 444 certs/ca.cert.pem
 	```
-	openssl 設定檔參照 [config](https://jamielinux.com/docs/openssl-certificate-authority/appendix/root-configuration-file.html) ，root 憑證過期日期建議設定長一點，因為是最重要的環節，不太適合頻繁的過期造成整串憑證失效。
+	root 憑證過期日期建議設定長一點，因為是最重要的環節，不太適合頻繁的過期造成整串憑證失效。
 	
 	另外因為是產生自我簽章的憑證，和接下來產生 intermediate 或 client/server 的 Certificate signing request (CSR) 指令多了 `-x509` 參數。
 
-3. 驗證 root 憑證
+4. 驗證 root 憑證
 
 	```
 	openssl x509 -noout -text -in certs/ca.cert.pem
@@ -79,7 +81,18 @@ intermediate 憑證介於 root 和 client server 之間，可避免 root 憑證�
       -out private/intermediate.key.pem 4096 
 	chmod 400 private/intermediate.key.pem
 	```
-3. 產生 intermediate CSR
+3. 修改 openssl.cnf 產生 openssl-im.cnf
+
+	```
+	[ CA_default ]
+	dir             = /root/ca/intermediate
+	private_key     = $dir/private/intermediate.key.pem
+	certificate     = $dir/certs/intermediate.cert.pem
+	crl             = $dir/crl/intermediate.crl.pem
+	policy          = policy_loose
+	```
+
+4. 產生 intermediate CSR
 
 	```sh
 	openssl req -config openssl-im.cnf -new -sha256 \
@@ -90,7 +103,7 @@ intermediate 憑證介於 root 和 client server 之間，可避免 root 憑證�
 	
 	[Certificate signing request (CSR)](https://en.wikipedia.org/wiki/Certificate_signing_request) 裡紀錄個人或組織的資訊，並且提供給憑證機構簽章。
 	
-4. 對 intermediate CSR 簽上 root 憑證，產生 intermediate 憑證
+5. 對 intermediate CSR 簽上 root 憑證，產生 intermediate 憑證
 
 	```sh
 	openssl ca -config /root/ca/openssl.cnf -extensions v3_intermediate_ca \
@@ -99,7 +112,7 @@ intermediate 憑證介於 root 和 client server 之間，可避免 root 憑證�
       -out certs/intermediate.cert.pem 
 	chmod 444 certs/intermediate.cert.pem
 	```
-5. 驗證 intermediate 憑證
+6. 驗證 intermediate 憑證
 
 	```sh
 	openssl x509 -noout -text \
@@ -107,7 +120,7 @@ intermediate 憑證介於 root 和 client server 之間，可避免 root 憑證�
 	openssl verify -CAfile certs/ca.cert.pem \
       intermediate/certs/intermediate.cert.pem
 	```
-6. 產生憑證鍊 (certificate chain)
+7. 產生憑證鍊 (certificate chain)
 
 	```sh
 	cat intermediate/certs/intermediate.cert.pem \
