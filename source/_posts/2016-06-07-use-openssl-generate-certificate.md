@@ -1,7 +1,7 @@
 ---
 title: 使用 Openssl 建立憑證
 date: 2016-06-20 21:00:00
-tags: [linux, tls]
+tags: [linux, TLS, openssl]
 ---
 
 最近工作上需要建立程式之間的 TLS 連線，而 TLS 之間的連線步驟需要驗證憑證 (Certificate) ，讓之間的加密連線可以成立。不過由於處於測試階段，需要自己產生憑證出來。因此學習使用 Openssl 來產生憑證，也藉此讓自已對 TLS 連線和憑證機制有更清楚的了解。
@@ -35,7 +35,7 @@ TLS 在建立連線時，會經過以下的步驟：
 	```sh
 	mkdir /root/ca
 	cd /root/ca
-	openssl genrsa -aes256 -out private/ca.key.pem 4096 
+	openssl genrsa -aes256 -out private/ca.key.pem 4096
 	chmod 400 private/ca.key.pem
 	```
 2. 參照 [config](https://jamielinux.com/docs/openssl-certificate-authority/appendix/root-configuration-file.html) 產生 openssl.cnf
@@ -46,11 +46,11 @@ TLS 在建立連線時，會經過以下的步驟：
       -key private/ca.key.pem \
       -new -x509 -days 7300 -sha256 -extensions v3_ca \
       -subj "/C=TW/ST=Taipei/O=RAIX/OU=RAIX.IO/CN=raix.io.rootca/emailAddress=raix@mail.com" \
-      -out certs/ca.cert.pem 
+      -out certs/ca.cert.pem
 	chmod 444 certs/ca.cert.pem
 	```
 	root 憑證過期日期建議設定長一點，因為是最重要的環節，不太適合頻繁的過期造成整串憑證失效。
-	
+
 	另外因為是產生自我簽章的憑證，和接下來產生 intermediate 或 client/server 的 Certificate signing request (CSR) 指令多了 `-x509` 參數。
 
 4. 驗證 root 憑證
@@ -64,21 +64,21 @@ intermediate 憑證介於 root 和 client server 之間，可避免 root 憑證�
 
 #### 步驟
 1. 設置相關資料夾和資訊
-	
+
 	```sh
-	mkdir /root/ca/intermediate 
-	cd /root/ca/intermediate 
-	mkdir certs crl csr newcerts private 
-	chmod 744 private 
-	touch index.txt 
-	echo 1000 > serial 
+	mkdir /root/ca/intermediate
+	cd /root/ca/intermediate
+	mkdir certs crl csr newcerts private
+	chmod 744 private
+	touch index.txt
+	echo 1000 > serial
 	echo 1000 > crlnumber
 	```
 2. 產生 intermediate key
-	
+
 	```sh
 	openssl genrsa -aes256 \
-      -out private/intermediate.key.pem 4096 
+      -out private/intermediate.key.pem 4096
 	chmod 400 private/intermediate.key.pem
 	```
 3. 修改 openssl.cnf 產生 openssl-im.cnf
@@ -98,25 +98,24 @@ intermediate 憑證介於 root 和 client server 之間，可避免 root 憑證�
 	openssl req -config openssl-im.cnf -new -sha256 \
       -subj "/C=TW/ST=Taipei/O=RAIX/OU=RAIX.IO/CN=raix.io.imca/emailAddress=raix@mail.com"\
       -key private/intermediate.key.pem \
-      -out csr/intermediate.csr.pem 
+      -out csr/intermediate.csr.pem
 	```
-	
 	[Certificate signing request (CSR)](https://en.wikipedia.org/wiki/Certificate_signing_request) 裡紀錄個人或組織的資訊，並且提供給憑證機構簽章。
-	
+
 5. 對 intermediate CSR 簽上 root 憑證，產生 intermediate 憑證
 
 	```sh
 	openssl ca -config /root/ca/openssl.cnf -extensions v3_intermediate_ca \
       -days 3650 -notext -md sha256 \
       -in csr/intermediate.csr.pem \
-      -out certs/intermediate.cert.pem 
+      -out certs/intermediate.cert.pem
 	chmod 444 certs/intermediate.cert.pem
 	```
 6. 驗證 intermediate 憑證
 
 	```sh
 	openssl x509 -noout -text \
-      -in intermediate/certs/intermediate.cert.pem 
+      -in intermediate/certs/intermediate.cert.pem
 	openssl verify -CAfile certs/ca.cert.pem \
       intermediate/certs/intermediate.cert.pem
 	```
@@ -127,7 +126,7 @@ intermediate 憑證介於 root 和 client server 之間，可避免 root 憑證�
       certs/ca.cert.pem > intermediate/certs/ca-chain.cert.pem
 	chmod 444 intermediate/certs/ca-chain.cert.pem
 	```
-	當應用程式要驗證 intermediate 憑證時，也需要同時驗證 root 憑證，因此需要產生憑證鍊來完成一整串驗證。	
+	當應用程式要驗證 intermediate 憑證時，也需要同時驗證 root 憑證，因此需要產生憑證鍊來完成一整串驗證。
 
 ### 建立 client/server 憑證
 最後就是對要使用的 client/server 產生憑證，讓彼此之間 TLS 連線可以成立，確保處於安全的連線下。
@@ -137,7 +136,7 @@ intermediate 憑證介於 root 和 client server 之間，可避免 root 憑證�
 
 	```sh
 	cd /root/ca/intermediate/
-	openssl genrsa -out private/client.raix.io.key.pem 2048 
+	openssl genrsa -out private/client.raix.io.key.pem 2048
 	chmod 444 private/client.raix.io.key.pem
 	```
 2. 產生 client/server CSR
@@ -154,8 +153,8 @@ intermediate 憑證介於 root 和 client server 之間，可避免 root 憑證�
 	openssl ca -config openssl-im.cnf \
       -extensions server_cert -days 375 -notext -md sha256 \
       -in intermediate/csr/client.raix.io.csr.pem \
-      -out intermediate/certs/client.raix.io.cert.pem 
-	chmod 444 certs/client.raix.io.cert.pem 
+      -out intermediate/certs/client.raix.io.cert.pem
+	chmod 444 certs/client.raix.io.cert.pem
 	```
 4. 驗證憑證
 
@@ -172,4 +171,3 @@ Wiki: [Transport Layer Security](https://en.wikipedia.org/wiki/Transport_Layer_S
 Wiki: [Certificate authority](https://en.wikipedia.org/wiki/Certificate_authority) <br/>
 Wiki: [Certificate signing request](https://en.wikipedia.org/wiki/Certificate_signing_request) <br/>
 [OpenSSL Certificate Authority](https://jamielinux.com/docs/openssl-certificate-authority/index.html)
-
