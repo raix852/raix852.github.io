@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>使用 Openssl 建立憑證 | Raix&#39;s Blog</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="最近工作上需要建立程式之間的 TLS 連線，而 TLS 之間的連線步驟需要驗證憑證 (Certificate) ，讓之間的加密連線可以成立。不過由於處於測試階段，需要自己產生憑證出來。因此學習使用 Openssl 來產生憑證，也藉此讓自已對 TLS 連線和憑證機制有更清楚的了解。
+TLS 介紹傳輸層安全協議（Transport Layer Security，縮寫：TLS），前身為安全通訊協定（Se">
+<meta property="og:type" content="article">
+<meta property="og:title" content="使用 Openssl 建立憑證">
+<meta property="og:url" content="http://raix852.github.io/2016/06/20/use-openssl-generate-certificate/index.html">
+<meta property="og:site_name" content="Raix's Blog">
+<meta property="og:description" content="最近工作上需要建立程式之間的 TLS 連線，而 TLS 之間的連線步驟需要驗證憑證 (Certificate) ，讓之間的加密連線可以成立。不過由於處於測試階段，需要自己產生憑證出來。因此學習使用 Openssl 來產生憑證，也藉此讓自已對 TLS 連線和憑證機制有更清楚的了解。
+TLS 介紹傳輸層安全協議（Transport Layer Security，縮寫：TLS），前身為安全通訊協定（Se">
+<meta property="og:updated_time" content="2016-06-21T01:48:44.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="使用 Openssl 建立憑證">
+<meta name="twitter:description" content="最近工作上需要建立程式之間的 TLS 連線，而 TLS 之間的連線步驟需要驗證憑證 (Certificate) ，讓之間的加密連線可以成立。不過由於處於測試階段，需要自己產生憑證出來。因此學習使用 Openssl 來產生憑證，也藉此讓自已對 TLS 連線和憑證機制有更清楚的了解。
+TLS 介紹傳輸層安全協議（Transport Layer Security，縮寫：TLS），前身為安全通訊協定（Se">
+  
+    <link rel="alternate" href="/atom.xml" title="Raix&#39;s Blog" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  
+
+</head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">Raix&#39;s Blog</a>
+      </h1>
+      
+        <h2 id="subtitle-wrap">
+          <a href="/" id="subtitle">知識不經整理，無法累積。智慧不經思考，無法成長。</a>
+        </h2>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+          <a class="main-nav-link" href="/about">About</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" results="0" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://raix852.github.io"></form>
+      </div>
+    </div>
+  </div>
+</header>
+
+      <div class="outer">
+        <section id="main"><article id="post-use-openssl-generate-certificate" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2016/06/20/use-openssl-generate-certificate/" class="article-date">
+  <time datetime="2016-06-20T13:00:00.000Z" itemprop="datePublished">2016-06-20</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      使用 Openssl 建立憑證
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>最近工作上需要建立程式之間的 TLS 連線，而 TLS 之間的連線步驟需要驗證憑證 (Certificate) ，讓之間的加密連線可以成立。不過由於處於測試階段，需要自己產生憑證出來。因此學習使用 Openssl 來產生憑證，也藉此讓自已對 TLS 連線和憑證機制有更清楚的了解。</p>
+<h2 id="TLS-介紹"><a href="#TLS-介紹" class="headerlink" title="TLS 介紹"></a>TLS 介紹</h2><p>傳輸層安全協議（Transport Layer Security，縮寫：TLS），前身為安全通訊協定（Secure Sockets Layer，縮寫：SSL），由網景公司 (Netscape) 開發出來用在 http 協定上，後來由 IETF 將 SSL 進行標準化，就是後來的 TLS 。</p>
+<p>TLS 在建立連線時，會經過以下的步驟：</p>
+<ol>
+<li>client 送出 ClientHello 訊息給 server ，裡面包含可支援的 TLS protocol，一個由 client 端隨機產生的數字(隨機數字只用在此次連線期間，避免被封包重播攻擊)，以及支援的加密和壓縮演算法。</li>
+<li>server 回應 ServerHello 訊息，提供要使用的 TLS protocol ，一個由 server 端隨機產生的數字，以及要使用的加密和壓縮演算法。</li>
+<li>server 根據上面選擇的 TLS protocol 和加密及壓縮演算法，提供憑證給 client</li>
+<li>client 驗證 server 提供的憑證，將憑證內的 public key 取出</li>
+<li>利用 server 提供的 public key ，將 client 的憑證，沒有憑證則隨機產生的 public key ，加密送回。</li>
+<li>雙方使用交換出來的資訊，產生一組通訊用的加解密方式，有對稱式或非對稱式，取決於採用哪種演算法。</li>
+<li>連線建立。</li>
+</ol>
+<h2 id="使用-Openssl-產生憑證"><a href="#使用-Openssl-產生憑證" class="headerlink" title="使用 Openssl 產生憑證"></a>使用 Openssl 產生憑證</h2><p>以下描述使用 openssl 來產生可供 TLS 連線所需的憑證，主要參考 <a href="https://jamielinux.com/docs/openssl-certificate-authority/index.html" target="_blank" rel="external">OpenSSL Certificate Authority</a> 這個網站的步驟來一步一步執行，根據自己的需求修改設定。</p>
+<h3 id="建立-root-憑證"><a href="#建立-root-憑證" class="headerlink" title="建立 root 憑證"></a>建立 root 憑證</h3><p>一般公開網路上憑證不會是自己產生的，因為網路傳輸過程中不能確保會不會被偽造或修改。因此為了有可靠的信任機制，於是就有了憑證機構 (Certificate Authority, CA) ，由憑證機構產生憑證。最上層憑證機構通常由被信任的第三方公正機關來擔任，然後對個人或公司團體產生憑證簽章，如此才能確保憑證可以不被修改。</p>
+<p>以瀏覽器為例，存有一串信任的憑證機構，藉由檢視連線網站的憑證是否由這些憑證機構產生，來判別網站可否受信任，不信任情況下就會出現不安全連線的提示。</p>
+<p>而對公司企業內的私人網路來說， 不需要透過第三方憑證機構，因此會由自己產生 root 憑證，往下建立一連串的認證階層。也因此 root 憑證必須保護好，放置在與網路隔絕的環境並只有特定人士可以存取。一般網路上的認證機構的 root 憑證會互相簽章，表示彼此信任，而自己產生的 root 憑證因沒有其他機關互相簽章，因此會是自我簽章的憑證。</p>
+<h4 id="步驟："><a href="#步驟：" class="headerlink" title="步驟："></a>步驟：</h4><ol>
+<li><p>產生 root key。</p>
+ <figure class="highlight sh"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">mkdir /root/ca</div><div class="line"><span class="built_in">cd</span> /root/ca</div><div class="line">openssl genrsa -aes256 -out private/ca.key.pem 4096</div><div class="line">chmod 400 private/ca.key.pem</div></pre></td></tr></table></figure>
+</li>
+<li><p>參照 <a href="https://jamielinux.com/docs/openssl-certificate-authority/appendix/root-configuration-file.html" target="_blank" rel="external">config</a> 產生 openssl.cnf</p>
+</li>
+<li><p>產生自我簽章的 root 憑證。</p>
+ <figure class="highlight sh"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">openssl req -config openssl.cnf \</div><div class="line">     -key private/ca.key.pem \</div><div class="line">     -new -x509 -days 7300 -sha256 -extensions v3_ca \</div><div class="line">     -subj <span class="string">"/C=TW/ST=Taipei/O=RAIX/OU=RAIX.IO/CN=raix.io.rootca/emailAddress=raix@mail.com"</span> \</div><div class="line">     -out certs/ca.cert.pem</div><div class="line">chmod 444 certs/ca.cert.pem</div></pre></td></tr></table></figure>
+<p> root 憑證過期日期建議設定長一點，因為是最重要的環節，不太適合頻繁的過期造成整串憑證失效。</p>
+<p> 另外因為是產生自我簽章的憑證，和接下來產生 intermediate 或 client/server 的 Certificate signing request (CSR) 指令多了 <code>-x509</code> 參數。</p>
+</li>
+<li><p>驗證 root 憑證</p>
+ <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">openssl x509 -noout -text -in certs/ca.cert.pem</div></pre></td></tr></table></figure>
+</li>
+</ol>
+<h3 id="建立-intermediate-憑證"><a href="#建立-intermediate-憑證" class="headerlink" title="建立 intermediate 憑證"></a>建立 intermediate 憑證</h3><p>intermediate 憑證介於 root 和 client server 之間，可避免 root 憑證直接被使用，也可用來分群組，區分可使用的範圍。</p>
+<h4 id="步驟"><a href="#步驟" class="headerlink" title="步驟"></a>步驟</h4><ol>
+<li><p>設置相關資料夾和資訊</p>
+ <figure class="highlight sh"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">mkdir /root/ca/intermediate</div><div class="line"><span class="built_in">cd</span> /root/ca/intermediate</div><div class="line">mkdir certs crl csr newcerts private</div><div class="line">chmod 744 private</div><div class="line">touch index.txt</div><div class="line"><span class="built_in">echo</span> 1000 &gt; serial</div><div class="line"><span class="built_in">echo</span> 1000 &gt; crlnumber</div></pre></td></tr></table></figure>
+</li>
+<li><p>產生 intermediate key</p>
+ <figure class="highlight sh"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">openssl genrsa -aes256 \</div><div class="line">     -out private/intermediate.key.pem 4096</div><div class="line">chmod 400 private/intermediate.key.pem</div></pre></td></tr></table></figure>
+</li>
+<li><p>修改 openssl.cnf 產生 openssl-im.cnf</p>
+ <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">[ CA_default ]</div><div class="line">dir             = /root/ca/intermediate</div><div class="line">private_key     = $dir/private/intermediate.key.pem</div><div class="line">certificate     = $dir/certs/intermediate.cert.pem</div><div class="line">crl             = $dir/crl/intermediate.crl.pem</div><div class="line">policy          = policy_loose</div></pre></td></tr></table></figure>
+</li>
+<li><p>產生 intermediate CSR</p>
+ <figure class="highlight sh"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">openssl req -config openssl-im.cnf -new -sha256 \</div><div class="line">     -subj <span class="string">"/C=TW/ST=Taipei/O=RAIX/OU=RAIX.IO/CN=raix.io.imca/emailAddress=raix@mail.com"</span>\</div><div class="line">     -key private/intermediate.key.pem \</div><div class="line">     -out csr/intermediate.csr.pem</div></pre></td></tr></table></figure>
+<p> <a href="https://en.wikipedia.org/wiki/Certificate_signing_request" target="_blank" rel="external">Certificate signing request (CSR)</a> 裡紀錄個人或組織的資訊，並且提供給憑證機構簽章。</p>
+</li>
+<li><p>對 intermediate CSR 簽上 root 憑證，產生 intermediate 憑證</p>
+ <figure class="highlight sh"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">openssl ca -config /root/ca/openssl.cnf -extensions v3_intermediate_ca \</div><div class="line">     -days 3650 -notext -md sha256 \</div><div class="line">     -in csr/intermediate.csr.pem \</div><div class="line">     -out certs/intermediate.cert.pem</div><div class="line">chmod 444 certs/intermediate.cert.pem</div></pre></td></tr></table></figure>
+</li>
+<li><p>驗證 intermediate 憑證</p>
+ <figure class="highlight sh"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">openssl x509 -noout -text \</div><div class="line">     -in intermediate/certs/intermediate.cert.pem</div><div class="line">openssl verify -CAfile certs/ca.cert.pem \</div><div class="line">     intermediate/certs/intermediate.cert.pem</div></pre></td></tr></table></figure>
+</li>
+<li><p>產生憑證鍊 (certificate chain)</p>
+ <figure class="highlight sh"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">cat intermediate/certs/intermediate.cert.pem \</div><div class="line">     certs/ca.cert.pem &gt; intermediate/certs/ca-chain.cert.pem</div><div class="line">chmod 444 intermediate/certs/ca-chain.cert.pem</div></pre></td></tr></table></figure>
+<p> 當應用程式要驗證 intermediate 憑證時，也需要同時驗證 root 憑證，因此需要產生憑證鍊來完成一整串驗證。</p>
+</li>
+</ol>
+<h3 id="建立-client-server-憑證"><a href="#建立-client-server-憑證" class="headerlink" title="建立 client/server 憑證"></a>建立 client/server 憑證</h3><p>最後就是對要使用的 client/server 產生憑證，讓彼此之間 TLS 連線可以成立，確保處於安全的連線下。</p>
+<h4 id="步驟-1"><a href="#步驟-1" class="headerlink" title="步驟"></a>步驟</h4><ol>
+<li><p>產生 client/server key</p>
+ <figure class="highlight sh"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="built_in">cd</span> /root/ca/intermediate/</div><div class="line">openssl genrsa -out private/client.raix.io.key.pem 2048</div><div class="line">chmod 444 private/client.raix.io.key.pem</div></pre></td></tr></table></figure>
+</li>
+<li><p>產生 client/server CSR</p>
+ <figure class="highlight sh"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">openssl req -config openssl-im.cnf \</div><div class="line">     -key intermediate/private/client.raix.io.key.pem \</div><div class="line">     -subj <span class="string">"/C=TW/ST=Taipei/O=RAIX/OU=RAIX.IO/CN=client.raix.io/emailAddress=raix@mail.com"</span> \</div><div class="line">     -new -sha256 -out client.raix.io.csr.pem</div></pre></td></tr></table></figure>
+</li>
+<li><p>產生 client/server 憑證</p>
+ <figure class="highlight sh"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">openssl ca -config openssl-im.cnf \</div><div class="line">     -extensions server_cert -days 375 -notext -md sha256 \</div><div class="line">     -in intermediate/csr/client.raix.io.csr.pem \</div><div class="line">     -out intermediate/certs/client.raix.io.cert.pem</div><div class="line">chmod 444 certs/client.raix.io.cert.pem</div></pre></td></tr></table></figure>
+</li>
+<li><p>驗證憑證</p>
+ <figure class="highlight sh"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">openssl x509 -noout -text \</div><div class="line">     -in certs/client.raix.io.cert.pem</div><div class="line">openssl verify -CAfile intermediate/certs/ca-chain.cert.pem \</div><div class="line">     certs/client.raix.io.cert.pem</div></pre></td></tr></table></figure>
+</li>
+</ol>
+<h2 id="參考資料"><a href="#參考資料" class="headerlink" title="參考資料"></a>參考資料</h2><p>Wiki: <a href="https://en.wikipedia.org/wiki/Transport_Layer_Security" target="_blank" rel="external">Transport Layer Security</a> <br><br>Wiki: <a href="https://en.wikipedia.org/wiki/Certificate_authority" target="_blank" rel="external">Certificate authority</a> <br><br>Wiki: <a href="https://en.wikipedia.org/wiki/Certificate_signing_request" target="_blank" rel="external">Certificate signing request</a> <br><br><a href="https://jamielinux.com/docs/openssl-certificate-authority/index.html" target="_blank" rel="external">OpenSSL Certificate Authority</a></p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://raix852.github.io/2016/06/20/use-openssl-generate-certificate/" data-id="cir8n8hcd0004i4pelwm64o72" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/TLS/">TLS</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/linux/">linux</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/openssl/">openssl</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2016/07/01/data-at-rest/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          Data at rest encryption
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2016/06/04/Python-decorator-property/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">Python - @property</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Deep-Learning/">Deep Learning</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Encryption/">Encryption</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Filesystem/">Filesystem</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Github/">Github</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Linux/">Linux</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Machine-Learning/">Machine Learning</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/NLP/">NLP</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Octopress/">Octopress</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/TLS/">TLS</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hexo/">hexo</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/linux/">linux</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/openssl/">openssl</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/python/">python</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/日記/">日記</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/Deep-Learning/" style="font-size: 10px;">Deep Learning</a> <a href="/tags/Encryption/" style="font-size: 10px;">Encryption</a> <a href="/tags/Filesystem/" style="font-size: 10px;">Filesystem</a> <a href="/tags/Github/" style="font-size: 20px;">Github</a> <a href="/tags/Linux/" style="font-size: 10px;">Linux</a> <a href="/tags/Machine-Learning/" style="font-size: 10px;">Machine Learning</a> <a href="/tags/NLP/" style="font-size: 10px;">NLP</a> <a href="/tags/Octopress/" style="font-size: 10px;">Octopress</a> <a href="/tags/TLS/" style="font-size: 10px;">TLS</a> <a href="/tags/hexo/" style="font-size: 20px;">hexo</a> <a href="/tags/linux/" style="font-size: 10px;">linux</a> <a href="/tags/openssl/" style="font-size: 10px;">openssl</a> <a href="/tags/python/" style="font-size: 10px;">python</a> <a href="/tags/日記/" style="font-size: 10px;">日記</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/07/">七月 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/06/">六月 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/05/">五月 2016</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2016/07/29/PixHack2016/">7/29 痞客邦克漏字比賽紀錄</a>
+          </li>
+        
+          <li>
+            <a href="/2016/07/01/data-at-rest/">Data at rest encryption</a>
+          </li>
+        
+          <li>
+            <a href="/2016/06/20/use-openssl-generate-certificate/">使用 Openssl 建立憑證</a>
+          </li>
+        
+          <li>
+            <a href="/2016/06/04/Python-decorator-property/">Python - @property</a>
+          </li>
+        
+          <li>
+            <a href="/2016/05/31/diary/">5/31 日記</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2016 Raix<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+    <a href="/about" class="mobile-nav-link">About</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+  </div>
+</body>
+</html>

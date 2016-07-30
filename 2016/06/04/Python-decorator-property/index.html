@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>Python - @property | Raix&#39;s Blog</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="今天在 trace 一個 python 專案時，看到類似 getter/setter 函式，不過實際使用時卻不像其他語言的 getter/setter 用法。於是就去 google 一下，找到 @property 的用法。
+原來，在 python class 中，因為沒有 private 變數，全部都是 public ，任何人都可以存取，頂多只有透過命名風格在變數前加 ‘_‘ 或 ‘__‘ ，讓別">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Python - @property">
+<meta property="og:url" content="http://raix852.github.io/2016/06/04/Python-decorator-property/index.html">
+<meta property="og:site_name" content="Raix's Blog">
+<meta property="og:description" content="今天在 trace 一個 python 專案時，看到類似 getter/setter 函式，不過實際使用時卻不像其他語言的 getter/setter 用法。於是就去 google 一下，找到 @property 的用法。
+原來，在 python class 中，因為沒有 private 變數，全部都是 public ，任何人都可以存取，頂多只有透過命名風格在變數前加 ‘_‘ 或 ‘__‘ ，讓別">
+<meta property="og:updated_time" content="2016-06-07T09:19:22.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Python - @property">
+<meta name="twitter:description" content="今天在 trace 一個 python 專案時，看到類似 getter/setter 函式，不過實際使用時卻不像其他語言的 getter/setter 用法。於是就去 google 一下，找到 @property 的用法。
+原來，在 python class 中，因為沒有 private 變數，全部都是 public ，任何人都可以存取，頂多只有透過命名風格在變數前加 ‘_‘ 或 ‘__‘ ，讓別">
+  
+    <link rel="alternate" href="/atom.xml" title="Raix&#39;s Blog" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  
+
+</head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">Raix&#39;s Blog</a>
+      </h1>
+      
+        <h2 id="subtitle-wrap">
+          <a href="/" id="subtitle">知識不經整理，無法累積。智慧不經思考，無法成長。</a>
+        </h2>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+          <a class="main-nav-link" href="/about">About</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" results="0" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://raix852.github.io"></form>
+      </div>
+    </div>
+  </div>
+</header>
+
+      <div class="outer">
+        <section id="main"><article id="post-Python-decorator-property" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2016/06/04/Python-decorator-property/" class="article-date">
+  <time datetime="2016-06-04T13:38:52.000Z" itemprop="datePublished">2016-06-04</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      Python - @property
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>今天在 trace 一個 python 專案時，看到類似 getter/setter 函式，不過實際使用時卻不像其他語言的 getter/setter 用法。於是就去 google 一下，找到 @property 的用法。</p>
+<p>原來，在 python class 中，因為沒有 private 變數，全部都是 public ，任何人都可以存取，頂多只有透過命名風格在變數前加 ‘_‘ 或 ‘__‘ ，讓別人了解這個變數是給內部使用，不建議直接呼叫。也因此 getter/setter 的設計模式在 python 較沒意義，取而代之的是使用 @property 裝飾器(decorator)來達到類似的效果。</p>
+<h3 id="範例-1"><a href="#範例-1" class="headerlink" title="範例 1"></a>範例 1</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div></pre></td><td class="code"><pre><div class="line"><span class="comment">#!/usr/bin/python</span></div><div class="line"></div><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">Example</span><span class="params">(object)</span>:</span></div><div class="line">    _text = <span class="string">'This is an origin string'</span></div><div class="line"></div><div class="line"><span class="meta">    @property</span></div><div class="line">    <span class="function"><span class="keyword">def</span> <span class="title">text</span><span class="params">(self)</span>:</span></div><div class="line">        <span class="keyword">return</span> self._text</div><div class="line"></div><div class="line"><span class="meta">    @text.setter</span></div><div class="line">    <span class="function"><span class="keyword">def</span> <span class="title">text</span><span class="params">(self, string)</span>:</span></div><div class="line">        <span class="keyword">if</span> isinstance(string, str):</div><div class="line">            self._text = string</div><div class="line">        <span class="keyword">else</span>:</div><div class="line">            <span class="keyword">raise</span> TypeError(<span class="string">'%s url must be str, got %s:'</span> % (type(self).__name__,</div><div class="line">                type(url).__name__))</div><div class="line"></div><div class="line"></div><div class="line"><span class="keyword">if</span> __name__ == <span class="string">'__main__'</span>:</div><div class="line">    ex = Example()</div><div class="line">    string = <span class="string">'This is a test'</span></div><div class="line"></div><div class="line">    <span class="keyword">print</span> <span class="string">'Get Example.text: %s'</span> % (ex.text)</div><div class="line"></div><div class="line">    <span class="keyword">print</span> <span class="string">'Set Example.text: %s'</span> % (string)</div><div class="line">    ex.text = string</div><div class="line"></div><div class="line">    <span class="keyword">print</span> <span class="string">'Get Example.text: %s'</span> % (ex.text)</div></pre></td></tr></table></figure>
+<h3 id="執行結果"><a href="#執行結果" class="headerlink" title="執行結果"></a>執行結果</h3><figure class="highlight sh"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">$ ./decorator_property.py</div><div class="line">Get Example.text: This is an origin string</div><div class="line">Set Example.text: This is a <span class="built_in">test</span></div><div class="line">Get Example.text: This is a <span class="built_in">test</span></div></pre></td></tr></table></figure>
+<p>不過在 trace 的 python 專案中，用的是另一種方法。</p>
+<h3 id="範例-2"><a href="#範例-2" class="headerlink" title="範例 2"></a>範例 2</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div></pre></td><td class="code"><pre><div class="line"><span class="comment">#!/usr/bin/python</span></div><div class="line"></div><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">Example</span><span class="params">(object)</span>:</span></div><div class="line">    _text = <span class="string">'This is an origin string'</span></div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">def</span> <span class="title">_get_text</span><span class="params">(self)</span>:</span></div><div class="line">        <span class="keyword">return</span> self._text</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">def</span> <span class="title">_set_text</span><span class="params">(self, string)</span>:</span></div><div class="line">        <span class="keyword">if</span> isinstance(string, str):</div><div class="line">            self._text = string</div><div class="line">        <span class="keyword">else</span>:</div><div class="line">            <span class="keyword">raise</span> TypeError(<span class="string">'%s url must be str, got %s:'</span> % (type(self).__name__,</div><div class="line">                type(url).__name__))</div><div class="line"></div><div class="line">    text = property(_get_text, _set_text)</div><div class="line"></div><div class="line"><span class="keyword">if</span> __name__ == <span class="string">'__main__'</span>:</div><div class="line">    ex = Example()</div><div class="line">    string = <span class="string">'This is a test'</span></div><div class="line"></div><div class="line">    <span class="keyword">print</span> <span class="string">'Get Example.text: %s'</span> % (ex.text)</div><div class="line"></div><div class="line">    <span class="keyword">print</span> <span class="string">'Set Example.text: %s'</span> % (string)</div><div class="line">    ex.text = string</div><div class="line"></div><div class="line">    <span class="keyword">print</span> <span class="string">'Get Example.text: %s'</span> % (ex.text)</div></pre></td></tr></table></figure>
+<h3 id="執行結果-1"><a href="#執行結果-1" class="headerlink" title="執行結果"></a>執行結果</h3><figure class="highlight sh"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">$ ./decorator_property_2.py</div><div class="line">Get Example.text: This is an origin string</div><div class="line">Set Example.text: This is a <span class="built_in">test</span></div><div class="line">Get Example.text: This is a <span class="built_in">test</span></div></pre></td></tr></table></figure>
+<p>可以看到兩種寫法都可以達到相同的效果，而且用 <code>type(ex.text)</code> 看型態都是 <code>&lt;type &#39;str&#39;&gt;</code> 。</p>
+<p>至於哪種寫法比較好？就本人覺得，比較偏好範例 2 ，畢竟可以對應到其他語言的寫法，相較之下可讀性較高。</p>
+<h2 id="Link"><a href="#Link" class="headerlink" title="Link"></a>Link</h2><ol>
+<li><a href="http://www.liaoxuefeng.com/wiki/001374738125095c955c1e6d8bb493182103fac9270762a000/001386820062641f3bcc60a4b164f8d91df476445697b9e000" target="_blank" rel="external">使用@property</a></li>
+<li><a href="http://stackoverflow.com/questions/6618002/python-property-versus-getters-and-setters" target="_blank" rel="external">Python @property versus getters and setters</a></li>
+</ol>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://raix852.github.io/2016/06/04/Python-decorator-property/" data-id="cir8n8hc20002i4pe251nkg7h" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/python/">python</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2016/06/20/use-openssl-generate-certificate/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          使用 Openssl 建立憑證
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2016/05/31/diary/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">5/31 日記</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Deep-Learning/">Deep Learning</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Encryption/">Encryption</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Filesystem/">Filesystem</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Github/">Github</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Linux/">Linux</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Machine-Learning/">Machine Learning</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/NLP/">NLP</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Octopress/">Octopress</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/TLS/">TLS</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hexo/">hexo</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/linux/">linux</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/openssl/">openssl</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/python/">python</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/日記/">日記</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/Deep-Learning/" style="font-size: 10px;">Deep Learning</a> <a href="/tags/Encryption/" style="font-size: 10px;">Encryption</a> <a href="/tags/Filesystem/" style="font-size: 10px;">Filesystem</a> <a href="/tags/Github/" style="font-size: 20px;">Github</a> <a href="/tags/Linux/" style="font-size: 10px;">Linux</a> <a href="/tags/Machine-Learning/" style="font-size: 10px;">Machine Learning</a> <a href="/tags/NLP/" style="font-size: 10px;">NLP</a> <a href="/tags/Octopress/" style="font-size: 10px;">Octopress</a> <a href="/tags/TLS/" style="font-size: 10px;">TLS</a> <a href="/tags/hexo/" style="font-size: 20px;">hexo</a> <a href="/tags/linux/" style="font-size: 10px;">linux</a> <a href="/tags/openssl/" style="font-size: 10px;">openssl</a> <a href="/tags/python/" style="font-size: 10px;">python</a> <a href="/tags/日記/" style="font-size: 10px;">日記</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/07/">七月 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/06/">六月 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/05/">五月 2016</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2016/07/29/PixHack2016/">7/29 痞客邦克漏字比賽紀錄</a>
+          </li>
+        
+          <li>
+            <a href="/2016/07/01/data-at-rest/">Data at rest encryption</a>
+          </li>
+        
+          <li>
+            <a href="/2016/06/20/use-openssl-generate-certificate/">使用 Openssl 建立憑證</a>
+          </li>
+        
+          <li>
+            <a href="/2016/06/04/Python-decorator-property/">Python - @property</a>
+          </li>
+        
+          <li>
+            <a href="/2016/05/31/diary/">5/31 日記</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2016 Raix<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+    <a href="/about" class="mobile-nav-link">About</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+  </div>
+</body>
+</html>

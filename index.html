@@ -1,0 +1,681 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>Raix&#39;s Blog</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="My garden, my knowledge, my soul.">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Raix's Blog">
+<meta property="og:url" content="http://raix852.github.io/index.html">
+<meta property="og:site_name" content="Raix's Blog">
+<meta property="og:description" content="My garden, my knowledge, my soul.">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Raix's Blog">
+<meta name="twitter:description" content="My garden, my knowledge, my soul.">
+  
+    <link rel="alternate" href="/atom.xml" title="Raix&#39;s Blog" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  
+
+</head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">Raix&#39;s Blog</a>
+      </h1>
+      
+        <h2 id="subtitle-wrap">
+          <a href="/" id="subtitle">知識不經整理，無法累積。智慧不經思考，無法成長。</a>
+        </h2>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+          <a class="main-nav-link" href="/about">About</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" results="0" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://raix852.github.io"></form>
+      </div>
+    </div>
+  </div>
+</header>
+
+      <div class="outer">
+        <section id="main">
+  
+    <article id="post-PixHack2016" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2016/07/29/PixHack2016/" class="article-date">
+  <time datetime="2016-07-29T15:10:37.000Z" itemprop="datePublished">2016-07-29</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2016/07/29/PixHack2016/">7/29 痞客邦克漏字比賽紀錄</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>最近這陣子都熱心在學習 Deep learning 的東西，動機來自於和同事組隊參加 <code>2016 PIXNET
+HACKATHON Cloze Contest</code>。這個比賽會給出一句話，裡面會挖一個洞，並給出 4 個選項來選出符合這<br>個洞的答案，也可以說是傳統的選擇題考試。對從小到大都是考試機器的我們來說是最常見不過的問題，因此<br>都練出的一身本領來回答。但是對於機器來說，要選出正確答案還真不是件簡單的事，更可說是巨大的挑戰。</p>
+<p>因此為了可以讓機器有辦法回答，需要有一些技巧來使用。以下紀錄目前我和同事做到的進度。正式比賽是在<br>8/13 日，離比賽還有兩星期。</p>
+<h2 id="爬取文章"><a href="#爬取文章" class="headerlink" title="爬取文章"></a>爬取文章</h2><p>在這個比賽裡，訓練資料集放出來是在 7/01 時，而我們準備的時間從 6 月初就開始，因此在沒有資料的<br>情況下，我們就決定要開發爬網程式將痞客邦的文章抓取下來。這部分使用 <a href="http://scrapy.org/" target="_blank" rel="external">Scrapy</a><br>來幫助我們開發爬網程式。</p>
+<p>目前做到的成果為針對每天有被痞客邦視為熱門的文章抓取下來，並且順便將這些文章的作者曾經寫過的文章<br>也一併抓取。跑一次爬網程式需要花費半天的時間，目前累積了將近 2G 的資料。不過現在的機制只是堪用，<br>要做進一步改善還有很大的空間，只是考慮到接下來還有更困難的問題要解決，因此先開發到這邊。</p>
+<h2 id="斷詞斷句"><a href="#斷詞斷句" class="headerlink" title="斷詞斷句"></a>斷詞斷句</h2><p>將文章抓取下來後，接下來使用 <a href="https://github.com/fxsjy/jieba" target="_blank" rel="external">Jieba</a> 來幫助我們做斷詞。<br>這裏就直接使用現成的工具，因此不是太困難的工作。當然使用過程中會看到很多奇奇怪怪的字詞出現，這就<br>需要人工介入將一些字詞濾掉。</p>
+<h2 id="Word2vec"><a href="#Word2vec" class="headerlink" title="Word2vec"></a>Word2vec</h2><p>將上面斷出來的字詞整理出一個字詞庫出來，接下來要做的動作是把字詞變成向量。根據 Word2vec 演算法<br>，字詞轉成向量後會有一些有趣的相關性，像是 <code>國王 - 男人 + 女人 = 皇后</code>。因此要完成這次的競賽，<br>其實用 Word2vec 就可以做到不錯的成果，把選項的向量拿去和題目比對相似度，把最高相似度的選項當作<br>正確答案，就會是一個不錯的解題模型。目前有組員利用這個方法做到 6 成正確率。</p>
+<h2 id="RNN-LSTM"><a href="#RNN-LSTM" class="headerlink" title="RNN/LSTM"></a>RNN/LSTM</h2><p>這部分就是真正的挑戰啦，對於我這個初學者而言，要跟很多不熟悉的演算法和公式搏鬥。而且要處理部落格<br>文章並拿去訓練也很不容易。基本上要面對龐大的字詞庫，動輒幾十萬的字詞，要算出每個字的機率出來，光<br>想就覺得困難重重。目前這塊還在努力中，希望可以真的玩出一個模型出來。</p>
+<h2 id="感想"><a href="#感想" class="headerlink" title="感想"></a>感想</h2><p>在這個比賽裡，由於接觸到的東西很多且都頗有挑戰性，所以做起來其實滿快樂的。學到很多東西，感覺很過<br>癮。在目前工作上覺得進展有點停滯的時刻，弄這些東西真的有如及時雨一般滋潤我的內心，邊做邊感到持續<br>有在進步中。希望到時能做出不錯的結果出來！</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://raix852.github.io/2016/07/29/PixHack2016/" data-id="cir8n8hcl0005i4peke837hsq" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Deep-Learning/">Deep Learning</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Machine-Learning/">Machine Learning</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/NLP/">NLP</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-data-at-rest" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2016/07/01/data-at-rest/" class="article-date">
+  <time datetime="2016-07-01T15:10:37.000Z" itemprop="datePublished">2016-07-01</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2016/07/01/data-at-rest/">Data at rest encryption</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>目前一般的 data at rest 有三種方式，分別為：</p>
+<ol>
+<li><p>Encrypted drives</p>
+<p> 獨立於作業系統之外，由硬體提供加密的功能。避免硬體遺失時資料被輕易拿出，缺點是無法避免系統運行時被惡意使用者或惡意程序拿取資料。</p>
+</li>
+<li><p>Full disk encryption</p>
+<p> 在這種模式下不需要硬體支援，可針對 disk 或 volume 整個加密。實作方式各家 filesystem 都有不同，所以也有不同的限制，像是有的可以對 /root 資料夾加密，有的不行。缺點和 Encrypted drives 一樣無法避免 disk 或 volume 運行起來時被惡意使用者或惡意程序拿取資料。</p>
+</li>
+<li><p>Filesystem encrytion</p>
+<p> 又稱為 file/folder encryption 。此種方式可以讓使用者分別對某個檔案或資料夾加密，加密時也可選擇不同的 key ，因此優點就是可以避免上面兩種方式的缺點，讓惡意使用者或程序難以解讀內容。缺點是針對密碼控管需要注意，特別是加密很多東西時。</p>
+<p> 其實我初看到 Filesystem encryption 名詞時還以為是對整個 filesystem 加密，不過後來查 wiki 看到別稱才明白是指什麼。</p>
+</li>
+</ol>
+<h2 id="參考資料"><a href="#參考資料" class="headerlink" title="參考資料"></a>參考資料</h2><p><a href="https://en.wikipedia.org/wiki/Disk_encryption" target="_blank" rel="external">Disk encryption</a> <br><br><a href="https://en.wikipedia.org/wiki/Filesystem-level_encryption" target="_blank" rel="external">Filesystem-level encryption</a></p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://raix852.github.io/2016/07/01/data-at-rest/" data-id="cir8ncp4m0000icperk6yjz5t" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Encryption/">Encryption</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Filesystem/">Filesystem</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Linux/">Linux</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-use-openssl-generate-certificate" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2016/06/20/use-openssl-generate-certificate/" class="article-date">
+  <time datetime="2016-06-20T13:00:00.000Z" itemprop="datePublished">2016-06-20</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2016/06/20/use-openssl-generate-certificate/">使用 Openssl 建立憑證</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>最近工作上需要建立程式之間的 TLS 連線，而 TLS 之間的連線步驟需要驗證憑證 (Certificate) ，讓之間的加密連線可以成立。不過由於處於測試階段，需要自己產生憑證出來。因此學習使用 Openssl 來產生憑證，也藉此讓自已對 TLS 連線和憑證機制有更清楚的了解。</p>
+<h2 id="TLS-介紹"><a href="#TLS-介紹" class="headerlink" title="TLS 介紹"></a>TLS 介紹</h2><p>傳輸層安全協議（Transport Layer Security，縮寫：TLS），前身為安全通訊協定（Secure Sockets Layer，縮寫：SSL），由網景公司 (Netscape) 開發出來用在 http 協定上，後來由 IETF 將 SSL 進行標準化，就是後來的 TLS 。</p>
+<p>TLS 在建立連線時，會經過以下的步驟：</p>
+<ol>
+<li>client 送出 ClientHello 訊息給 server ，裡面包含可支援的 TLS protocol，一個由 client 端隨機產生的數字(隨機數字只用在此次連線期間，避免被封包重播攻擊)，以及支援的加密和壓縮演算法。</li>
+<li>server 回應 ServerHello 訊息，提供要使用的 TLS protocol ，一個由 server 端隨機產生的數字，以及要使用的加密和壓縮演算法。</li>
+<li>server 根據上面選擇的 TLS protocol 和加密及壓縮演算法，提供憑證給 client</li>
+<li>client 驗證 server 提供的憑證，將憑證內的 public key 取出</li>
+<li>利用 server 提供的 public key ，將 client 的憑證，沒有憑證則隨機產生的 public key ，加密送回。</li>
+<li>雙方使用交換出來的資訊，產生一組通訊用的加解密方式，有對稱式或非對稱式，取決於採用哪種演算法。</li>
+<li>連線建立。</li>
+</ol>
+<h2 id="使用-Openssl-產生憑證"><a href="#使用-Openssl-產生憑證" class="headerlink" title="使用 Openssl 產生憑證"></a>使用 Openssl 產生憑證</h2><p>以下描述使用 openssl 來產生可供 TLS 連線所需的憑證，主要參考 <a href="https://jamielinux.com/docs/openssl-certificate-authority/index.html" target="_blank" rel="external">OpenSSL Certificate Authority</a> 這個網站的步驟來一步一步執行，根據自己的需求修改設定。</p>
+<h3 id="建立-root-憑證"><a href="#建立-root-憑證" class="headerlink" title="建立 root 憑證"></a>建立 root 憑證</h3><p>一般公開網路上憑證不會是自己產生的，因為網路傳輸過程中不能確保會不會被偽造或修改。因此為了有可靠的信任機制，於是就有了憑證機構 (Certificate Authority, CA) ，由憑證機構產生憑證。最上層憑證機構通常由被信任的第三方公正機關來擔任，然後對個人或公司團體產生憑證簽章，如此才能確保憑證可以不被修改。</p>
+<p>以瀏覽器為例，存有一串信任的憑證機構，藉由檢視連線網站的憑證是否由這些憑證機構產生，來判別網站可否受信任，不信任情況下就會出現不安全連線的提示。</p>
+<p>而對公司企業內的私人網路來說， 不需要透過第三方憑證機構，因此會由自己產生 root 憑證，往下建立一連串的認證階層。也因此 root 憑證必須保護好，放置在與網路隔絕的環境並只有特定人士可以存取。一般網路上的認證機構的 root 憑證會互相簽章，表示彼此信任，而自己產生的 root 憑證因沒有其他機關互相簽章，因此會是自我簽章的憑證。</p>
+<h4 id="步驟："><a href="#步驟：" class="headerlink" title="步驟："></a>步驟：</h4><ol>
+<li><p>產生 root key。</p>
+ <figure class="highlight sh"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">mkdir /root/ca</div><div class="line"><span class="built_in">cd</span> /root/ca</div><div class="line">openssl genrsa -aes256 -out private/ca.key.pem 4096</div><div class="line">chmod 400 private/ca.key.pem</div></pre></td></tr></table></figure>
+</li>
+<li><p>參照 <a href="https://jamielinux.com/docs/openssl-certificate-authority/appendix/root-configuration-file.html" target="_blank" rel="external">config</a> 產生 openssl.cnf</p>
+</li>
+<li><p>產生自我簽章的 root 憑證。</p>
+ <figure class="highlight sh"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">openssl req -config openssl.cnf \</div><div class="line">     -key private/ca.key.pem \</div><div class="line">     -new -x509 -days 7300 -sha256 -extensions v3_ca \</div><div class="line">     -subj <span class="string">"/C=TW/ST=Taipei/O=RAIX/OU=RAIX.IO/CN=raix.io.rootca/emailAddress=raix@mail.com"</span> \</div><div class="line">     -out certs/ca.cert.pem</div><div class="line">chmod 444 certs/ca.cert.pem</div></pre></td></tr></table></figure>
+<p> root 憑證過期日期建議設定長一點，因為是最重要的環節，不太適合頻繁的過期造成整串憑證失效。</p>
+<p> 另外因為是產生自我簽章的憑證，和接下來產生 intermediate 或 client/server 的 Certificate signing request (CSR) 指令多了 <code>-x509</code> 參數。</p>
+</li>
+<li><p>驗證 root 憑證</p>
+ <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">openssl x509 -noout -text -in certs/ca.cert.pem</div></pre></td></tr></table></figure>
+</li>
+</ol>
+<h3 id="建立-intermediate-憑證"><a href="#建立-intermediate-憑證" class="headerlink" title="建立 intermediate 憑證"></a>建立 intermediate 憑證</h3><p>intermediate 憑證介於 root 和 client server 之間，可避免 root 憑證直接被使用，也可用來分群組，區分可使用的範圍。</p>
+<h4 id="步驟"><a href="#步驟" class="headerlink" title="步驟"></a>步驟</h4><ol>
+<li><p>設置相關資料夾和資訊</p>
+ <figure class="highlight sh"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">mkdir /root/ca/intermediate</div><div class="line"><span class="built_in">cd</span> /root/ca/intermediate</div><div class="line">mkdir certs crl csr newcerts private</div><div class="line">chmod 744 private</div><div class="line">touch index.txt</div><div class="line"><span class="built_in">echo</span> 1000 &gt; serial</div><div class="line"><span class="built_in">echo</span> 1000 &gt; crlnumber</div></pre></td></tr></table></figure>
+</li>
+<li><p>產生 intermediate key</p>
+ <figure class="highlight sh"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">openssl genrsa -aes256 \</div><div class="line">     -out private/intermediate.key.pem 4096</div><div class="line">chmod 400 private/intermediate.key.pem</div></pre></td></tr></table></figure>
+</li>
+<li><p>修改 openssl.cnf 產生 openssl-im.cnf</p>
+ <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">[ CA_default ]</div><div class="line">dir             = /root/ca/intermediate</div><div class="line">private_key     = $dir/private/intermediate.key.pem</div><div class="line">certificate     = $dir/certs/intermediate.cert.pem</div><div class="line">crl             = $dir/crl/intermediate.crl.pem</div><div class="line">policy          = policy_loose</div></pre></td></tr></table></figure>
+</li>
+<li><p>產生 intermediate CSR</p>
+ <figure class="highlight sh"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">openssl req -config openssl-im.cnf -new -sha256 \</div><div class="line">     -subj <span class="string">"/C=TW/ST=Taipei/O=RAIX/OU=RAIX.IO/CN=raix.io.imca/emailAddress=raix@mail.com"</span>\</div><div class="line">     -key private/intermediate.key.pem \</div><div class="line">     -out csr/intermediate.csr.pem</div></pre></td></tr></table></figure>
+<p> <a href="https://en.wikipedia.org/wiki/Certificate_signing_request" target="_blank" rel="external">Certificate signing request (CSR)</a> 裡紀錄個人或組織的資訊，並且提供給憑證機構簽章。</p>
+</li>
+<li><p>對 intermediate CSR 簽上 root 憑證，產生 intermediate 憑證</p>
+ <figure class="highlight sh"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">openssl ca -config /root/ca/openssl.cnf -extensions v3_intermediate_ca \</div><div class="line">     -days 3650 -notext -md sha256 \</div><div class="line">     -in csr/intermediate.csr.pem \</div><div class="line">     -out certs/intermediate.cert.pem</div><div class="line">chmod 444 certs/intermediate.cert.pem</div></pre></td></tr></table></figure>
+</li>
+<li><p>驗證 intermediate 憑證</p>
+ <figure class="highlight sh"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">openssl x509 -noout -text \</div><div class="line">     -in intermediate/certs/intermediate.cert.pem</div><div class="line">openssl verify -CAfile certs/ca.cert.pem \</div><div class="line">     intermediate/certs/intermediate.cert.pem</div></pre></td></tr></table></figure>
+</li>
+<li><p>產生憑證鍊 (certificate chain)</p>
+ <figure class="highlight sh"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">cat intermediate/certs/intermediate.cert.pem \</div><div class="line">     certs/ca.cert.pem &gt; intermediate/certs/ca-chain.cert.pem</div><div class="line">chmod 444 intermediate/certs/ca-chain.cert.pem</div></pre></td></tr></table></figure>
+<p> 當應用程式要驗證 intermediate 憑證時，也需要同時驗證 root 憑證，因此需要產生憑證鍊來完成一整串驗證。</p>
+</li>
+</ol>
+<h3 id="建立-client-server-憑證"><a href="#建立-client-server-憑證" class="headerlink" title="建立 client/server 憑證"></a>建立 client/server 憑證</h3><p>最後就是對要使用的 client/server 產生憑證，讓彼此之間 TLS 連線可以成立，確保處於安全的連線下。</p>
+<h4 id="步驟-1"><a href="#步驟-1" class="headerlink" title="步驟"></a>步驟</h4><ol>
+<li><p>產生 client/server key</p>
+ <figure class="highlight sh"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="built_in">cd</span> /root/ca/intermediate/</div><div class="line">openssl genrsa -out private/client.raix.io.key.pem 2048</div><div class="line">chmod 444 private/client.raix.io.key.pem</div></pre></td></tr></table></figure>
+</li>
+<li><p>產生 client/server CSR</p>
+ <figure class="highlight sh"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">openssl req -config openssl-im.cnf \</div><div class="line">     -key intermediate/private/client.raix.io.key.pem \</div><div class="line">     -subj <span class="string">"/C=TW/ST=Taipei/O=RAIX/OU=RAIX.IO/CN=client.raix.io/emailAddress=raix@mail.com"</span> \</div><div class="line">     -new -sha256 -out client.raix.io.csr.pem</div></pre></td></tr></table></figure>
+</li>
+<li><p>產生 client/server 憑證</p>
+ <figure class="highlight sh"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">openssl ca -config openssl-im.cnf \</div><div class="line">     -extensions server_cert -days 375 -notext -md sha256 \</div><div class="line">     -in intermediate/csr/client.raix.io.csr.pem \</div><div class="line">     -out intermediate/certs/client.raix.io.cert.pem</div><div class="line">chmod 444 certs/client.raix.io.cert.pem</div></pre></td></tr></table></figure>
+</li>
+<li><p>驗證憑證</p>
+ <figure class="highlight sh"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">openssl x509 -noout -text \</div><div class="line">     -in certs/client.raix.io.cert.pem</div><div class="line">openssl verify -CAfile intermediate/certs/ca-chain.cert.pem \</div><div class="line">     certs/client.raix.io.cert.pem</div></pre></td></tr></table></figure>
+</li>
+</ol>
+<h2 id="參考資料"><a href="#參考資料" class="headerlink" title="參考資料"></a>參考資料</h2><p>Wiki: <a href="https://en.wikipedia.org/wiki/Transport_Layer_Security" target="_blank" rel="external">Transport Layer Security</a> <br><br>Wiki: <a href="https://en.wikipedia.org/wiki/Certificate_authority" target="_blank" rel="external">Certificate authority</a> <br><br>Wiki: <a href="https://en.wikipedia.org/wiki/Certificate_signing_request" target="_blank" rel="external">Certificate signing request</a> <br><br><a href="https://jamielinux.com/docs/openssl-certificate-authority/index.html" target="_blank" rel="external">OpenSSL Certificate Authority</a></p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://raix852.github.io/2016/06/20/use-openssl-generate-certificate/" data-id="cir8n8hcd0004i4pelwm64o72" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/TLS/">TLS</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/linux/">linux</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/openssl/">openssl</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-Python-decorator-property" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2016/06/04/Python-decorator-property/" class="article-date">
+  <time datetime="2016-06-04T13:38:52.000Z" itemprop="datePublished">2016-06-04</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2016/06/04/Python-decorator-property/">Python - @property</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>今天在 trace 一個 python 專案時，看到類似 getter/setter 函式，不過實際使用時卻不像其他語言的 getter/setter 用法。於是就去 google 一下，找到 @property 的用法。</p>
+<p>原來，在 python class 中，因為沒有 private 變數，全部都是 public ，任何人都可以存取，頂多只有透過命名風格在變數前加 ‘_‘ 或 ‘__‘ ，讓別人了解這個變數是給內部使用，不建議直接呼叫。也因此 getter/setter 的設計模式在 python 較沒意義，取而代之的是使用 @property 裝飾器(decorator)來達到類似的效果。</p>
+<h3 id="範例-1"><a href="#範例-1" class="headerlink" title="範例 1"></a>範例 1</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div></pre></td><td class="code"><pre><div class="line"><span class="comment">#!/usr/bin/python</span></div><div class="line"></div><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">Example</span><span class="params">(object)</span>:</span></div><div class="line">    _text = <span class="string">'This is an origin string'</span></div><div class="line"></div><div class="line"><span class="meta">    @property</span></div><div class="line">    <span class="function"><span class="keyword">def</span> <span class="title">text</span><span class="params">(self)</span>:</span></div><div class="line">        <span class="keyword">return</span> self._text</div><div class="line"></div><div class="line"><span class="meta">    @text.setter</span></div><div class="line">    <span class="function"><span class="keyword">def</span> <span class="title">text</span><span class="params">(self, string)</span>:</span></div><div class="line">        <span class="keyword">if</span> isinstance(string, str):</div><div class="line">            self._text = string</div><div class="line">        <span class="keyword">else</span>:</div><div class="line">            <span class="keyword">raise</span> TypeError(<span class="string">'%s url must be str, got %s:'</span> % (type(self).__name__,</div><div class="line">                type(url).__name__))</div><div class="line"></div><div class="line"></div><div class="line"><span class="keyword">if</span> __name__ == <span class="string">'__main__'</span>:</div><div class="line">    ex = Example()</div><div class="line">    string = <span class="string">'This is a test'</span></div><div class="line"></div><div class="line">    <span class="keyword">print</span> <span class="string">'Get Example.text: %s'</span> % (ex.text)</div><div class="line"></div><div class="line">    <span class="keyword">print</span> <span class="string">'Set Example.text: %s'</span> % (string)</div><div class="line">    ex.text = string</div><div class="line"></div><div class="line">    <span class="keyword">print</span> <span class="string">'Get Example.text: %s'</span> % (ex.text)</div></pre></td></tr></table></figure>
+<h3 id="執行結果"><a href="#執行結果" class="headerlink" title="執行結果"></a>執行結果</h3><figure class="highlight sh"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">$ ./decorator_property.py</div><div class="line">Get Example.text: This is an origin string</div><div class="line">Set Example.text: This is a <span class="built_in">test</span></div><div class="line">Get Example.text: This is a <span class="built_in">test</span></div></pre></td></tr></table></figure>
+<p>不過在 trace 的 python 專案中，用的是另一種方法。</p>
+<h3 id="範例-2"><a href="#範例-2" class="headerlink" title="範例 2"></a>範例 2</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div></pre></td><td class="code"><pre><div class="line"><span class="comment">#!/usr/bin/python</span></div><div class="line"></div><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">Example</span><span class="params">(object)</span>:</span></div><div class="line">    _text = <span class="string">'This is an origin string'</span></div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">def</span> <span class="title">_get_text</span><span class="params">(self)</span>:</span></div><div class="line">        <span class="keyword">return</span> self._text</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">def</span> <span class="title">_set_text</span><span class="params">(self, string)</span>:</span></div><div class="line">        <span class="keyword">if</span> isinstance(string, str):</div><div class="line">            self._text = string</div><div class="line">        <span class="keyword">else</span>:</div><div class="line">            <span class="keyword">raise</span> TypeError(<span class="string">'%s url must be str, got %s:'</span> % (type(self).__name__,</div><div class="line">                type(url).__name__))</div><div class="line"></div><div class="line">    text = property(_get_text, _set_text)</div><div class="line"></div><div class="line"><span class="keyword">if</span> __name__ == <span class="string">'__main__'</span>:</div><div class="line">    ex = Example()</div><div class="line">    string = <span class="string">'This is a test'</span></div><div class="line"></div><div class="line">    <span class="keyword">print</span> <span class="string">'Get Example.text: %s'</span> % (ex.text)</div><div class="line"></div><div class="line">    <span class="keyword">print</span> <span class="string">'Set Example.text: %s'</span> % (string)</div><div class="line">    ex.text = string</div><div class="line"></div><div class="line">    <span class="keyword">print</span> <span class="string">'Get Example.text: %s'</span> % (ex.text)</div></pre></td></tr></table></figure>
+<h3 id="執行結果-1"><a href="#執行結果-1" class="headerlink" title="執行結果"></a>執行結果</h3><figure class="highlight sh"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">$ ./decorator_property_2.py</div><div class="line">Get Example.text: This is an origin string</div><div class="line">Set Example.text: This is a <span class="built_in">test</span></div><div class="line">Get Example.text: This is a <span class="built_in">test</span></div></pre></td></tr></table></figure>
+<p>可以看到兩種寫法都可以達到相同的效果，而且用 <code>type(ex.text)</code> 看型態都是 <code>&lt;type &#39;str&#39;&gt;</code> 。</p>
+<p>至於哪種寫法比較好？就本人覺得，比較偏好範例 2 ，畢竟可以對應到其他語言的寫法，相較之下可讀性較高。</p>
+<h2 id="Link"><a href="#Link" class="headerlink" title="Link"></a>Link</h2><ol>
+<li><a href="http://www.liaoxuefeng.com/wiki/001374738125095c955c1e6d8bb493182103fac9270762a000/001386820062641f3bcc60a4b164f8d91df476445697b9e000" target="_blank" rel="external">使用@property</a></li>
+<li><a href="http://stackoverflow.com/questions/6618002/python-property-versus-getters-and-setters" target="_blank" rel="external">Python @property versus getters and setters</a></li>
+</ol>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://raix852.github.io/2016/06/04/Python-decorator-property/" data-id="cir8n8hc20002i4pe251nkg7h" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/python/">python</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-diary" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2016/05/31/diary/" class="article-date">
+  <time datetime="2016-05-31T15:10:37.000Z" itemprop="datePublished">2016-05-31</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2016/05/31/diary/">5/31 日記</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>今天終於將 blog 上面的圖換掉，換成東方project中的三位魔女，左至右分別為魔理沙，帕秋莉和愛莉絲，Pixiv ID:<a href="http://www.pixiv.net/member_illust.php?mode=medium&amp;illust_id=51596801" target="_blank" rel="external">51596801</a> 。</p>
+<p>在一開始隨便將圖放上，效果其實是非常差的。因為上面呈現的範圍只有一小區塊，而且預設是置中呈現，會對原圖人物的頭部部份給切掉，而且色彩偏向明亮，對文字會干擾模糊。因此就要根據這張圖來調整網頁呈現。</p>
+<p>在準備開始調整時，其實我內心一點頭緒也沒有，對前端網頁呈現一丁點也不懂，這時候就只能先把 firefox 的網頁開發者工具開啟，觀察頁面元素，找出上頭呈現範圍所對應的 html 元素。如下圖：<br><img src="http://i.imgur.com/bOI6BGI.png" alt="Inspector"></p>
+<p>然後看到右邊分隔頁的 rule ，看起來是 css 設定，於是去找其他網頁來比對設定。接著就是開始 google 大法，找這些關鍵字要怎麼設定，再利用 firefox 提供的開發工具可以隨手改動數據，立刻顯出效果。經過幾番嘗試後，開始知道要怎麼調整了，後面就開始邊調邊想像我想要做成的畫面。結果就做出感覺還不錯的成果，這也歸功於於設計者先天設計良好，隨便調都好看。</p>
+<p>到這邊為止算是稍微撇到前端千變萬化的一小小部份，不過能改變別人寫好的程式，內心會開始沾沾自喜起來。接下來想要在右邊欄位放上個人簡介，將會是另一番工程要奮鬥。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://raix852.github.io/2016/05/31/diary/" data-id="cir8n8hbe0000i4peg8a2xxv0" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/hexo/">hexo</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/日記/">日記</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-hexo" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2016/05/24/hexo/" class="article-date">
+  <time datetime="2016-05-24T13:47:01.000Z" itemprop="datePublished">2016-05-24</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2016/05/24/hexo/">Hexo 安裝和佈署到 Github</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>Octopress 剛架設好後立刻使用 Atom 撰寫 markdown 文章，透過 Atom 預覽呈現出來的排版都很美好，滿心期待看到 Octopress 轉出網頁後的成果，結果就開始一連串格式不合無法轉出的錯誤發生，且費一般功夫修好後呈現出來的結果不怎麼好。</p>
+<p>無奈之下開始上 Github 查詢 issues ，這才發現 Octopress 目前開發進度有點處於停滯的情況，所以乾脆開始尋找另一套解決方案。就是本篇的 <a href="https://hexo.io/zh-tw/" target="_blank" rel="external">Hexo</a>。</p>
+<p>將為數不多的文章改用 Hexo 產生後，呈現上果然有比較好些。雖然還需要經過一些微調，但對於純粹使用上來說，是足以了。因此立刻寫一篇文章紀錄我的安裝過程。</p>
+<h2 id="安裝"><a href="#安裝" class="headerlink" title="安裝"></a>安裝</h2><p><a href="https://hexo.io/zh-tw/docs/" target="_blank" rel="external">官網的文件</a> 上提供了詳細的步驟，而且動作也比起 Octopress 來說簡單。基本需求只有：</p>
+<ul>
+<li>Node.js</li>
+<li>Git</li>
+</ul>
+<p>Git 不用說，對程式開發者而言都是必裝的套件。而 Node.js 在目前使用的 Ubuntu 16.04 環境上沒有安裝，因此直覺得下 <code>apt-get install nodejs</code> 安裝。豈知之後要安裝 Hexo 就開始遇到麻煩。最後是照著官網建議的安裝 Node.js 方式才成功安裝。因此這邊就不誤人子弟，直接使用官網的方式安裝吧。</p>
+<h3 id="安裝-Node-js"><a href="#安裝-Node-js" class="headerlink" title="安裝 Node.js"></a>安裝 Node.js</h3><p>我這邊使用 wget 方式：</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ wget -qO- https://raw.github.com/creationix/nvm/master/install.sh | sh</div></pre></td></tr></table></figure>
+<p>安裝完成後要重開終端機。接著在下：</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ nvm install 4</div></pre></td></tr></table></figure>
+<p>以上指令查一下是安裝版號 4.x ，裝好之號看 Node.js 版號是 v4.4.4 。</p>
+<h3 id="安裝-Hexo"><a href="#安裝-Hexo" class="headerlink" title="安裝 Hexo"></a>安裝 Hexo</h3><p>安裝 Hexo 指令只須一行。</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ npm install -g hexo-cli</div></pre></td></tr></table></figure>
+<p>之後就可以開始使用囉。</p>
+<h2 id="建立"><a href="#建立" class="headerlink" title="建立"></a>建立</h2><h3 id="建立網站範本"><a href="#建立網站範本" class="headerlink" title="建立網站範本"></a>建立網站範本</h3><p>Hexo 是透過指令來產生網站的範本，相比 Octopress 是先去 git clone 自己的 repo 下來做修改，簡潔不少。<br>使用以下指令來建立範本：</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">$ hexo init &lt;folder&gt;</div><div class="line">$ <span class="built_in">cd</span> &lt;folder&gt;</div><div class="line">$ npm install</div></pre></td></tr></table></figure>
+<p>建完之後會看到設定的資料夾下多了一些目錄和檔案。<br>其中 _config.yml 是用來設定 Hexo 的配置，其他的目錄和檔案就請參考官網說明。</p>
+<h3 id="建立新文章"><a href="#建立新文章" class="headerlink" title="建立新文章"></a>建立新文章</h3><p>透過 Hexo 提供的指令一樣可以方便的建立出新文章樣本出來。</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ hexo new [layout] &lt;title&gt;</div></pre></td></tr></table></figure>
+<p>其中 [layout] 提供了三種布局。</p>
+<table>
+<thead>
+<tr>
+<th>佈局</th>
+<th>路徑</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>post</td>
+<td>source/_posts/</td>
+</tr>
+<tr>
+<td>page</td>
+<td>source/</td>
+</tr>
+<tr>
+<td>draft</td>
+<td>source/_drafts/</td>
+</tr>
+</tbody>
+</table>
+<p>post 是一般要建立新文章使用的指令。<br>page 可以在網站中產生新的頁面出來，存放其他種類文章。像是拿來開一個頁面做 “About” 介紹。<br>draft 可以用來當作草稿使用，佈署的時候會忽略這裡面的內容。需要另外下指令 <code>hexo publish</code> 來發表。此外預覽時可以加參數來呈現。</p>
+<h2 id="佈署"><a href="#佈署" class="headerlink" title="佈署"></a>佈署</h2><h3 id="產生網頁"><a href="#產生網頁" class="headerlink" title="產生網頁"></a>產生網頁</h3><p>內容準備完成後，接下來就下指令來產生網頁。</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ hexo generate</div></pre></td></tr></table></figure>
+<p>以上指令會依據使用者提供的內容和設定，產生想要的網站內容。</p>
+<h3 id="佈署到-Github-上"><a href="#佈署到-Github-上" class="headerlink" title="佈署到 Github 上"></a>佈署到 Github 上</h3><p>在佈署之前，需要先在 _config.yml 裡設定要採取 git 模式佈署。設定如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">deploy:</div><div class="line">  type: git</div><div class="line">  repo: &lt;repository url&gt;</div><div class="line">  branch: [branch]</div><div class="line">  message: [message]</div></pre></td></tr></table></figure>
+<p>repo 欄位上就填寫 Github repo 的 url 。<br><br>另外還須額外安裝 <a href="https://github.com/hexojs/hexo-deployer-git" target="_blank" rel="external">hexo-deployer-git</a>。</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ npm install hexo-deployer-git --save</div></pre></td></tr></table></figure>
+<p>接下來就可以透過 Hexo 一行指令完成佈署囉。</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ hexo deploy</div></pre></td></tr></table></figure>
+<p>另外如果想再產生網頁時同時佈署上去， Hexo 也有提供指令參數使用，不過我想還是先預覽看過再佈署上去比較明智。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">$ hexo generate --deploy</div><div class="line">$ hexo deploy --generate</div></pre></td></tr></table></figure>
+<h2 id="完成"><a href="#完成" class="headerlink" title="完成"></a>完成</h2><p>至此，我的網站就更新完成啦。真的和 Octopress 比起簡單快速不少。</p>
+<p>不過 Octopress 的管理模式還是值得學習一下， Hexo 預設只會把產生的網站 commit 到指定的 branch 上，但是本身的內容並沒有提供方式來做版本控制。而這部份 Octopress 就會切出 master 和 source 兩個 branch 出來， master 用來放置管理網站內容，而 source 用來對自身做版本管理。接下來目標是參照這種模式把 Hexo 的內容納入版本管理。</p>
+<p>此外， Hexo 裡面還有不少東西可以挖，努力來做出一個漂漂亮亮的網站出來吧！！</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://raix852.github.io/2016/05/24/hexo/" data-id="cir8n8hcz0009i4peb2ccmhhq" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Github/">Github</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/hexo/">hexo</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-octopress" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2016/05/22/octopress/" class="article-date">
+  <time datetime="2016-05-22T12:33:29.000Z" itemprop="datePublished">2016-05-22</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2016/05/22/octopress/">Octopress 安裝和佈署到 Github</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>時常在逛網路 blog 時可以看到有不少人架設在自己的 Github 上，查了一下才了解 Github 有提供 <a href="https://pages.github.com/" target="_blank" rel="external">Github Pages</a> 的功能，可以讓使用者免費架設自己的網站。不過當然有一些限制，如下：</p>
+<ol>
+<li>只能使用靜態網頁，無法透過 ajax 方式來交換前後端資料，動態生成出網頁。</li>
+<li>每個月有 100 GB 和 100,000 requests 限制。</li>
+<li>Source repositories 有 1 GB 限制。</li>
+<li>連線只能透過 http ，因此不適合傳送敏感資料。</li>
+</ol>
+<p>然而以上限制對一般使用者來說，並不太會碰到。因此可以好好放心的架設自己的 blog 在 Github 上面，接著再透過 git 強大的版本控制功能，對文章內容可以好好保存修改紀錄。</p>
+<p>在 Github 官網上官方推薦使用 <a href="http://jekyllrb.com/" target="_blank" rel="external">Jekyll</a> ，Github Pages 也是透過 Jekyll 做出。不過在架設的教學文章上，還是 Octopress 居多數，因此採用 Octopress 作為我的 blog 基礎。至於其中差異，我就沒有打算深入比較。</p>
+<h2 id="安裝"><a href="#安裝" class="headerlink" title="安裝"></a>安裝</h2><p>在我常用的機器上，有灌 Ubuntu 16.04 的一般桌機和 Mac 筆電，安裝時參考<a href="http://octopress.org/docs/" target="_blank" rel="external">Octopress</a> 官網文件提供的安裝方式。在安裝在 ubuntu 環境上時有遇上一些問題，而在 mac 上安裝就很順利 。因此對 Ubuntu 上提供詳細的安裝步驟。</p>
+<h3 id="Ubuntu-16-04-環境"><a href="#Ubuntu-16-04-環境" class="headerlink" title="Ubuntu 16.04 環境"></a>Ubuntu 16.04 環境</h3><ol>
+<li><p>安裝 git。</p>
+ <figure class="highlight sh"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">sudo apt-get install -y git</div></pre></td></tr></table></figure>
+</li>
+<li><p>安裝 ruby 和 rbenv。</p>
+ <figure class="highlight sh"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">sudo apt-get install -y ruby2.3 ruby2.3-dev rbenv</div></pre></td></tr></table></figure>
+</li>
+<li><p>下載 Octopress。</p>
+ <figure class="highlight sh"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">git <span class="built_in">clone</span> git://github.com/imathis/octopress.git octopress</div><div class="line"><span class="built_in">cd</span> octopress</div></pre></td></tr></table></figure>
+</li>
+<li><p>安裝 dependencies，這邊需要額外安裝 nodejs ，不然在<code>bundle install</code>時會出現錯誤。</p>
+ <figure class="highlight sh"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">sudo apt-get install -y nodejs</div><div class="line">gem install bundler</div><div class="line">rbenv <span class="built_in">rehash</span>    <span class="comment"># If you use rbenv, rehash to be able to run the bundle command</span></div><div class="line">bundle install</div></pre></td></tr></table></figure>
+</li>
+<li><p>安裝 Octopress 預設的 theme。</p>
+ <figure class="highlight sh"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">rake install</div></pre></td></tr></table></figure>
+</li>
+</ol>
+<p>至此 Octopress 就算安裝完成，接下來就開始來設定 blog 吧。</p>
+<h2 id="設定"><a href="#設定" class="headerlink" title="設定"></a>設定</h2><p>將 Octopress 設定架設到 Github 上。</p>
+<ol>
+<li><p>建立以自己為域名(Ex. <code>your_username.github.io</code>)的 Github repository。</p>
+</li>
+<li><p>Octopress 設定 Github repository，輸入自己的 repository (Ex. <code>git@github.com:your_username/your_username.github.io.git</code>)。</p>
+ <figure class="highlight sh"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">rake setup_github_pages</div></pre></td></tr></table></figure>
+</li>
+<li><p>產生樣板網頁，在這步驟中<code>rake generate</code>會根據設定產生樣板網頁出來，而<code>rake deploy</code>會將網頁佈署到 Github 上。完成之後就可以開啟自己的 Blog 出來看囉。</p>
+ <figure class="highlight sh"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">rake generate</div><div class="line">rake deploy</div></pre></td></tr></table></figure>
+</li>
+<li><p>到這步就可以開始變更 blog 設定，新增文章，並將修改 commit。</p>
+ <figure class="highlight sh"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">git add .</div><div class="line">git commit -m <span class="string">'your message'</span></div><div class="line">git push origin <span class="built_in">source</span></div></pre></td></tr></table></figure>
+</li>
+</ol>
+<p>Octopress 除了提供架設在 Github 上以外，還有提供架設在 <a href="https://www.heroku.com/" target="_blank" rel="external">heroku</a> 和透過 rsync 的方式，有需求的人就請操考官方文章操作吧。</p>
+<h2 id="產生-About"><a href="#產生-About" class="headerlink" title="產生 About"></a>產生 About</h2><p>想要在 blog 上有一個分頁是 “About” 來介紹嗎？以下兩個步驟可以輕鬆產生。</p>
+<ol>
+<li><p>產生 about 頁面</p>
+ <figure class="highlight sh"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">rake new_page[<span class="string">"about"</span>]</div></pre></td></tr></table></figure>
+<p> 這步驟會產生新的檔案在 <code>source/about/index.markdown</code> ，接下來就編輯這份文件來寫內容。</p>
+</li>
+<li><p>加入上方分頁連結。</p>
+<p> 編輯<code>source/_includes/custom/navigation.html</code>，加入第4行的內容。</p>
+ <figure class="highlight html"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="tag">&lt;<span class="name">ul</span> <span class="attr">class</span>=<span class="string">"main-navigation"</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">li</span>&gt;</span><span class="tag">&lt;<span class="name">a</span> <span class="attr">href</span>=<span class="string">"&#123;&#123; root_url &#125;&#125;/"</span>&gt;</span>Blog<span class="tag">&lt;/<span class="name">a</span>&gt;</span><span class="tag">&lt;/<span class="name">li</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">li</span>&gt;</span><span class="tag">&lt;<span class="name">a</span> <span class="attr">href</span>=<span class="string">"&#123;&#123; root_url &#125;&#125;/blog/archives"</span>&gt;</span>Archives<span class="tag">&lt;/<span class="name">a</span>&gt;</span><span class="tag">&lt;/<span class="name">li</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">li</span>&gt;</span><span class="tag">&lt;<span class="name">a</span> <span class="attr">href</span>=<span class="string">"&#123;&#123; root_url &#125;&#125;/about"</span>&gt;</span>About<span class="tag">&lt;/<span class="name">a</span>&gt;</span><span class="tag">&lt;/<span class="name">li</span>&gt;</span></div><div class="line"><span class="tag">&lt;/<span class="name">ul</span>&gt;</span></div></pre></td></tr></table></figure>
+<p> 以上就可產生 About 頁面囉。</p>
+</li>
+</ol>
+<h2 id="產生新文章並發表"><a href="#產生新文章並發表" class="headerlink" title="產生新文章並發表"></a>產生新文章並發表</h2><h3 id="產生新文章"><a href="#產生新文章" class="headerlink" title="產生新文章"></a>產生新文章</h3><p>使用 Octopress 提供的指令來生出範本。</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">rake new_post[<span class="string">"title"</span>]</div></pre></td></tr></table></figure>
+<p>新的範本會產生在<code>source/_posts/</code>下，開啟就可以開始透過 markdown 語法編輯文章內容。</p>
+<h3 id="發表"><a href="#發表" class="headerlink" title="發表"></a>發表</h3><p>編輯完成後別急著使用 deploy 指令開始發表，Octopress 有提供預覽的功能，透過以下指令來預覽。</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">rake generate</div><div class="line">rake preview</div></pre></td></tr></table></figure>
+<p>接著使用瀏覽器開起<code>localhost:4000</code>，就能搶先看文章呈現的樣貌。</p>
+<p>確認都沒有問題後，就能 deploy 出去啦。</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">rake deploy</div></pre></td></tr></table></figure>
+<p>上傳完之後要記得還需要 commit 將紀錄保存下來呦。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://raix852.github.io/2016/05/22/octopress/" data-id="cir8n8hcq0007i4pe06ksppme" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Github/">Github</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Octopress/">Octopress</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Deep-Learning/">Deep Learning</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Encryption/">Encryption</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Filesystem/">Filesystem</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Github/">Github</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Linux/">Linux</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Machine-Learning/">Machine Learning</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/NLP/">NLP</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Octopress/">Octopress</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/TLS/">TLS</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hexo/">hexo</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/linux/">linux</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/openssl/">openssl</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/python/">python</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/日記/">日記</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/Deep-Learning/" style="font-size: 10px;">Deep Learning</a> <a href="/tags/Encryption/" style="font-size: 10px;">Encryption</a> <a href="/tags/Filesystem/" style="font-size: 10px;">Filesystem</a> <a href="/tags/Github/" style="font-size: 20px;">Github</a> <a href="/tags/Linux/" style="font-size: 10px;">Linux</a> <a href="/tags/Machine-Learning/" style="font-size: 10px;">Machine Learning</a> <a href="/tags/NLP/" style="font-size: 10px;">NLP</a> <a href="/tags/Octopress/" style="font-size: 10px;">Octopress</a> <a href="/tags/TLS/" style="font-size: 10px;">TLS</a> <a href="/tags/hexo/" style="font-size: 20px;">hexo</a> <a href="/tags/linux/" style="font-size: 10px;">linux</a> <a href="/tags/openssl/" style="font-size: 10px;">openssl</a> <a href="/tags/python/" style="font-size: 10px;">python</a> <a href="/tags/日記/" style="font-size: 10px;">日記</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/07/">七月 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/06/">六月 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/05/">五月 2016</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2016/07/29/PixHack2016/">7/29 痞客邦克漏字比賽紀錄</a>
+          </li>
+        
+          <li>
+            <a href="/2016/07/01/data-at-rest/">Data at rest encryption</a>
+          </li>
+        
+          <li>
+            <a href="/2016/06/20/use-openssl-generate-certificate/">使用 Openssl 建立憑證</a>
+          </li>
+        
+          <li>
+            <a href="/2016/06/04/Python-decorator-property/">Python - @property</a>
+          </li>
+        
+          <li>
+            <a href="/2016/05/31/diary/">5/31 日記</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2016 Raix<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+    <a href="/about" class="mobile-nav-link">About</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+  </div>
+</body>
+</html>

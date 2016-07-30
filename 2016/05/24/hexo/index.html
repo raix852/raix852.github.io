@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>Hexo 安裝和佈署到 Github | Raix&#39;s Blog</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="Octopress 剛架設好後立刻使用 Atom 撰寫 markdown 文章，透過 Atom 預覽呈現出來的排版都很美好，滿心期待看到 Octopress 轉出網頁後的成果，結果就開始一連串格式不合無法轉出的錯誤發生，且費一般功夫修好後呈現出來的結果不怎麼好。
+無奈之下開始上 Github 查詢 issues ，這才發現 Octopress 目前開發進度有點處於停滯的情況，所以乾脆開始尋找另一套">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Hexo 安裝和佈署到 Github">
+<meta property="og:url" content="http://raix852.github.io/2016/05/24/hexo/index.html">
+<meta property="og:site_name" content="Raix's Blog">
+<meta property="og:description" content="Octopress 剛架設好後立刻使用 Atom 撰寫 markdown 文章，透過 Atom 預覽呈現出來的排版都很美好，滿心期待看到 Octopress 轉出網頁後的成果，結果就開始一連串格式不合無法轉出的錯誤發生，且費一般功夫修好後呈現出來的結果不怎麼好。
+無奈之下開始上 Github 查詢 issues ，這才發現 Octopress 目前開發進度有點處於停滯的情況，所以乾脆開始尋找另一套">
+<meta property="og:updated_time" content="2016-06-07T09:19:22.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Hexo 安裝和佈署到 Github">
+<meta name="twitter:description" content="Octopress 剛架設好後立刻使用 Atom 撰寫 markdown 文章，透過 Atom 預覽呈現出來的排版都很美好，滿心期待看到 Octopress 轉出網頁後的成果，結果就開始一連串格式不合無法轉出的錯誤發生，且費一般功夫修好後呈現出來的結果不怎麼好。
+無奈之下開始上 Github 查詢 issues ，這才發現 Octopress 目前開發進度有點處於停滯的情況，所以乾脆開始尋找另一套">
+  
+    <link rel="alternate" href="/atom.xml" title="Raix&#39;s Blog" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  
+
+</head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">Raix&#39;s Blog</a>
+      </h1>
+      
+        <h2 id="subtitle-wrap">
+          <a href="/" id="subtitle">知識不經整理，無法累積。智慧不經思考，無法成長。</a>
+        </h2>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+          <a class="main-nav-link" href="/about">About</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" results="0" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://raix852.github.io"></form>
+      </div>
+    </div>
+  </div>
+</header>
+
+      <div class="outer">
+        <section id="main"><article id="post-hexo" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2016/05/24/hexo/" class="article-date">
+  <time datetime="2016-05-24T13:47:01.000Z" itemprop="datePublished">2016-05-24</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      Hexo 安裝和佈署到 Github
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>Octopress 剛架設好後立刻使用 Atom 撰寫 markdown 文章，透過 Atom 預覽呈現出來的排版都很美好，滿心期待看到 Octopress 轉出網頁後的成果，結果就開始一連串格式不合無法轉出的錯誤發生，且費一般功夫修好後呈現出來的結果不怎麼好。</p>
+<p>無奈之下開始上 Github 查詢 issues ，這才發現 Octopress 目前開發進度有點處於停滯的情況，所以乾脆開始尋找另一套解決方案。就是本篇的 <a href="https://hexo.io/zh-tw/" target="_blank" rel="external">Hexo</a>。</p>
+<p>將為數不多的文章改用 Hexo 產生後，呈現上果然有比較好些。雖然還需要經過一些微調，但對於純粹使用上來說，是足以了。因此立刻寫一篇文章紀錄我的安裝過程。</p>
+<h2 id="安裝"><a href="#安裝" class="headerlink" title="安裝"></a>安裝</h2><p><a href="https://hexo.io/zh-tw/docs/" target="_blank" rel="external">官網的文件</a> 上提供了詳細的步驟，而且動作也比起 Octopress 來說簡單。基本需求只有：</p>
+<ul>
+<li>Node.js</li>
+<li>Git</li>
+</ul>
+<p>Git 不用說，對程式開發者而言都是必裝的套件。而 Node.js 在目前使用的 Ubuntu 16.04 環境上沒有安裝，因此直覺得下 <code>apt-get install nodejs</code> 安裝。豈知之後要安裝 Hexo 就開始遇到麻煩。最後是照著官網建議的安裝 Node.js 方式才成功安裝。因此這邊就不誤人子弟，直接使用官網的方式安裝吧。</p>
+<h3 id="安裝-Node-js"><a href="#安裝-Node-js" class="headerlink" title="安裝 Node.js"></a>安裝 Node.js</h3><p>我這邊使用 wget 方式：</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ wget -qO- https://raw.github.com/creationix/nvm/master/install.sh | sh</div></pre></td></tr></table></figure>
+<p>安裝完成後要重開終端機。接著在下：</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ nvm install 4</div></pre></td></tr></table></figure>
+<p>以上指令查一下是安裝版號 4.x ，裝好之號看 Node.js 版號是 v4.4.4 。</p>
+<h3 id="安裝-Hexo"><a href="#安裝-Hexo" class="headerlink" title="安裝 Hexo"></a>安裝 Hexo</h3><p>安裝 Hexo 指令只須一行。</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ npm install -g hexo-cli</div></pre></td></tr></table></figure>
+<p>之後就可以開始使用囉。</p>
+<h2 id="建立"><a href="#建立" class="headerlink" title="建立"></a>建立</h2><h3 id="建立網站範本"><a href="#建立網站範本" class="headerlink" title="建立網站範本"></a>建立網站範本</h3><p>Hexo 是透過指令來產生網站的範本，相比 Octopress 是先去 git clone 自己的 repo 下來做修改，簡潔不少。<br>使用以下指令來建立範本：</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">$ hexo init &lt;folder&gt;</div><div class="line">$ <span class="built_in">cd</span> &lt;folder&gt;</div><div class="line">$ npm install</div></pre></td></tr></table></figure>
+<p>建完之後會看到設定的資料夾下多了一些目錄和檔案。<br>其中 _config.yml 是用來設定 Hexo 的配置，其他的目錄和檔案就請參考官網說明。</p>
+<h3 id="建立新文章"><a href="#建立新文章" class="headerlink" title="建立新文章"></a>建立新文章</h3><p>透過 Hexo 提供的指令一樣可以方便的建立出新文章樣本出來。</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ hexo new [layout] &lt;title&gt;</div></pre></td></tr></table></figure>
+<p>其中 [layout] 提供了三種布局。</p>
+<table>
+<thead>
+<tr>
+<th>佈局</th>
+<th>路徑</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>post</td>
+<td>source/_posts/</td>
+</tr>
+<tr>
+<td>page</td>
+<td>source/</td>
+</tr>
+<tr>
+<td>draft</td>
+<td>source/_drafts/</td>
+</tr>
+</tbody>
+</table>
+<p>post 是一般要建立新文章使用的指令。<br>page 可以在網站中產生新的頁面出來，存放其他種類文章。像是拿來開一個頁面做 “About” 介紹。<br>draft 可以用來當作草稿使用，佈署的時候會忽略這裡面的內容。需要另外下指令 <code>hexo publish</code> 來發表。此外預覽時可以加參數來呈現。</p>
+<h2 id="佈署"><a href="#佈署" class="headerlink" title="佈署"></a>佈署</h2><h3 id="產生網頁"><a href="#產生網頁" class="headerlink" title="產生網頁"></a>產生網頁</h3><p>內容準備完成後，接下來就下指令來產生網頁。</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ hexo generate</div></pre></td></tr></table></figure>
+<p>以上指令會依據使用者提供的內容和設定，產生想要的網站內容。</p>
+<h3 id="佈署到-Github-上"><a href="#佈署到-Github-上" class="headerlink" title="佈署到 Github 上"></a>佈署到 Github 上</h3><p>在佈署之前，需要先在 _config.yml 裡設定要採取 git 模式佈署。設定如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">deploy:</div><div class="line">  type: git</div><div class="line">  repo: &lt;repository url&gt;</div><div class="line">  branch: [branch]</div><div class="line">  message: [message]</div></pre></td></tr></table></figure>
+<p>repo 欄位上就填寫 Github repo 的 url 。<br><br>另外還須額外安裝 <a href="https://github.com/hexojs/hexo-deployer-git" target="_blank" rel="external">hexo-deployer-git</a>。</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ npm install hexo-deployer-git --save</div></pre></td></tr></table></figure>
+<p>接下來就可以透過 Hexo 一行指令完成佈署囉。</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ hexo deploy</div></pre></td></tr></table></figure>
+<p>另外如果想再產生網頁時同時佈署上去， Hexo 也有提供指令參數使用，不過我想還是先預覽看過再佈署上去比較明智。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">$ hexo generate --deploy</div><div class="line">$ hexo deploy --generate</div></pre></td></tr></table></figure>
+<h2 id="完成"><a href="#完成" class="headerlink" title="完成"></a>完成</h2><p>至此，我的網站就更新完成啦。真的和 Octopress 比起簡單快速不少。</p>
+<p>不過 Octopress 的管理模式還是值得學習一下， Hexo 預設只會把產生的網站 commit 到指定的 branch 上，但是本身的內容並沒有提供方式來做版本控制。而這部份 Octopress 就會切出 master 和 source 兩個 branch 出來， master 用來放置管理網站內容，而 source 用來對自身做版本管理。接下來目標是參照這種模式把 Hexo 的內容納入版本管理。</p>
+<p>此外， Hexo 裡面還有不少東西可以挖，努力來做出一個漂漂亮亮的網站出來吧！！</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://raix852.github.io/2016/05/24/hexo/" data-id="cir8n8hcz0009i4peb2ccmhhq" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Github/">Github</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/hexo/">hexo</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2016/05/31/diary/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          5/31 日記
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2016/05/22/octopress/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">Octopress 安裝和佈署到 Github</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Deep-Learning/">Deep Learning</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Encryption/">Encryption</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Filesystem/">Filesystem</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Github/">Github</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Linux/">Linux</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Machine-Learning/">Machine Learning</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/NLP/">NLP</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Octopress/">Octopress</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/TLS/">TLS</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hexo/">hexo</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/linux/">linux</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/openssl/">openssl</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/python/">python</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/日記/">日記</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/Deep-Learning/" style="font-size: 10px;">Deep Learning</a> <a href="/tags/Encryption/" style="font-size: 10px;">Encryption</a> <a href="/tags/Filesystem/" style="font-size: 10px;">Filesystem</a> <a href="/tags/Github/" style="font-size: 20px;">Github</a> <a href="/tags/Linux/" style="font-size: 10px;">Linux</a> <a href="/tags/Machine-Learning/" style="font-size: 10px;">Machine Learning</a> <a href="/tags/NLP/" style="font-size: 10px;">NLP</a> <a href="/tags/Octopress/" style="font-size: 10px;">Octopress</a> <a href="/tags/TLS/" style="font-size: 10px;">TLS</a> <a href="/tags/hexo/" style="font-size: 20px;">hexo</a> <a href="/tags/linux/" style="font-size: 10px;">linux</a> <a href="/tags/openssl/" style="font-size: 10px;">openssl</a> <a href="/tags/python/" style="font-size: 10px;">python</a> <a href="/tags/日記/" style="font-size: 10px;">日記</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/07/">七月 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/06/">六月 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/05/">五月 2016</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2016/07/29/PixHack2016/">7/29 痞客邦克漏字比賽紀錄</a>
+          </li>
+        
+          <li>
+            <a href="/2016/07/01/data-at-rest/">Data at rest encryption</a>
+          </li>
+        
+          <li>
+            <a href="/2016/06/20/use-openssl-generate-certificate/">使用 Openssl 建立憑證</a>
+          </li>
+        
+          <li>
+            <a href="/2016/06/04/Python-decorator-property/">Python - @property</a>
+          </li>
+        
+          <li>
+            <a href="/2016/05/31/diary/">5/31 日記</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2016 Raix<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+    <a href="/about" class="mobile-nav-link">About</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+  </div>
+</body>
+</html>
