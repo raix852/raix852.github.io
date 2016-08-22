@@ -57,9 +57,9 @@
       </nav>
       <nav id="sub-nav">
         
-          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="Flux RSS"></a>
         
-        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+        <a id="nav-search-btn" class="nav-icon" title="Rechercher"></a>
       </nav>
       <div id="search-form-wrap">
         <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" results="0" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://raix852.github.io"></form>
@@ -70,6 +70,129 @@
 
       <div class="outer">
         <section id="main">
+  
+    <article id="post-tensorflow-gpu-installation" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2016/08/21/tensorflow-gpu-installation/" class="article-date">
+  <time datetime="2016-08-21T14:00:00.000Z" itemprop="datePublished">2016-08-21</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2016/08/21/tensorflow-gpu-installation/">Tensorflow gtx 1060 installation</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>上個禮拜電腦在開機時又開始產生了異常狀況，算一算大概壽命快要到達盡頭了。於是心一狠準備花大錢來組台新的來使用，目標是可以讓 tensorflow 跑 GPU 的版本。原訂目標是直上 gtx 1080 ，後來和朋友討論之後是不需要太衝動買這張，但是又要有一定的效能和記憶體容量，考量了一下價錢，最後選擇了 msi gtx 1060 版本。因此目前新的這一台系統環境如下：</p>
+<p><img src="http://i.imgur.com/8jdWJYV.png" alt="System Info"></p>
+<h1 id="環境準備"><a href="#環境準備" class="headerlink" title="環境準備"></a>環境準備</h1><h2 id="安裝-nvidia-driver"><a href="#安裝-nvidia-driver" class="headerlink" title="安裝 nvidia driver"></a>安裝 nvidia driver</h2><p>這邊我是參考別人的作法，從 <a href="https://launchpad.net/~graphics-drivers/+archive/ubuntu/ppa" target="_blank" rel="external">“Graphics Drivers Team” team</a> 找 driver 下載，若是直接從 nvidia 官網下載 driver 步驟會比較麻煩，看 github 上的討論也有不少問題。</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">sudo add-apt-repository ppa:graphics-drivers/ppa</div><div class="line">sudo apt-get update</div><div class="line">sudo apt-get install nvidia-367</div><div class="line">sudo apt-get install mesa-common-dev</div><div class="line">sudo apt-get install freeglut3-dev</div></pre></td></tr></table></figure>
+<p>裝好後，重開機將 driver load 進來。</p>
+<h2 id="安裝-gcc-amp-g-4-8"><a href="#安裝-gcc-amp-g-4-8" class="headerlink" title="安裝 gcc &amp; g++ 4.8"></a>安裝 gcc &amp; g++ 4.8</h2><p>在裝 CUDA 之前，需要先將 gcc &amp; g++ 準備好，由於 ubuntu 預設是使用 4.5 ，因此需要裝額外的版本。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">sudo add-apt-repository ppa:ubuntu-toolchain-r/test</div><div class="line">sudo apt-get update</div><div class="line">sudo apt-get install gcc-4.8</div><div class="line">sudo apt-get install g++-4.8</div><div class="line">sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-4.8 50</div><div class="line">sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-4.8 50</div></pre></td></tr></table></figure>
+<h2 id="安裝-CUDA-Toolkit-8-0"><a href="#安裝-CUDA-Toolkit-8-0" class="headerlink" title="安裝 CUDA Toolkit 8.0"></a>安裝 CUDA Toolkit 8.0</h2><p>從 <a href="https://developer.nvidia.com/cuda-release-candidate-download" target="_blank" rel="external">CUDA Toolkit 8.0</a> 裡選擇適合的版本。</p>
+<p><img src="http://i.imgur.com/DCAL3eF.png" alt="CUDA Toolkit 8.0"></p>
+<p>接下來執行：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">sudo bash cuda_8.0.27_linux.run</div></pre></td></tr></table></figure></p>
+<p>安裝過程中第一步會詢問是否要安裝 nvidia driver ，這裡就填 <code>n</code> ，避免先前安裝的 driver 被蓋過。</p>
+<p>安裝完之後，設定環境變數到 <code>.bashrc</code> 裡：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">export PATH=/usr/local/cuda-8.0/bin$&#123;PATH:+:$&#123;PATH&#125;&#125;</div><div class="line">export LD_LIBRARY_PATH=/usr/local/cuda-8.0/lib64$&#123;LD_LIBRARY_PATH:+:$&#123;LD_LIBRARY_PATH&#125;&#125;</div></pre></td></tr></table></figure>
+<p>現在就可以下指令來觀察是否有正確安裝好。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div></pre></td><td class="code"><pre><div class="line">$ nvidia-smi</div><div class="line">Sun Aug 21 22:54:45 2016       </div><div class="line">+-----------------------------------------------------------------------------+</div><div class="line">| NVIDIA-SMI 367.35                 Driver Version: 367.35                    |</div><div class="line">|-------------------------------+----------------------+----------------------+</div><div class="line">| GPU  Name        Persistence-M| Bus-Id        Disp.A | Volatile Uncorr. ECC |</div><div class="line">| Fan  Temp  Perf  Pwr:Usage/Cap|         Memory-Usage | GPU-Util  Compute M. |</div><div class="line">|===============================+======================+======================|</div><div class="line">|   0  GeForce GTX 106...  Off  | 0000:01:00.0      On |                  N/A |</div><div class="line">|  0%   54C    P0    30W / 200W |    310MiB /  6069MiB |      0%      Default |</div><div class="line">+-------------------------------+----------------------+----------------------+</div><div class="line"></div><div class="line">+-----------------------------------------------------------------------------+</div><div class="line">| Processes:                                                       GPU Memory |</div><div class="line">|  GPU       PID  Type  Process name                               Usage      |</div><div class="line">|=============================================================================|</div><div class="line">|    0      3359    G   /usr/lib/xorg/Xorg                             172MiB |</div><div class="line">|    0      4089    G   cinnamon                                       104MiB |</div><div class="line">|    0      4380    G   /usr/lib/firefox/firefox                         1MiB |</div><div class="line">|    0      4523    G   ...s-passed-by-fd --v8-snapshot-passed-by-fd    31MiB |</div><div class="line">+-----------------------------------------------------------------------------+</div></pre></td></tr></table></figure>
+<h2 id="安裝-cuDNN-5-0"><a href="#安裝-cuDNN-5-0" class="headerlink" title="安裝 cuDNN 5.0"></a>安裝 cuDNN 5.0</h2><p><a href="https://developer.nvidia.com/rdp/cudnn-download" target="_blank" rel="external">cuDNN Download</a> 從此處選擇 <code>Download cuDNN v5 (May 27, 2016), for CUDA 8.0 RC</code> 。</p>
+<p>解壓縮後放到指定的位置。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">tar -zxvf cudnn-8.0-linux-x64-v5.0-ga.tgz</div><div class="line">sudo cp cuda/include/cudnn.h /usr/local/cuda/include/</div><div class="line">sudo cp cuda/lib64/libcudnn* /usr/local/cuda/lib64/</div><div class="line">sudo chmod a+r /usr/local/cuda/include/cudnn.h</div><div class="line">sudo chmod a+r /usr/local/cuda/lib64/libcudnn*</div></pre></td></tr></table></figure>
+<h1 id="安裝-Tensorflow-with-GPU"><a href="#安裝-Tensorflow-with-GPU" class="headerlink" title="安裝 Tensorflow with GPU"></a>安裝 Tensorflow with GPU</h1><p>這邊要使用最新版本的原始碼。目前 release 的 <code>r0.10 RC0</code> 有 bug 還沒有修好。</p>
+<h2 id="下載原始碼"><a href="#下載原始碼" class="headerlink" title="下載原始碼"></a>下載原始碼</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">git clone https://github.com/tensorflow/tensorflow.git</div></pre></td></tr></table></figure>
+<h2 id="安裝-dependencies"><a href="#安裝-dependencies" class="headerlink" title="安裝 dependencies"></a>安裝 dependencies</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">sudo apt-get install openjdk-8-jdk openjdk-8-jdk-headless openjdk-8-jre</div><div class="line">sudo apt-get install python-numpy swig python-dev python-wheel</div></pre></td></tr></table></figure>
+<h2 id="安裝-Bazel"><a href="#安裝-Bazel" class="headerlink" title="安裝 Bazel"></a>安裝 Bazel</h2><p>Bazel 是 google 在推的 build 工具，不過我想吐槽一下除了 google ，一般不會使用這套工具。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">wget https://github.com/bazelbuild/bazel/releases/download/0.3.1/bazel-0.3.1-installer-linux-x86_64.sh</div><div class="line">bash bazel-0.3.1-installer-linux-x86_64.sh</div></pre></td></tr></table></figure>
+<h2 id="設定-Tensorflow"><a href="#設定-Tensorflow" class="headerlink" title="設定 Tensorflow"></a>設定 Tensorflow</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div></pre></td><td class="code"><pre><div class="line">$ ./configure</div><div class="line">Please specify the location of python. [Default is /usr/bin/python]:</div><div class="line">Do you wish to build TensorFlow with Google Cloud Platform support? [y/N] N</div><div class="line">No Google Cloud Platform support will be enabled for TensorFlow</div><div class="line">Do you wish to build TensorFlow with GPU support? [y/N] y</div><div class="line">GPU support will be enabled for TensorFlow</div><div class="line">Please specify which gcc nvcc should use as the host compiler. [Default is /usr/bin/gcc]:</div><div class="line">Please specify the Cuda SDK version you want to use, e.g. 7.0. [Leave empty to use system default]:</div><div class="line">Please specify the location where CUDA toolkit is installed. Refer to README.md for more details. [Default is /usr/local/cuda]:</div><div class="line">Please specify the cuDNN version you want to use. [Leave empty to use system default]:</div><div class="line">Please specify the location where cuDNN library is installed. Refer to README.md for more details. [Default is /usr/local/cuda]:</div><div class="line">Please specify a list of comma-separated Cuda compute capabilities you want to build with.</div><div class="line">You can find the compute capability of your device at: https://developer.nvidia.com/cuda-gpus.</div><div class="line">Please note that each additional compute capability significantly increases your build time and binary size.</div><div class="line"></div><div class="line">Setting up Cuda include</div><div class="line">Setting up Cuda lib</div><div class="line">Setting up Cuda bin</div><div class="line">Setting up Cuda nvvm</div><div class="line">Setting up CUPTI include</div><div class="line">Setting up CUPTI lib64</div><div class="line">Configuration finished</div></pre></td></tr></table></figure>
+<p>基本上設定要啟用 GPU ，剩下的版本環境使用預設值就好。</p>
+<h2 id="修改-Tensorflow"><a href="#修改-Tensorflow" class="headerlink" title="修改 Tensorflow"></a>修改 Tensorflow</h2><p>在設定完之後，接下來是測試是否可以編譯成功。在這邊編譯時會出現 <code>ERROR: ... undeclared inclusion(s) in rule ...</code> ，這邊翻到 <a href="https://github.com/tensorflow/tensorflow/issues/3760" target="_blank" rel="external">issue 3760</a> 裡有人提到需要修改 Tensorflow 的設定。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">vim tensorflow/third_party/gpus/crosstool/CROSSTOOL</div></pre></td></tr></table></figure>
+<p>在 65 行那邊加入這一行 <code>cxx_builtin_include_directory: &quot;/usr/local/cuda-8.0/include&quot;</code> ，測試加了之後就可以編譯成功。</p>
+<h2 id="Build-Tensorflow-with-GPU"><a href="#Build-Tensorflow-with-GPU" class="headerlink" title="Build Tensorflow with GPU"></a>Build Tensorflow with GPU</h2><p>這裡之後就沒遇到什麼問題， 跟著官網安裝指令走就好。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">$ bazel build -c opt --config=cuda //tensorflow/cc:tutorials_example_trainer</div><div class="line"></div><div class="line">$ bazel-bin/tensorflow/cc/tutorials_example_trainer --use_gpu</div><div class="line"># Lots of output. This tutorial iteratively calculates the major eigenvalue of</div><div class="line"># a 2x2 matrix, on GPU. The last few lines look like this.</div><div class="line">000009/000005 lambda = 2.000000 x = [0.894427 -0.447214] y = [1.788854 -0.894427]</div><div class="line">000006/000001 lambda = 2.000000 x = [0.894427 -0.447214] y = [1.788854 -0.894427]</div><div class="line">000009/000009 lambda = 2.000000 x = [0.894427 -0.447214] y = [1.788854 -0.894427]</div></pre></td></tr></table></figure>
+<h2 id="Create-pip-package"><a href="#Create-pip-package" class="headerlink" title="Create pip package"></a>Create pip package</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">$ bazel build -c opt --config=cuda //tensorflow/tools/pip_package:build_pip_package</div><div class="line"></div><div class="line">$ bazel-bin/tensorflow/tools/pip_package/build_pip_package /tmp/tensorflow_pkg</div><div class="line"></div><div class="line"># The name of the .whl file will depend on your platform.</div><div class="line">$ sudo pip install /tmp/tensorflow_pkg/tensorflow-0.10.0rc0-py2-none-any.whl</div></pre></td></tr></table></figure>
+<h1 id="結論"><a href="#結論" class="headerlink" title="結論"></a>結論</h1><p>到此就大功告成，開始享受 GPU 加速之後的威力，以及…更多的 GPU 問題。</p>
+<h1 id="References"><a href="#References" class="headerlink" title="References"></a>References</h1><ul>
+<li><a href="http://textminingonline.com/dive-into-tensorflow-part-iii-gtx-1080-ubuntu16-04-cuda8-0-cudnn5-0-tensorflow" target="_blank" rel="external">Dive Into TensorFlow, Part III</a></li>
+<li><a href="https://github.com/tensorflow/tensorflow/issues/3760" target="_blank" rel="external">Ubuntu 16.04 / Gpu 1080 Version compile Error (Tensorflow installation) </a></li>
+</ul>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://raix852.github.io/2016/08/21/tensorflow-gpu-installation/" data-id="cis5on8pf000v6on4eibzpjyd" class="article-share-link">Partager</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/tensorflow/">tensorflow</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-PixHack2016" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2016/08/14/PixHack2016/" class="article-date">
+  <time datetime="2016-08-14T04:00:00.000Z" itemprop="datePublished">2016-08-14</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2016/08/14/PixHack2016/">8/13 痞客邦克漏字比賽心得</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>昨天就是痞客幫克漏字比賽的日子，一大早7點爬起來梳洗一下就出發到現場。然而到達目的地華山文創園區時要找會場在哪時迷路了一下，在裡面繞一繞找不太到會場在哪裡。</p>
+<p>進到會場後，痞客邦工作人員帶我到比賽時使用的桌子，組員其他三位都已經到達現場在為今天比賽做準備。由於我們很早就開始討論今天的比賽要怎麼做，所以到了當天只差投影片還沒有開始製作，剩下其實沒多少事。於是我就用當天得時間去詢問 AWS 無法使用 GPU instance 的問題，現場也有 AWS support 人員和工程師在場，過不了多久就順利開起來，原來是 GPU instance 預設限制使用量是0，需要去申請才可以使用。</p>
+<p>既然能開啟有 GPU 的環境，那當然就是要嘗試一下利用 GPU 的計算能力來看看我們使用的 RNN 模型有沒有計算比較快。這次比賽時我們就決定好全力嘗試使用 RNN/LSTM 模型，不過過程中沒那麼順利，直到比賽前幾天才弄出了一個可以跑的模型出來。實際開始訓練已經是比賽前一天，而且訓練速度真的是慢的超乎想像，借了一台性能不錯的 server 來跑還是需要好幾個星期才能訓練完畢。不得已，我們只能先拿訓練一部份的結果來先測試看看能不能在比賽時使用。結果是在算預測值時也是需要花上不少時間，無法在比賽時拿出來用。因此在正式比賽時就不是使用 RNN ，而是使用另一組員先建好的 Word2vec 模型。</p>
+<p>即使如此，有了 GPU 環境可以使用，不嘗試看看也說不過去。於是整個上午的時間，我都在弄 AWS 環境。嘗試把 tensorflow build 出使用 CUDA 的版本，過程中看似一切都很順利，最後要使用時卻會出現找不到 GPU device 的問題。鑑於時間的關係，就不去找尋找原因，而是改去找別人弄好的還境。這邊還好泡在 tensorflow community 時有看到相關的訊息，因此順利地找到可以使用的環境。</p>
+<p>有了神兵利器，該是屠殺獵物的時刻。立即將我們使用的模型拿下去跑。然後…然後它就死了。GPU 的記憶體稱不過大量的文字向量表，真是沒用過不曉得記憶體使用的問題會這麼大。後來嘗試把訓練資料不斷縮小，縮小到剩 20mb 左右才跑得起來。不過即使是這樣的資料量，用 GPU 訓練起來還是需要一兩個小時。所以到此 RNN 就從比賽中出局啦。</p>
+<p>剩下的時間就幫忙製作投影片，看一下其他組的成果。其中有一組<code>資料科科家</code>的成果非常驚人，在整場比賽裡丟出來的測試樣本都可以 100% 答對。我們的模型在測試過程中大概排第4名。</p>
+<p>到了比賽時間，開始了第一輪淘汰賽。這時戲劇性的結果出現了，<code>資料科科家</code>在第一輪比賽時程式出了問題，沒有回答，結果就被刷掉了。每個參賽成員、主辦單位都大吃了一驚。頓時比賽變成了人人都有機會，一下子氣氛開始緊張起來。第一輪三次淘汰賽下，我們組別幸運地擠進前三名，準確度排第二。</p>
+<p>第二輪比賽是採搶答方式，第一個回答正確才得分，累積10分為優勝者。這一輪比賽更刺激，因為大家的回答速度都很快，幾乎時間都只差一咪咪。不過我們沒有針對回答速度特別去調整，因此幾乎搶不到第一名回答，於是比賽過程不久就開始落後，成績都還掛0。當好不容易因前面組的失誤，才讓我們拿下一分時，全場都還鼓掌了起來，內心真的是頗感動的。後來劣勢一直都在，不過有幾次前面2組都答錯，只有我們答對，成了在比賽中的驕傲。</p>
+<p>最後成績是我們排名第3名，雖然無法獲得更佳的名次有點可惜，不過已經超乎我們的預期。真是感謝組員的參與和付出。</p>
+<p>附上報告組員的帥照。<br><img src="http://i.imgur.com/1PTGCHr.jpg" alt="Present"></p>
+<p>比賽時各組的投影片：<br><a href="https://docs.google.com/spreadsheets/d/1q2uVExVaLyUMDubGet7e_MgKy9mdgo4MKZWY1YfH-48/edit#gid=0" target="_blank" rel="external">2016 PIXNET HACKATHON DEMO</a></p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://raix852.github.io/2016/08/14/PixHack2016/" data-id="cis5on8p2000r6on466bnpru3" class="article-share-link">Partager</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Deep-Learning/">Deep Learning</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Machine-Learning/">Machine Learning</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/NLP/">NLP</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/tensorflow/">tensorflow</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/日記/">日記</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
   
     <article id="post-PixHack2016" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
@@ -93,20 +216,19 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        <p>最近這陣子都熱心在學習 Deep learning 的東西，動機來自於和同事組隊參加 <code>2016 PIXNET
-HACKATHON Cloze Contest</code>。這個比賽會給出一句話，裡面會挖一個洞，並給出 4 個選項來選出符合這<br>個洞的答案，也可以說是傳統的選擇題考試。對從小到大都是考試機器的我們來說是最常見不過的問題，因此<br>都練出的一身本領來回答。但是對於機器來說，要選出正確答案還真不是件簡單的事，更可說是巨大的挑戰。</p>
-<p>因此為了可以讓機器有辦法回答，需要有一些技巧來使用。以下紀錄目前我和同事做到的進度。正式比賽是在<br>8/13 日，離比賽還有兩星期。</p>
-<h2 id="爬取文章"><a href="#爬取文章" class="headerlink" title="爬取文章"></a>爬取文章</h2><p>在這個比賽裡，訓練資料集放出來是在 7/01 時，而我們準備的時間從 6 月初就開始，因此在沒有資料的<br>情況下，我們就決定要開發爬網程式將痞客邦的文章抓取下來。這部分使用 <a href="http://scrapy.org/" target="_blank" rel="external">Scrapy</a><br>來幫助我們開發爬網程式。</p>
-<p>目前做到的成果為針對每天有被痞客邦視為熱門的文章抓取下來，並且順便將這些文章的作者曾經寫過的文章<br>也一併抓取。跑一次爬網程式需要花費半天的時間，目前累積了將近 2G 的資料。不過現在的機制只是堪用，<br>要做進一步改善還有很大的空間，只是考慮到接下來還有更困難的問題要解決，因此先開發到這邊。</p>
-<h2 id="斷詞斷句"><a href="#斷詞斷句" class="headerlink" title="斷詞斷句"></a>斷詞斷句</h2><p>將文章抓取下來後，接下來使用 <a href="https://github.com/fxsjy/jieba" target="_blank" rel="external">Jieba</a> 來幫助我們做斷詞。<br>這裏就直接使用現成的工具，因此不是太困難的工作。當然使用過程中會看到很多奇奇怪怪的字詞出現，這就<br>需要人工介入將一些字詞濾掉。</p>
-<h2 id="Word2vec"><a href="#Word2vec" class="headerlink" title="Word2vec"></a>Word2vec</h2><p>將上面斷出來的字詞整理出一個字詞庫出來，接下來要做的動作是把字詞變成向量。根據 Word2vec 演算法<br>，字詞轉成向量後會有一些有趣的相關性，像是 <code>國王 - 男人 + 女人 = 皇后</code>。因此要完成這次的競賽，<br>其實用 Word2vec 就可以做到不錯的成果，把選項的向量拿去和題目比對相似度，把最高相似度的選項當作<br>正確答案，就會是一個不錯的解題模型。目前有組員利用這個方法做到 6 成正確率。</p>
-<h2 id="RNN-LSTM"><a href="#RNN-LSTM" class="headerlink" title="RNN/LSTM"></a>RNN/LSTM</h2><p>這部分就是真正的挑戰啦，對於我這個初學者而言，要跟很多不熟悉的演算法和公式搏鬥。而且要處理部落格<br>文章並拿去訓練也很不容易。基本上要面對龐大的字詞庫，動輒幾十萬的字詞，要算出每個字的機率出來，光<br>想就覺得困難重重。目前這塊還在努力中，希望可以真的玩出一個模型出來。</p>
-<h2 id="感想"><a href="#感想" class="headerlink" title="感想"></a>感想</h2><p>在這個比賽裡，由於接觸到的東西很多且都頗有挑戰性，所以做起來其實滿快樂的。學到很多東西，感覺很過<br>癮。在目前工作上覺得進展有點停滯的時刻，弄這些東西真的有如及時雨一般滋潤我的內心，邊做邊感到持續<br>有在進步中。希望到時能做出不錯的結果出來！</p>
+        <p>最近這陣子都熱心在學習 Deep learning 的東西，動機來自於和同事組隊參加 <code>2016 PIXNET HACKATHON Cloze Contest</code>。這個比賽會給出一句話，裡面會挖一個洞，並給出 4 個選項來選出符合這個洞的答案，也可以說是傳統的選擇題考試。對從小到大都是考試機器的我們來說是最常見不過的問題，因此都練出的一身本領來回答。但是對於機器來說，要選出正確答案還真不是件簡單的事，更可說是巨大的挑戰。</p>
+<p>因此為了可以讓機器有辦法回答，需要有一些技巧來使用。以下紀錄目前我和同事做到的進度。正式比賽是在8/13 日，離比賽還有兩星期。</p>
+<h2 id="爬取文章"><a href="#爬取文章" class="headerlink" title="爬取文章"></a>爬取文章</h2><p>在這個比賽裡，訓練資料集放出來是在 7/01 時，而我們準備的時間從 6 月初就開始，因此在沒有資料的情況下，我們就決定要開發爬網程式將痞客邦的文章抓取下來。這部分使用 <a href="http://scrapy.org/" target="_blank" rel="external">Scrapy</a> 來幫助我們開發爬網程式。</p>
+<p>目前做到的成果為針對每天有被痞客邦視為熱門的文章抓取下來，並且順便將這些文章的作者曾經寫過的文章也一併抓取。跑一次爬網程式需要花費半天的時間，目前累積了將近 2G 的資料。不過現在的機制只是堪用，要做進一步改善還有很大的空間，只是考慮到接下來還有更困難的問題要解決，因此先開發到這邊。</p>
+<h2 id="斷詞斷句"><a href="#斷詞斷句" class="headerlink" title="斷詞斷句"></a>斷詞斷句</h2><p>將文章抓取下來後，接下來使用 <a href="https://github.com/fxsjy/jieba" target="_blank" rel="external">Jieba</a> 來幫助我們做斷詞。這裏就直接使用現成的工具，因此不是太困難的工作。當然使用過程中會看到很多奇奇怪怪的字詞出現，這就需要人工介入將一些字詞濾掉。</p>
+<h2 id="Word2vec"><a href="#Word2vec" class="headerlink" title="Word2vec"></a>Word2vec</h2><p>將上面斷出來的字詞整理出一個字詞庫出來，接下來要做的動作是把字詞變成向量。根據 Word2vec 演算法，字詞轉成向量後會有一些有趣的相關性，像是 <code>國王 - 男人 + 女人 = 皇后</code>。因此要完成這次的競賽，其實用 Word2vec 就可以做到不錯的成果，把選項的向量拿去和題目比對相似度，把最高相似度的選項當作正確答案，就會是一個不錯的解題模型。目前有組員利用這個方法做到 6 成正確率。</p>
+<h2 id="RNN-LSTM"><a href="#RNN-LSTM" class="headerlink" title="RNN/LSTM"></a>RNN/LSTM</h2><p>這部分就是真正的挑戰啦，對於我這個初學者而言，要跟很多不熟悉的演算法和公式搏鬥。而且要處理部落格文章並拿去訓練也很不容易。基本上要面對龐大的字詞庫，動輒幾十萬的字詞，要算出每個字的機率出來，光想就覺得困難重重。目前這塊還在努力中，希望可以真的玩出一個模型出來。</p>
+<h2 id="感想"><a href="#感想" class="headerlink" title="感想"></a>感想</h2><p>在這個比賽裡，由於接觸到的東西很多且都頗有挑戰性，所以做起來其實滿快樂的。學到很多東西，感覺很過癮。在目前工作上覺得進展有點停滯的時刻，弄這些東西真的有如及時雨一般滋潤我的內心，邊做邊感到持續有在進步中。希望到時能做出不錯的結果出來！</p>
 
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://raix852.github.io/2016/07/29/PixHack2016/" data-id="cir8n8hcl0005i4peke837hsq" class="article-share-link">Share</a>
+      <a data-url="http://raix852.github.io/2016/07/29/PixHack2016/" data-id="cis5on8ob00066on4qvifhi1y" class="article-share-link">Partager</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Deep-Learning/">Deep Learning</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Machine-Learning/">Machine Learning</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/NLP/">NLP</a></li></ul>
@@ -158,7 +280,7 @@ HACKATHON Cloze Contest</code>。這個比賽會給出一句話，裡面會挖�
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://raix852.github.io/2016/07/01/data-at-rest/" data-id="cir8ncp4m0000icperk6yjz5t" class="article-share-link">Share</a>
+      <a data-url="http://raix852.github.io/2016/07/01/data-at-rest/" data-id="cis5on8o600046on42xbaxcfd" class="article-share-link">Partager</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Encryption/">Encryption</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Filesystem/">Filesystem</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Linux/">Linux</a></li></ul>
@@ -269,7 +391,7 @@ HACKATHON Cloze Contest</code>。這個比賽會給出一句話，裡面會挖�
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://raix852.github.io/2016/06/20/use-openssl-generate-certificate/" data-id="cir8n8hcd0004i4pelwm64o72" class="article-share-link">Share</a>
+      <a data-url="http://raix852.github.io/2016/06/20/use-openssl-generate-certificate/" data-id="cis5on8pj000w6on4zxe9e5jm" class="article-share-link">Partager</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/TLS/">TLS</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/linux/">linux</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/openssl/">openssl</a></li></ul>
@@ -320,7 +442,7 @@ HACKATHON Cloze Contest</code>。這個比賽會給出一句話，裡面會挖�
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://raix852.github.io/2016/06/04/Python-decorator-property/" data-id="cir8n8hc20002i4pe251nkg7h" class="article-share-link">Share</a>
+      <a data-url="http://raix852.github.io/2016/06/04/Python-decorator-property/" data-id="cis5on8o300036on4zisroflq" class="article-share-link">Partager</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/python/">python</a></li></ul>
@@ -363,7 +485,7 @@ HACKATHON Cloze Contest</code>。這個比賽會給出一句話，裡面會挖�
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://raix852.github.io/2016/05/31/diary/" data-id="cir8n8hbe0000i4peg8a2xxv0" class="article-share-link">Share</a>
+      <a data-url="http://raix852.github.io/2016/05/31/diary/" data-id="cis5on8nu00016on4n139yo1q" class="article-share-link">Partager</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/hexo/">hexo</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/日記/">日記</a></li></ul>
@@ -397,10 +519,9 @@ HACKATHON Cloze Contest</code>。這個比賽會給出一句話，裡面會挖�
     
     <div class="article-entry" itemprop="articleBody">
       
-        <p>Octopress 剛架設好後立刻使用 Atom 撰寫 markdown 文章，透過 Atom 預覽呈現出來的排版都很美好，滿心期待看到 Octopress 轉出網頁後的成果，結果就開始一連串格式不合無法轉出的錯誤發生，且費一般功夫修好後呈現出來的結果不怎麼好。</p>
-<p>無奈之下開始上 Github 查詢 issues ，這才發現 Octopress 目前開發進度有點處於停滯的情況，所以乾脆開始尋找另一套解決方案。就是本篇的 <a href="https://hexo.io/zh-tw/" target="_blank" rel="external">Hexo</a>。</p>
-<p>將為數不多的文章改用 Hexo 產生後，呈現上果然有比較好些。雖然還需要經過一些微調，但對於純粹使用上來說，是足以了。因此立刻寫一篇文章紀錄我的安裝過程。</p>
-<h2 id="安裝"><a href="#安裝" class="headerlink" title="安裝"></a>安裝</h2><p><a href="https://hexo.io/zh-tw/docs/" target="_blank" rel="external">官網的文件</a> 上提供了詳細的步驟，而且動作也比起 Octopress 來說簡單。基本需求只有：</p>
+        <p>Octopress 剛架設好後立刻使用 markdown 寫了一篇文章，滿心期待看到轉出來的成果，結果就是一連串格式不合無法轉出的錯誤發生。我現在使用的編輯是 Atom ，預覽呈現出來的排版都很美好，然而一旦要被 Octopress 轉出時，就會出現問題。無奈之下開始上 Github 查詢 issues ，這才發現 Octopress 目前開發進度有點處於停滯的情況，所以乾脆開始尋找另一套解決方案。就是本篇的 <a href="https://hexo.io/zh-tw/" target="_blank" rel="external">Hexo</a>。</p>
+<p>將為數不多的文章改用 Hexo 產生後，呈現上果然有比較好些。雖然還需要經過一些微調，但對於純粹使用上來說，是已經足以。以下紀錄我的安裝過程。</p>
+<h2 id="安裝"><a href="#安裝" class="headerlink" title="安裝"></a>安裝</h2><p>參照 <a href="https://hexo.io/zh-tw/docs/" target="_blank" rel="external">官網的文件</a> 上提供了詳細的步驟，而且動作也比起 Octopress 來說簡單。基本需求只有：</p>
 <ul>
 <li>Node.js</li>
 <li>Git</li>
@@ -414,9 +535,9 @@ HACKATHON Cloze Contest</code>。這個比賽會給出一句話，裡面會挖�
 <h3 id="安裝-Hexo"><a href="#安裝-Hexo" class="headerlink" title="安裝 Hexo"></a>安裝 Hexo</h3><p>安裝 Hexo 指令只須一行。</p>
 <figure class="highlight sh"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ npm install -g hexo-cli</div></pre></td></tr></table></figure>
 <p>之後就可以開始使用囉。</p>
-<h2 id="建立"><a href="#建立" class="headerlink" title="建立"></a>建立</h2><h3 id="建立網站範本"><a href="#建立網站範本" class="headerlink" title="建立網站範本"></a>建立網站範本</h3><p>Hexo 是透過指令來產生網站的範本，相比 Octopress 是先去 git clone 自己的 repo 下來做修改，簡潔不少。<br>使用以下指令來建立範本：</p>
+<h2 id="建立"><a href="#建立" class="headerlink" title="建立"></a>建立</h2><h3 id="建立網站範本"><a href="#建立網站範本" class="headerlink" title="建立網站範本"></a>建立網站範本</h3><p>Hexo 是透過指令來產生網站的範本，相比 Octopress 是先去 git clone 自己的 repo 下來做修改，簡潔不少。使用以下指令來建立範本：</p>
 <figure class="highlight sh"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">$ hexo init &lt;folder&gt;</div><div class="line">$ <span class="built_in">cd</span> &lt;folder&gt;</div><div class="line">$ npm install</div></pre></td></tr></table></figure>
-<p>建完之後會看到設定的資料夾下多了一些目錄和檔案。<br>其中 _config.yml 是用來設定 Hexo 的配置，其他的目錄和檔案就請參考官網說明。</p>
+<p>建完之後會看到設定的資料夾下多了一些目錄和檔案。其中 _config.yml 是用來設定 Hexo 的配置，其他的目錄和檔案就請參考官網說明。</p>
 <h3 id="建立新文章"><a href="#建立新文章" class="headerlink" title="建立新文章"></a>建立新文章</h3><p>透過 Hexo 提供的指令一樣可以方便的建立出新文章樣本出來。</p>
 <figure class="highlight sh"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ hexo new [layout] &lt;title&gt;</div></pre></td></tr></table></figure>
 <p>其中 [layout] 提供了三種布局。</p>
@@ -442,7 +563,7 @@ HACKATHON Cloze Contest</code>。這個比賽會給出一句話，裡面會挖�
 </tr>
 </tbody>
 </table>
-<p>post 是一般要建立新文章使用的指令。<br>page 可以在網站中產生新的頁面出來，存放其他種類文章。像是拿來開一個頁面做 “About” 介紹。<br>draft 可以用來當作草稿使用，佈署的時候會忽略這裡面的內容。需要另外下指令 <code>hexo publish</code> 來發表。此外預覽時可以加參數來呈現。</p>
+<p>post 是一般要建立新文章使用的指令。<br><br>page 可以在網站中產生新的頁面出來，存放其他種類文章。像是拿來開一個頁面做 “About” 介紹。<br><br>draft 可以用來當作草稿使用，佈署的時候會忽略這裡面的內容。需要另外下指令 <code>hexo publish</code> 來發表。此外預覽時可以加參數來呈現。</p>
 <h2 id="佈署"><a href="#佈署" class="headerlink" title="佈署"></a>佈署</h2><h3 id="產生網頁"><a href="#產生網頁" class="headerlink" title="產生網頁"></a>產生網頁</h3><p>內容準備完成後，接下來就下指令來產生網頁。</p>
 <figure class="highlight sh"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ hexo generate</div></pre></td></tr></table></figure>
 <p>以上指令會依據使用者提供的內容和設定，產生想要的網站內容。</p>
@@ -455,13 +576,12 @@ HACKATHON Cloze Contest</code>。這個比賽會給出一句話，裡面會挖�
 <p>另外如果想再產生網頁時同時佈署上去， Hexo 也有提供指令參數使用，不過我想還是先預覽看過再佈署上去比較明智。</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">$ hexo generate --deploy</div><div class="line">$ hexo deploy --generate</div></pre></td></tr></table></figure>
 <h2 id="完成"><a href="#完成" class="headerlink" title="完成"></a>完成</h2><p>至此，我的網站就更新完成啦。真的和 Octopress 比起簡單快速不少。</p>
-<p>不過 Octopress 的管理模式還是值得學習一下， Hexo 預設只會把產生的網站 commit 到指定的 branch 上，但是本身的內容並沒有提供方式來做版本控制。而這部份 Octopress 就會切出 master 和 source 兩個 branch 出來， master 用來放置管理網站內容，而 source 用來對自身做版本管理。接下來目標是參照這種模式把 Hexo 的內容納入版本管理。</p>
-<p>此外， Hexo 裡面還有不少東西可以挖，努力來做出一個漂漂亮亮的網站出來吧！！</p>
+<p>不過 Octopress 的管理模式還是值得學習一下， Hexo 預設只會把產生的網站 commit 到指定的 branch 上，但是本身的內容並沒有提供方式來做版本控制。而這部份 Octopress 就會切出 master 和 source 兩個 branch 出來， master 用來放置管理網站內容，而 source 用來對自身做版本管理。接下來目標是參照這種模式把</p>
 
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://raix852.github.io/2016/05/24/hexo/" data-id="cir8n8hcz0009i4peb2ccmhhq" class="article-share-link">Share</a>
+      <a data-url="http://raix852.github.io/2016/05/24/hexo/" data-id="cis5on8nn00006on4o0u9z8vo" class="article-share-link">Partager</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Github/">Github</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/hexo/">hexo</a></li></ul>
@@ -563,7 +683,7 @@ HACKATHON Cloze Contest</code>。這個比賽會給出一句話，裡面會挖�
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://raix852.github.io/2016/05/22/octopress/" data-id="cir8n8hcq0007i4pe06ksppme" class="article-share-link">Share</a>
+      <a data-url="http://raix852.github.io/2016/05/22/octopress/" data-id="cis5on8p9000t6on4k384915q" class="article-share-link">Partager</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Github/">Github</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Octopress/">Octopress</a></li></ul>
@@ -585,9 +705,9 @@ HACKATHON Cloze Contest</code>。這個比賽會給出一句話，裡面會挖�
   
     
   <div class="widget-wrap">
-    <h3 class="widget-title">Tags</h3>
+    <h3 class="widget-title">Mot-clés</h3>
     <div class="widget">
-      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Deep-Learning/">Deep Learning</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Encryption/">Encryption</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Filesystem/">Filesystem</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Github/">Github</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Linux/">Linux</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Machine-Learning/">Machine Learning</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/NLP/">NLP</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Octopress/">Octopress</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/TLS/">TLS</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hexo/">hexo</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/linux/">linux</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/openssl/">openssl</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/python/">python</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/日記/">日記</a></li></ul>
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Deep-Learning/">Deep Learning</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Encryption/">Encryption</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Filesystem/">Filesystem</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Github/">Github</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Linux/">Linux</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Machine-Learning/">Machine Learning</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/NLP/">NLP</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Octopress/">Octopress</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/TLS/">TLS</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hexo/">hexo</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/linux/">linux</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/openssl/">openssl</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/python/">python</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/tensorflow/">tensorflow</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/日記/">日記</a></li></ul>
     </div>
   </div>
 
@@ -595,9 +715,9 @@ HACKATHON Cloze Contest</code>。這個比賽會給出一句話，裡面會挖�
   
     
   <div class="widget-wrap">
-    <h3 class="widget-title">Tag Cloud</h3>
+    <h3 class="widget-title">Nuage de mot-clés</h3>
     <div class="widget tagcloud">
-      <a href="/tags/Deep-Learning/" style="font-size: 10px;">Deep Learning</a> <a href="/tags/Encryption/" style="font-size: 10px;">Encryption</a> <a href="/tags/Filesystem/" style="font-size: 10px;">Filesystem</a> <a href="/tags/Github/" style="font-size: 20px;">Github</a> <a href="/tags/Linux/" style="font-size: 10px;">Linux</a> <a href="/tags/Machine-Learning/" style="font-size: 10px;">Machine Learning</a> <a href="/tags/NLP/" style="font-size: 10px;">NLP</a> <a href="/tags/Octopress/" style="font-size: 10px;">Octopress</a> <a href="/tags/TLS/" style="font-size: 10px;">TLS</a> <a href="/tags/hexo/" style="font-size: 20px;">hexo</a> <a href="/tags/linux/" style="font-size: 10px;">linux</a> <a href="/tags/openssl/" style="font-size: 10px;">openssl</a> <a href="/tags/python/" style="font-size: 10px;">python</a> <a href="/tags/日記/" style="font-size: 10px;">日記</a>
+      <a href="/tags/Deep-Learning/" style="font-size: 20px;">Deep Learning</a> <a href="/tags/Encryption/" style="font-size: 10px;">Encryption</a> <a href="/tags/Filesystem/" style="font-size: 10px;">Filesystem</a> <a href="/tags/Github/" style="font-size: 20px;">Github</a> <a href="/tags/Linux/" style="font-size: 10px;">Linux</a> <a href="/tags/Machine-Learning/" style="font-size: 20px;">Machine Learning</a> <a href="/tags/NLP/" style="font-size: 20px;">NLP</a> <a href="/tags/Octopress/" style="font-size: 10px;">Octopress</a> <a href="/tags/TLS/" style="font-size: 10px;">TLS</a> <a href="/tags/hexo/" style="font-size: 20px;">hexo</a> <a href="/tags/linux/" style="font-size: 10px;">linux</a> <a href="/tags/openssl/" style="font-size: 10px;">openssl</a> <a href="/tags/python/" style="font-size: 10px;">python</a> <a href="/tags/tensorflow/" style="font-size: 20px;">tensorflow</a> <a href="/tags/日記/" style="font-size: 20px;">日記</a>
     </div>
   </div>
 
@@ -606,7 +726,7 @@ HACKATHON Cloze Contest</code>。這個比賽會給出一句話，裡面會挖�
   <div class="widget-wrap">
     <h3 class="widget-title">Archives</h3>
     <div class="widget">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/07/">七月 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/06/">六月 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/05/">五月 2016</a></li></ul>
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/08/">八月 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/07/">七月 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/06/">六月 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/05/">五月 2016</a></li></ul>
     </div>
   </div>
 
@@ -614,9 +734,17 @@ HACKATHON Cloze Contest</code>。這個比賽會給出一句話，裡面會挖�
   
     
   <div class="widget-wrap">
-    <h3 class="widget-title">Recent Posts</h3>
+    <h3 class="widget-title">Articles récents</h3>
     <div class="widget">
       <ul>
+        
+          <li>
+            <a href="/2016/08/21/tensorflow-gpu-installation/">Tensorflow gtx 1060 installation</a>
+          </li>
+        
+          <li>
+            <a href="/2016/08/14/PixHack2016/">8/13 痞客邦克漏字比賽心得</a>
+          </li>
         
           <li>
             <a href="/2016/07/29/PixHack2016/">7/29 痞客邦克漏字比賽紀錄</a>
@@ -628,14 +756,6 @@ HACKATHON Cloze Contest</code>。這個比賽會給出一句話，裡面會挖�
         
           <li>
             <a href="/2016/06/20/use-openssl-generate-certificate/">使用 Openssl 建立憑證</a>
-          </li>
-        
-          <li>
-            <a href="/2016/06/04/Python-decorator-property/">Python - @property</a>
-          </li>
-        
-          <li>
-            <a href="/2016/05/31/diary/">5/31 日記</a>
           </li>
         
       </ul>
@@ -651,7 +771,7 @@ HACKATHON Cloze Contest</code>。這個比賽會給出一句話，裡面會挖�
   <div class="outer">
     <div id="footer-info" class="inner">
       &copy; 2016 Raix<br>
-      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+      Propulsé by <a href="http://hexo.io/" target="_blank">Hexo</a>
     </div>
   </div>
 </footer>
