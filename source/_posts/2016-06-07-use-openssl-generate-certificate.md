@@ -1,7 +1,7 @@
 ---
 title: 使用 Openssl 建立憑證
 date: 2016-06-20 21:00:00
-tags: [linux, TLS, openssl]
+tags: [Linux, TLS, openssl]
 ---
 
 最近工作上需要建立程式之間的 TLS 連線，而 TLS 之間的連線步驟需要驗證憑證 (Certificate) ，讓之間的加密連線可以成立。不過由於處於測試階段，需要自己產生憑證出來。因此學習使用 Openssl 來產生憑證，也藉此讓自已對 TLS 連線和憑證機制有更清楚的了解。
