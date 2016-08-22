@@ -185,3 +185,7 @@ $ sudo pip install /tmp/tensorflow_pkg/tensorflow-0.10.0rc0-py2-none-any.whl
 # 結論
 
 到此就大功告成，開始享受 GPU 加速之後的威力，以及...更多的 GPU 問題。
+
+# References
+* [Dive Into TensorFlow, Part III](http://textminingonline.com/dive-into-tensorflow-part-iii-gtx-1080-ubuntu16-04-cuda8-0-cudnn5-0-tensorflow)
+* [Ubuntu 16.04 / Gpu 1080 Version compile Error (Tensorflow installation) ](https://github.com/tensorflow/tensorflow/issues/3760)
