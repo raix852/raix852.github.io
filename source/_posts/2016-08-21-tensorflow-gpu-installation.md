@@ -112,7 +112,7 @@ sudo apt-get install python-numpy swig python-dev python-wheel
 ```
 
 ## 安裝 Bazel
-Bazel 是 google 在推的 build 工具，不過我想吐槽一下除了 google ，一般不會使用這套工具。
+Bazel 是 google 在推的 build 工具，適用於大型專案裡有不同語言和套件整合的需求上。
 
 ```
 wget https://github.com/bazelbuild/bazel/releases/download/0.3.1/bazel-0.3.1-installer-linux-x86_64.sh

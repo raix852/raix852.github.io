@@ -95,6 +95,6 @@ Get Example.text: This is a test
 至於哪種寫法比較好？就本人覺得，比較偏好範例 2 ，畢竟可以對應到其他語言的寫法，相較之下可讀性較高。
 
 
-## Link
+## References
 1. [使用@property](http://www.liaoxuefeng.com/wiki/001374738125095c955c1e6d8bb493182103fac9270762a000/001386820062641f3bcc60a4b164f8d91df476445697b9e000)
 2. [Python @property versus getters and setters](http://stackoverflow.com/questions/6618002/python-property-versus-getters-and-setters)
