@@ -103,7 +103,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://raix852.github.io/2016/09/13/read-report/" data-id="cit0ww8gd000wmrpe47ezrrmw" class="article-share-link">Share</a>
+      <a data-url="http://raix852.github.io/2016/09/13/read-report/" data-id="ciu5kp8gc000zuapes29a3vn2" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/讀書心得/">讀書心得</a></li></ul>
@@ -142,8 +142,12 @@
 <h1 id="環境準備"><a href="#環境準備" class="headerlink" title="環境準備"></a>環境準備</h1><h2 id="安裝-nvidia-driver"><a href="#安裝-nvidia-driver" class="headerlink" title="安裝 nvidia driver"></a>安裝 nvidia driver</h2><p>這邊我是參考別人的作法，從 <a href="https://launchpad.net/~graphics-drivers/+archive/ubuntu/ppa" target="_blank" rel="external">“Graphics Drivers Team” team</a> 找 driver 下載，若是直接從 nvidia 官網下載 driver 步驟會比較麻煩，看 github 上的討論也有不少問題。</p>
 <figure class="highlight sh"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">sudo add-apt-repository ppa:graphics-drivers/ppa</div><div class="line">sudo apt-get update</div><div class="line">sudo apt-get install nvidia-367</div><div class="line">sudo apt-get install mesa-common-dev</div><div class="line">sudo apt-get install freeglut3-dev</div></pre></td></tr></table></figure>
 <p>裝好後，重開機將 driver load 進來。</p>
+<h2 id="安裝-dependencies-套件"><a href="#安裝-dependencies-套件" class="headerlink" title="安裝 dependencies 套件"></a>安裝 dependencies 套件</h2><figure class="highlight sh"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">sudo apt-get install libglu1-mesa libxi-dev libxmu-dev libglu1-mesa-dev</div></pre></td></tr></table></figure>
 <h2 id="安裝-gcc-amp-g-4-8"><a href="#安裝-gcc-amp-g-4-8" class="headerlink" title="安裝 gcc &amp; g++ 4.8"></a>安裝 gcc &amp; g++ 4.8</h2><p>在裝 CUDA 之前，需要先將 gcc &amp; g++ 準備好，由於 ubuntu 預設是使用 4.5 ，因此需要裝額外的版本。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">sudo add-apt-repository ppa:ubuntu-toolchain-r/test</div><div class="line">sudo apt-get update</div><div class="line">sudo apt-get install gcc-4.8</div><div class="line">sudo apt-get install g++-4.8</div><div class="line">sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-4.8 50</div><div class="line">sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-4.8 50</div></pre></td></tr></table></figure>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">sudo add-apt-repository ppa:ubuntu-toolchain-r/<span class="built_in">test</span></div><div class="line">sudo apt-get update</div><div class="line">sudo apt-get install gcc-4.8</div><div class="line">sudo apt-get install g++-4.8</div><div class="line">sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-4.8 50</div><div class="line">sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-4.8 50</div></pre></td></tr></table></figure>
+<p><strong>10/11 更新</strong></p>
+<p>Ubuntu 16.04 使用的 gcc 版本已經非常的新 (Gcc version 5.4)，會造成 <code>#error -- unsupported GNU version! gcc versions later than 5.3 are not supported!</code> 訊息出現，需要去修改 <code>/usr/local/cuda/include/host_config.h</code> 。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">#if __GNUC__ &gt; 5 || (__GNUC__ == 5 &amp;&amp; __GNUC_MINOR__ &gt; 3)</div><div class="line"></div><div class="line">//#error -- unsupported GNU version! gcc versions later than 5.3 are not supported!</div><div class="line"></div><div class="line">#endif /* __GNUC__ &gt; 5 || (__GNUC__ == 5 &amp;&amp; __GNUC_MINOR__ &gt; 1) */</div></pre></td></tr></table></figure>
 <h2 id="安裝-CUDA-Toolkit-8-0"><a href="#安裝-CUDA-Toolkit-8-0" class="headerlink" title="安裝 CUDA Toolkit 8.0"></a>安裝 CUDA Toolkit 8.0</h2><p>從 <a href="https://developer.nvidia.com/cuda-release-candidate-download" target="_blank" rel="external">CUDA Toolkit 8.0</a> 裡選擇適合的版本。</p>
 <p><img src="http://i.imgur.com/DCAL3eF.png" alt="CUDA Toolkit 8.0"></p>
 <p>接下來執行：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">sudo bash cuda_8.0.27_linux.run</div></pre></td></tr></table></figure></p>
@@ -157,14 +161,14 @@
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">tar -zxvf cudnn-8.0-linux-x64-v5.0-ga.tgz</div><div class="line">sudo cp cuda/include/cudnn.h /usr/local/cuda/include/</div><div class="line">sudo cp cuda/lib64/libcudnn* /usr/local/cuda/lib64/</div><div class="line">sudo chmod a+r /usr/local/cuda/include/cudnn.h</div><div class="line">sudo chmod a+r /usr/local/cuda/lib64/libcudnn*</div></pre></td></tr></table></figure>
 <h1 id="安裝-Tensorflow-with-GPU"><a href="#安裝-Tensorflow-with-GPU" class="headerlink" title="安裝 Tensorflow with GPU"></a>安裝 Tensorflow with GPU</h1><p>這邊要使用最新版本的原始碼。目前 release 的 <code>r0.10 RC0</code> 有 bug 還沒有修好。</p>
 <h2 id="下載原始碼"><a href="#下載原始碼" class="headerlink" title="下載原始碼"></a>下載原始碼</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">git clone https://github.com/tensorflow/tensorflow.git</div></pre></td></tr></table></figure>
-<h2 id="安裝-dependencies"><a href="#安裝-dependencies" class="headerlink" title="安裝 dependencies"></a>安裝 dependencies</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">sudo apt-get install openjdk-8-jdk openjdk-8-jdk-headless openjdk-8-jre</div><div class="line">sudo apt-get install python-numpy swig python-dev python-wheel</div></pre></td></tr></table></figure>
+<h2 id="安裝-dependencies"><a href="#安裝-dependencies" class="headerlink" title="安裝 dependencies"></a>安裝 dependencies</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">sudo apt-get install openjdk-8-jdk openjdk-8-jdk-headless openjdk-8-jre</div><div class="line">sudo apt-get install python-numpy swig python-dev python-wheel</div><div class="line">sudo apt-get install zlib1g-dev</div></pre></td></tr></table></figure>
 <h2 id="安裝-Bazel"><a href="#安裝-Bazel" class="headerlink" title="安裝 Bazel"></a>安裝 Bazel</h2><p>Bazel 是 google 在推的 build 工具，適用於大型專案裡有不同語言和套件整合的需求上。</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">wget https://github.com/bazelbuild/bazel/releases/download/0.3.1/bazel-0.3.1-installer-linux-x86_64.sh</div><div class="line">bash bazel-0.3.1-installer-linux-x86_64.sh</div></pre></td></tr></table></figure>
 <h2 id="設定-Tensorflow"><a href="#設定-Tensorflow" class="headerlink" title="設定 Tensorflow"></a>設定 Tensorflow</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div></pre></td><td class="code"><pre><div class="line">$ ./configure</div><div class="line">Please specify the location of python. [Default is /usr/bin/python]:</div><div class="line">Do you wish to build TensorFlow with Google Cloud Platform support? [y/N] N</div><div class="line">No Google Cloud Platform support will be enabled for TensorFlow</div><div class="line">Do you wish to build TensorFlow with GPU support? [y/N] y</div><div class="line">GPU support will be enabled for TensorFlow</div><div class="line">Please specify which gcc nvcc should use as the host compiler. [Default is /usr/bin/gcc]:</div><div class="line">Please specify the Cuda SDK version you want to use, e.g. 7.0. [Leave empty to use system default]:</div><div class="line">Please specify the location where CUDA toolkit is installed. Refer to README.md for more details. [Default is /usr/local/cuda]:</div><div class="line">Please specify the cuDNN version you want to use. [Leave empty to use system default]:</div><div class="line">Please specify the location where cuDNN library is installed. Refer to README.md for more details. [Default is /usr/local/cuda]:</div><div class="line">Please specify a list of comma-separated Cuda compute capabilities you want to build with.</div><div class="line">You can find the compute capability of your device at: https://developer.nvidia.com/cuda-gpus.</div><div class="line">Please note that each additional compute capability significantly increases your build time and binary size.</div><div class="line"></div><div class="line">Setting up Cuda include</div><div class="line">Setting up Cuda lib</div><div class="line">Setting up Cuda bin</div><div class="line">Setting up Cuda nvvm</div><div class="line">Setting up CUPTI include</div><div class="line">Setting up CUPTI lib64</div><div class="line">Configuration finished</div></pre></td></tr></table></figure>
 <p>基本上設定要啟用 GPU ，剩下的版本環境使用預設值就好。</p>
-<h2 id="修改-Tensorflow"><a href="#修改-Tensorflow" class="headerlink" title="修改 Tensorflow"></a>修改 Tensorflow</h2><p>在設定完之後，接下來是測試是否可以編譯成功。在這邊編譯時會出現 <code>ERROR: ... undeclared inclusion(s) in rule ...</code> ，這邊翻到 <a href="https://github.com/tensorflow/tensorflow/issues/3760" target="_blank" rel="external">issue 3760</a> 裡有人提到需要修改 Tensorflow 的設定。</p>
+<h2 id="修改-Tensorflow"><a href="#修改-Tensorflow" class="headerlink" title="修改 Tensorflow"></a>修改 Tensorflow</h2><p>在設定完之後，接下來是測試是否可以編譯成功。在這邊編譯時會出現 ERROR: … undeclared inclusion(s) in rule … ，這邊翻到 issue 3760 裡有人提到需要修改 Tensorflow 的設定。</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">vim tensorflow/third_party/gpus/crosstool/CROSSTOOL</div></pre></td></tr></table></figure>
-<p>在 65 行那邊加入這一行 <code>cxx_builtin_include_directory: &quot;/usr/local/cuda-8.0/include&quot;</code> ，測試加了之後就可以編譯成功。</p>
+<p>在 65 行那邊加入這一行 cxx_builtin_include_directory: “/usr/local/cuda-8.0/include” ，測試加了之後就可以編譯成功。</p>
 <h2 id="Build-Tensorflow-with-GPU"><a href="#Build-Tensorflow-with-GPU" class="headerlink" title="Build Tensorflow with GPU"></a>Build Tensorflow with GPU</h2><p>這裡之後就沒遇到什麼問題， 跟著官網安裝指令走就好。</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">$ bazel build -c opt --config=cuda //tensorflow/cc:tutorials_example_trainer</div><div class="line"></div><div class="line">$ bazel-bin/tensorflow/cc/tutorials_example_trainer --use_gpu</div><div class="line"># Lots of output. This tutorial iteratively calculates the major eigenvalue of</div><div class="line"># a 2x2 matrix, on GPU. The last few lines look like this.</div><div class="line">000009/000005 lambda = 2.000000 x = [0.894427 -0.447214] y = [1.788854 -0.894427]</div><div class="line">000006/000001 lambda = 2.000000 x = [0.894427 -0.447214] y = [1.788854 -0.894427]</div><div class="line">000009/000009 lambda = 2.000000 x = [0.894427 -0.447214] y = [1.788854 -0.894427]</div></pre></td></tr></table></figure>
 <h2 id="Create-pip-package"><a href="#Create-pip-package" class="headerlink" title="Create pip package"></a>Create pip package</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">$ bazel build -c opt --config=cuda //tensorflow/tools/pip_package:build_pip_package</div><div class="line"></div><div class="line">$ bazel-bin/tensorflow/tools/pip_package/build_pip_package /tmp/tensorflow_pkg</div><div class="line"></div><div class="line"># The name of the .whl file will depend on your platform.</div><div class="line">$ sudo pip install /tmp/tensorflow_pkg/tensorflow-0.10.0rc0-py2-none-any.whl</div></pre></td></tr></table></figure>
@@ -177,7 +181,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://raix852.github.io/2016/08/21/tensorflow-gpu-installation/" data-id="cit0ww8gq0011mrpel5kyw01x" class="article-share-link">Share</a>
+      <a data-url="http://raix852.github.io/2016/08/21/tensorflow-gpu-installation/" data-id="ciu5kp8fi0007uape9lwr4jgl" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/tensorflow/">tensorflow</a></li></ul>
@@ -226,7 +230,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://raix852.github.io/2016/08/14/PixHack2016/" data-id="cit0ww8gi000ymrpe9xewdjft" class="article-share-link">Share</a>
+      <a data-url="http://raix852.github.io/2016/08/14/PixHack2016/" data-id="ciu5kp8gj0013uapep55k68ie" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Deep-Learning/">Deep Learning</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Machine-Learning/">Machine Learning</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/NLP/">NLP</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/tensorflow/">tensorflow</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/日記/">日記</a></li></ul>
@@ -272,7 +276,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://raix852.github.io/2016/07/29/PixHack2016/" data-id="cit0ww8gn0010mrpegtxldd9g" class="article-share-link">Share</a>
+      <a data-url="http://raix852.github.io/2016/07/29/PixHack2016/" data-id="ciu5kp8gf0011uape784opst3" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Deep-Learning/">Deep Learning</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Machine-Learning/">Machine Learning</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/NLP/">NLP</a></li></ul>
@@ -324,7 +328,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://raix852.github.io/2016/07/01/data-at-rest/" data-id="cit0ww8fo0007mrpeqmd1jq1g" class="article-share-link">Share</a>
+      <a data-url="http://raix852.github.io/2016/07/01/data-at-rest/" data-id="ciu5kp8fk0008uapejxev7g4b" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Encryption/">Encryption</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Filesystem/">Filesystem</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Linux/">Linux</a></li></ul>
@@ -435,7 +439,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://raix852.github.io/2016/06/20/use-openssl-generate-certificate/" data-id="cit0ww8fl0006mrpebryjo23x" class="article-share-link">Share</a>
+      <a data-url="http://raix852.github.io/2016/06/20/use-openssl-generate-certificate/" data-id="ciu5kp8ff0006uapear36s5t8" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Linux/">Linux</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/TLS/">TLS</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/openssl/">openssl</a></li></ul>
@@ -486,7 +490,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://raix852.github.io/2016/06/04/Python-decorator-property/" data-id="cit0ww8ff0004mrpexe1xbbpa" class="article-share-link">Share</a>
+      <a data-url="http://raix852.github.io/2016/06/04/Python-decorator-property/" data-id="ciu5kp8fa0004uapec6i8rq53" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/python/">python</a></li></ul>
@@ -529,7 +533,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://raix852.github.io/2016/05/31/diary/" data-id="cit0ww8fe0003mrpesp8c0v7a" class="article-share-link">Share</a>
+      <a data-url="http://raix852.github.io/2016/05/31/diary/" data-id="ciu5kp8f80003uapewdwagsi7" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/hexo/">hexo</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/日記/">日記</a></li></ul>
@@ -625,7 +629,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://raix852.github.io/2016/05/24/hexo/" data-id="cit0ww8ex0001mrpesabqspiq" class="article-share-link">Share</a>
+      <a data-url="http://raix852.github.io/2016/05/24/hexo/" data-id="ciu5kp8ev0000uapedlrgjitl" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Github/">Github</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/hexo/">hexo</a></li></ul>
@@ -727,7 +731,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://raix852.github.io/2016/05/22/octopress/" data-id="cit0ww8eq0000mrpeuk275f83" class="article-share-link">Share</a>
+      <a data-url="http://raix852.github.io/2016/05/22/octopress/" data-id="ciu5kp8f10001uapei6llhzf1" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Github/">Github</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Octopress/">Octopress</a></li></ul>
