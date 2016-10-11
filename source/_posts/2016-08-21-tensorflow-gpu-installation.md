@@ -24,10 +24,15 @@ sudo apt-get install freeglut3-dev
 
 裝好後，重開機將 driver load 進來。
 
+## 安裝 dependencies 套件
+```sh
+sudo apt-get install libglu1-mesa libxi-dev libxmu-dev libglu1-mesa-dev
+```
+
 ## 安裝 gcc & g++ 4.8
 在裝 CUDA 之前，需要先將 gcc & g++ 準備好，由於 ubuntu 預設是使用 4.5 ，因此需要裝額外的版本。
 
-```
+```sh
 sudo add-apt-repository ppa:ubuntu-toolchain-r/test
 sudo apt-get update
 sudo apt-get install gcc-4.8
@@ -35,6 +40,19 @@ sudo apt-get install g++-4.8
 sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-4.8 50
 sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-4.8 50
 ```
+
+**10/11 更新**
+
+Ubuntu 16.04 使用的 gcc 版本已經非常的新 (Gcc version 5.4)，會造成 `#error -- unsupported GNU version! gcc versions later than 5.3 are not supported!` 訊息出現，需要去修改 `/usr/local/cuda/include/host_config.h` 。
+
+```
+#if __GNUC__ > 5 || (__GNUC__ == 5 && __GNUC_MINOR__ > 3)
+
+//#error -- unsupported GNU version! gcc versions later than 5.3 are not supported!
+
+#endif /* __GNUC__ > 5 || (__GNUC__ == 5 && __GNUC_MINOR__ > 1) */
+```
+
 
 ## 安裝 CUDA Toolkit 8.0
 
@@ -109,6 +127,7 @@ git clone https://github.com/tensorflow/tensorflow.git
 ```
 sudo apt-get install openjdk-8-jdk openjdk-8-jdk-headless openjdk-8-jre
 sudo apt-get install python-numpy swig python-dev python-wheel
+sudo apt-get install zlib1g-dev
 ```
 
 ## 安裝 Bazel
@@ -149,13 +168,15 @@ Configuration finished
 基本上設定要啟用 GPU ，剩下的版本環境使用預設值就好。
 
 ## 修改 Tensorflow
-在設定完之後，接下來是測試是否可以編譯成功。在這邊編譯時會出現 `ERROR: ... undeclared inclusion(s) in rule ...` ，這邊翻到 [issue 3760](https://github.com/tensorflow/tensorflow/issues/3760) 裡有人提到需要修改 Tensorflow 的設定。
+
+在設定完之後，接下來是測試是否可以編譯成功。在這邊編譯時會出現 ERROR: ... undeclared inclusion(s) in rule ... ，這邊翻到 issue 3760 裡有人提到需要修改 Tensorflow 的設定。
 
 ```
 vim tensorflow/third_party/gpus/crosstool/CROSSTOOL
 ```
 
-在 65 行那邊加入這一行 `cxx_builtin_include_directory: "/usr/local/cuda-8.0/include"` ，測試加了之後就可以編譯成功。
+在 65 行那邊加入這一行 cxx_builtin_include_directory: "/usr/local/cuda-8.0/include" ，測試加了之後就可以編譯成功。
+
 
 ## Build Tensorflow with GPU
 這裡之後就沒遇到什麼問題， 跟著官網安裝指令走就好。
