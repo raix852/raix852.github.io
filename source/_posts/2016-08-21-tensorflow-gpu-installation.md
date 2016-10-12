@@ -127,6 +127,7 @@ git clone https://github.com/tensorflow/tensorflow.git
 ```
 sudo apt-get install openjdk-8-jdk openjdk-8-jdk-headless openjdk-8-jre
 sudo apt-get install python-numpy swig python-dev python-wheel
+sudo apt-get install python-setuptools  python-pip
 sudo apt-get install zlib1g-dev
 ```
 
