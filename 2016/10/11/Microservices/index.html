@@ -3,17 +3,36 @@
 <head>
   <meta charset="utf-8">
   
-  <title>Archives: 2016/7 | Raix&#39;s Blog</title>
+  <title>Scalable Microservices with Kubernetes - Lesson 1 | Raix&#39;s Blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="My garden, my knowledge, my soul.">
-<meta property="og:type" content="website">
-<meta property="og:title" content="Raix's Blog">
-<meta property="og:url" content="http://raix852.github.io/archives/2016/07/index.html">
+  <meta name="description" content="這門課介紹使用 docker 、 Kubernetes  ，並且會使用 Go 和 Google cloud platform 來學習建立 Microservices 。課程網址：Scalable Microservices with Kubernetes
+什麼是 Microservices？
+Moduler
+Easy to deploy
+Scale independently
+
+Microserv">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Scalable Microservices with Kubernetes - Lesson 1">
+<meta property="og:url" content="http://raix852.github.io/2016/10/11/Microservices/index.html">
 <meta property="og:site_name" content="Raix's Blog">
-<meta property="og:description" content="My garden, my knowledge, my soul.">
+<meta property="og:description" content="這門課介紹使用 docker 、 Kubernetes  ，並且會使用 Go 和 Google cloud platform 來學習建立 Microservices 。課程網址：Scalable Microservices with Kubernetes
+什麼是 Microservices？
+Moduler
+Easy to deploy
+Scale independently
+
+Microserv">
+<meta property="og:updated_time" content="2016-10-12T15:32:21.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Raix's Blog">
-<meta name="twitter:description" content="My garden, my knowledge, my soul.">
+<meta name="twitter:title" content="Scalable Microservices with Kubernetes - Lesson 1">
+<meta name="twitter:description" content="這門課介紹使用 docker 、 Kubernetes  ，並且會使用 Go 和 Google cloud platform 來學習建立 Microservices 。課程網址：Scalable Microservices with Kubernetes
+什麼是 Microservices？
+Moduler
+Easy to deploy
+Scale independently
+
+Microserv">
   
     <link rel="alternate" href="/atom.xml" title="Raix&#39;s Blog" type="application/atom+xml">
   
@@ -69,58 +88,95 @@
 </header>
 
       <div class="outer">
-        <section id="main">
-  
-  
-    
-    
-      
-      
-      <section class="archives-wrap">
-        <div class="archive-year-wrap">
-          <a href="/archives/2016" class="archive-year">2016</a>
-        </div>
-        <div class="archives">
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      <a href="/2016/07/29/PixHack2016/" class="archive-article-date">
-  <time datetime="2016-07-29T15:10:37.000Z" itemprop="datePublished">7月 29</time>
+        <section id="main"><article id="post-Microservices" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2016/10/11/Microservices/" class="article-date">
+  <time datetime="2016-10-11T15:00:00.000Z" itemprop="datePublished">2016-10-11</time>
 </a>
-      
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
   
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2016/07/29/PixHack2016/">7/29 痞客邦克漏字比賽紀錄</a>
+    <h1 class="article-title" itemprop="name">
+      Scalable Microservices with Kubernetes - Lesson 1
     </h1>
   
 
-    </header>
-  </div>
-</article>
-  
+      </header>
     
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      <a href="/2016/07/01/data-at-rest/" class="archive-article-date">
-  <time datetime="2016-07-01T15:10:37.000Z" itemprop="datePublished">7月 1</time>
-</a>
+    <div class="article-entry" itemprop="articleBody">
       
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2016/07/01/data-at-rest/">Data at rest encryption</a>
-    </h1>
-  
+        <p>這門課介紹使用 docker 、 Kubernetes  ，並且會使用 Go 和 Google cloud platform 來學習建立 Microservices 。<br>課程網址：<a href="https://classroom.udacity.com/courses/ud615/" target="_blank" rel="external">Scalable Microservices with Kubernetes</a></p>
+<h2 id="什麼是-Microservices？"><a href="#什麼是-Microservices？" class="headerlink" title="什麼是 Microservices？"></a>什麼是 Microservices？</h2><ul>
+<li><strong>Moduler</strong></li>
+<li><strong>Easy to deploy</strong></li>
+<li><strong>Scale independently</strong></li>
+</ul>
+<p>Microservices 設計模式可以套用在很多地方，像是 Web service。幫助快速開發和 Continuous delivery ，並將測試工具和 infrastructure 設計推上更上一層樓。</p>
+<h2 id="Twelve-Factor-App"><a href="#Twelve-Factor-App" class="headerlink" title="Twelve-Factor App"></a>Twelve-Factor App</h2><p>Heroku 在 2012 年提出的 <a href="https://12factor.net/" target="_blank" rel="external">The TWELVE-FACTS APP</a>，在『建構微服務』一書中也有提到這 12 條準則。</p>
+<ol>
+<li><strong>Codebase</strong> - One codebase tracked in revision control, many deploys</li>
+<li><strong>Dependencies</strong> - Explicitly declare and isolate dependencies</li>
+<li><strong>Config</strong> - Store config in the environment</li>
+<li><strong>Backing services</strong> - Treat backing services as attached resources</li>
+<li><strong>Build, release, run</strong> - Strictly separate build and run stages</li>
+<li><strong>Processes</strong> - Execute the app as one or more stateless processes</li>
+<li><strong>Port binding</strong> - Export services via port binding</li>
+<li><strong>Concurrency</strong> - Scale out via the process model</li>
+<li><strong>Disposability</strong> - Maximize robustness with fast startup and graceful shutdown</li>
+<li><strong>Dev/prod parity</strong> - Keep development, staging, and production as similar as possible</li>
+<li><strong>Logs</strong> - Treat logs as event streams</li>
+<li><strong>Admin processes</strong> - Run admin/management tasks as one-off processes</li>
+</ol>
+<p>Twelve-Factor App 可歸類成下列三個重要因素：</p>
+<ul>
+<li><strong>Portability</strong> - 消除執行環境的不同，像是 dependencies 和 configuration</li>
+<li><strong>Deployability</strong> - 可持續佈署在不同環境，或是不同的雲服務商(AWS, GCP)</li>
+<li><strong>Scalability</strong> - 根據使用者需求擴充服務能力。</li>
+</ul>
+<h2 id="JWT"><a href="#JWT" class="headerlink" title="JWT"></a>JWT</h2><p>JSON Web Token，用來做：</p>
+<ul>
+<li><strong>Authentication</strong> - 可被使用者簽證</li>
+<li><strong>Information Exchange</strong> - 可打包訊息</li>
+</ul>
+<p>JWT 可被眾多語言支援 encode / decode ，常用於 Authentication 。</p>
+<h2 id="How-does-JWT-work"><a href="#How-does-JWT-work" class="headerlink" title="How does JWT work?"></a>How does JWT work?</h2><ol>
+<li>Client 端傳送使用者帳號和密碼到 Server 上</li>
+<li>Server 驗證完使用者之後，建立 JWT Token</li>
+<li>傳送 JWT Token 到 Client 端，由 Client 端保存</li>
+<li>Client 端傳送 request ，並附上 JWT Token</li>
+<li>Server 端驗證 JWT Token 是否正確</li>
+<li>驗證成功， Server 端傳回 request 的 response</li>
+</ol>
 
-    </header>
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://raix852.github.io/2016/10/11/Microservices/" data-id="ciu72t7zg000qqfpeqga6nq48" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Udacity/">Udacity</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/學習筆記/">學習筆記</a></li></ul>
+
+    </footer>
   </div>
+  
+    
+<nav id="article-nav">
+  
+  
+    <a href="/2016/09/13/read-report/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">台灣史上最有梗的台灣史</div>
+    </a>
+  
+</nav>
+
+  
 </article>
-  
-  
-    </div></section>
-  
 
 </section>
         
