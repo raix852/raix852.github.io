@@ -4,7 +4,6 @@ title: "Octopress 安裝和佈署到 Github"
 date: 2016-05-22 20:33:29 +0800
 comments: true
 tags:
-  - Octopress
   - Github
 ---
 

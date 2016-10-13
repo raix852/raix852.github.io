@@ -1,7 +1,7 @@
 ---
 title: Scalable Microservices with Kubernetes - Lesson 1
 date: 2016-10-11 23:00:00
-tags: [學習筆記, Udacity]
+tags: [學習筆記, Udacity, Kubernetes, docker]
 ---
 
 這門課介紹使用 docker 、 Kubernetes  ，並且會使用 Go 和 Google cloud platform 來學習建立 Microservices 。
