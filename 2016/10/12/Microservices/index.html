@@ -3,36 +3,39 @@
 <head>
   <meta charset="utf-8">
   
-  <title>Data at rest encryption | Raix&#39;s Blog</title>
+  <title>Scalable Microservices with Kubernetes - Lesson 2 | Raix&#39;s Blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="目前一般的 data at rest encryption 有三種方式，分別為：
+  <meta name="description" content="第二節課在教 docker 觀念以及如何使用，內容對初心者而言非常簡易上手，對我來說也可當作複習的機會。
+Why docker?docker 所使用的 image 不只包含程式本身，所需要的 dependencies 和執行時所需的設定檔也都包含在內。docker 本身也提供良好的 API
 
-Encrypted drives
- 獨立於作業系統之外，由硬體提供加密的功能。避免硬體遺失時資料被輕易拿出，缺點是無法避免系統運行時被惡意使用者或惡意程序拿取資料。
+create
+distribute
+run
 
-Full disk encryption
- 在這種模式下不需要硬體支援，可針對 disk 或 volume 整個加密。實作方式各家 filesyst">
+container 在 server 上。目前支援的 OS">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Data at rest encryption">
-<meta property="og:url" content="http://raix852.github.io/2016/07/01/data-at-rest/index.html">
+<meta property="og:title" content="Scalable Microservices with Kubernetes - Lesson 2">
+<meta property="og:url" content="http://raix852.github.io/2016/10/12/Microservices/index.html">
 <meta property="og:site_name" content="Raix's Blog">
-<meta property="og:description" content="目前一般的 data at rest encryption 有三種方式，分別為：
+<meta property="og:description" content="第二節課在教 docker 觀念以及如何使用，內容對初心者而言非常簡易上手，對我來說也可當作複習的機會。
+Why docker?docker 所使用的 image 不只包含程式本身，所需要的 dependencies 和執行時所需的設定檔也都包含在內。docker 本身也提供良好的 API
 
-Encrypted drives
- 獨立於作業系統之外，由硬體提供加密的功能。避免硬體遺失時資料被輕易拿出，缺點是無法避免系統運行時被惡意使用者或惡意程序拿取資料。
+create
+distribute
+run
 
-Full disk encryption
- 在這種模式下不需要硬體支援，可針對 disk 或 volume 整個加密。實作方式各家 filesyst">
-<meta property="og:updated_time" content="2016-08-23T09:40:39.000Z">
+container 在 server 上。目前支援的 OS">
+<meta property="og:updated_time" content="2016-10-19T02:11:58.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Data at rest encryption">
-<meta name="twitter:description" content="目前一般的 data at rest encryption 有三種方式，分別為：
+<meta name="twitter:title" content="Scalable Microservices with Kubernetes - Lesson 2">
+<meta name="twitter:description" content="第二節課在教 docker 觀念以及如何使用，內容對初心者而言非常簡易上手，對我來說也可當作複習的機會。
+Why docker?docker 所使用的 image 不只包含程式本身，所需要的 dependencies 和執行時所需的設定檔也都包含在內。docker 本身也提供良好的 API
 
-Encrypted drives
- 獨立於作業系統之外，由硬體提供加密的功能。避免硬體遺失時資料被輕易拿出，缺點是無法避免系統運行時被惡意使用者或惡意程序拿取資料。
+create
+distribute
+run
 
-Full disk encryption
- 在這種模式下不需要硬體支援，可針對 disk 或 volume 整個加密。實作方式各家 filesyst">
+container 在 server 上。目前支援的 OS">
   
     <link rel="alternate" href="/atom.xml" title="Raix&#39;s Blog" type="application/atom+xml">
   
@@ -88,10 +91,10 @@ Full disk encryption
 </header>
 
       <div class="outer">
-        <section id="main"><article id="post-data-at-rest" class="article article-type-post" itemscope itemprop="blogPost">
+        <section id="main"><article id="post-Microservices" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
-    <a href="/2016/07/01/data-at-rest/" class="article-date">
-  <time datetime="2016-07-01T15:10:37.000Z" itemprop="datePublished">2016-07-01</time>
+    <a href="/2016/10/12/Microservices/" class="article-date">
+  <time datetime="2016-10-12T15:00:00.000Z" itemprop="datePublished">2016-10-12</time>
 </a>
     
   </div>
@@ -102,7 +105,7 @@ Full disk encryption
         
   
     <h1 class="article-title" itemprop="name">
-      Data at rest encryption
+      Scalable Microservices with Kubernetes - Lesson 2
     </h1>
   
 
@@ -110,28 +113,50 @@ Full disk encryption
     
     <div class="article-entry" itemprop="articleBody">
       
-        <p>目前一般的 data at rest encryption 有三種方式，分別為：</p>
-<ol>
-<li><p>Encrypted drives</p>
-<p> 獨立於作業系統之外，由硬體提供加密的功能。避免硬體遺失時資料被輕易拿出，缺點是無法避免系統運行時被惡意使用者或惡意程序拿取資料。</p>
-</li>
-<li><p>Full disk encryption</p>
-<p> 在這種模式下不需要硬體支援，可針對 disk 或 volume 整個加密。實作方式各家 filesystem 都有不同，所以也有不同的限制，像是有的可以對 /root 資料夾加密，有的不行。缺點和 Encrypted drives 一樣無法避免 disk 或 volume 運行起來時被惡意使用者或惡意程序拿取資料。</p>
-</li>
-<li><p>Filesystem encryption</p>
-<p> 又稱為 file/folder encryption 。此種方式可以讓使用者分別對某個檔案或資料夾加密，加密時也可選擇不同的 key ，因此優點就是可以避免上面兩種方式的缺點，讓惡意使用者或程序難以解讀內容。缺點是針對密碼控管需要注意，特別是加密很多東西時。</p>
-<p> 其實我初看到 Filesystem encryption 名詞時還以為是對整個 filesystem 加密，不過後來查 wiki 看到別稱才明白是指什麼。</p>
-</li>
-</ol>
-<h2 id="參考資料"><a href="#參考資料" class="headerlink" title="參考資料"></a>參考資料</h2><p><a href="https://en.wikipedia.org/wiki/Disk_encryption" target="_blank" rel="external">Disk encryption</a> <br><br><a href="https://en.wikipedia.org/wiki/Filesystem-level_encryption" target="_blank" rel="external">Filesystem-level encryption</a></p>
+        <p>第二節課在教 docker 觀念以及如何使用，內容對初心者而言非常簡易上手，對我來說也可當作複習的機會。</p>
+<h2 id="Why-docker"><a href="#Why-docker" class="headerlink" title="Why docker?"></a>Why docker?</h2><p>docker 所使用的 image 不只包含程式本身，所需要的 dependencies 和執行時所需的設定檔也都包含在內。docker 本身也提供良好的 API</p>
+<ul>
+<li><strong>create</strong></li>
+<li><strong>distribute</strong></li>
+<li><strong>run</strong></li>
+</ul>
+<p>container 在 server 上。目前支援的 OS 平台有 linux 和 windows。</p>
+<p>docker 可以幫助系統管理者作到</p>
+<ul>
+<li><strong>Reproducable</strong></li>
+<li><strong>Consistant</strong></li>
+</ul>
+<p>docker 可以提供類似 virtual machine 的功能，將執行程式從同一台機器上隔離出來，因此可不用擔心各種 dependencies 問題。</p>
+<h2 id="docker-擅長什麼？"><a href="#docker-擅長什麼？" class="headerlink" title="docker 擅長什麼？"></a>docker 擅長什麼？</h2><p>常見的 linux 發布版(Ex. Ubuntu, Redhat) ，擅長於</p>
+<ul>
+<li><strong>Installing Services</strong></li>
+<li><strong>Start and Stop Services</strong></li>
+</ul>
+<p>docker 在這之上，提供了</p>
+<ul>
+<li><strong>Installing Services</strong></li>
+<li><strong>Start and Stop Services</strong></li>
+<li><strong>Running multiple versions</strong></li>
+<li><strong>Running multiple instances</strong></li>
+</ul>
+<p>舉例，要使用 nginx 套件， linux 的套件管理程式可以方便下載，並透過 systemd 或舊的 init.d 將 nginx 啟動。但假設需要在同一台機器上啟動多個 nginx 服務或使用不同的版本，此時就會遇到瓶頸，因為同一時間只能跑一個。而 docker 則可以提供運行多個 instances 和多個版本的能力。</p>
+<h2 id="Containers"><a href="#Containers" class="headerlink" title="Containers"></a>Containers</h2><p>可以讓 applications 方便運行和發布到不同平台上的技術。</p>
+<ul>
+<li><strong>Independent packages</strong> - 將所需要的 dependencies 打包起來，發布到各種平台上。</li>
+<li><strong>Namespace isolation</strong> - 提供 filesystem 的 Iiolation 和 network isolatation，讓檔案名稱或 ip/port 不會衝突。</li>
+</ul>
+<p>與一般的 virtual machine 透過模擬整個 OS 層不同， container 是經由 linux kernel 由邏輯上分割出來，透過 Namespace 隔離和 cgroup 控制 resources 達成，因此可視為輕量級的 VM ，啟動和關閉都非常快速。</p>
+<h2 id="Dockerfile"><a href="#Dockerfile" class="headerlink" title="Dockerfile"></a>Dockerfile</h2><p>docker 用來建立 image 的檔案，裡面描述指令讓 docker 依指示要從哪個 base image 開始，逐漸將所需要的 dependencies 打包起來，最後完成一個包含所有套件和設定的 application image 來使用。</p>
+<p>以下是之前做過得小型 java 7 image，使用 centos 7.2 作為程式運行的環境。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line">FROM centos:7.2.1511</div><div class="line">MAINTAINER raix</div><div class="line"></div><div class="line">USER root</div><div class="line">RUN yum install -y wget \</div><div class="line">                git \</div><div class="line">                curl \</div><div class="line">                zip \</div><div class="line">                openssh-clients \</div><div class="line">                java-1.7.0-openjdk \</div><div class="line">                java-1.7.0-openjdk-devel \</div><div class="line">                java-1.7.0-openjdk-headless</div><div class="line"></div><div class="line">ENV LANG C.UTF-8</div></pre></td></tr></table></figure></p>
+<h2 id="Docker-Hub"><a href="#Docker-Hub" class="headerlink" title="Docker Hub"></a>Docker Hub</h2><p>做出來的 image 可以發布到 docker hub 上，公開讓所有人使用，直接從 docker hub 上下載完整的 image 下來，而不用從頭建置起來，方便用來做大量佈署的動作。除了 docker hub 這個公開存放 image 的地方，也有其他公開的服務可以使用，像是 gcr (Google Container Registry) ，或是建立私有 hub ，供企業內部使用。</p>
 
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://raix852.github.io/2016/07/01/data-at-rest/" data-id="ciuky5jbb0003dcpeqf0gvzdy" class="article-share-link">Share</a>
+      <a data-url="http://raix852.github.io/2016/10/12/Microservices/" data-id="ciuky5jc3000fdcpetcvknw6e" class="article-share-link">Share</a>
       
       
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Encryption/">Encryption</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Filesystem/">Filesystem</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Linux/">Linux</a></li></ul>
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Kubernetes/">Kubernetes</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Udacity/">Udacity</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/docker/">docker</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/學習筆記/">學習筆記</a></li></ul>
 
     </footer>
   </div>
@@ -139,19 +164,19 @@ Full disk encryption
     
 <nav id="article-nav">
   
-    <a href="/2016/07/29/PixHack2016/" id="article-nav-newer" class="article-nav-link-wrap">
+    <a href="/2016/10/22/Microservices/" id="article-nav-newer" class="article-nav-link-wrap">
       <strong class="article-nav-caption">Newer</strong>
       <div class="article-nav-title">
         
-          7/29 痞客邦克漏字比賽紀錄
+          Scalable Microservices with Kubernetes - Lesson 3
         
       </div>
     </a>
   
   
-    <a href="/2016/06/20/use-openssl-generate-certificate/" id="article-nav-older" class="article-nav-link-wrap">
+    <a href="/2016/10/11/Microservices/" id="article-nav-older" class="article-nav-link-wrap">
       <strong class="article-nav-caption">Older</strong>
-      <div class="article-nav-title">使用 Openssl 建立憑證</div>
+      <div class="article-nav-title">Scalable Microservices with Kubernetes - Lesson 1</div>
     </a>
   
 </nav>

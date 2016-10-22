@@ -73,6 +73,215 @@
   
     <article id="post-Microservices" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
+    <a href="/2016/10/22/Microservices/" class="article-date">
+  <time datetime="2016-10-22T08:30:00.000Z" itemprop="datePublished">2016-10-22</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2016/10/22/Microservices/">Scalable Microservices with Kubernetes - Lesson 3</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>第三堂課介紹 Kubernetes。</p>
+<p><strong>Conway’s Law</strong><br><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">Organizations which design systems ... are constrained to produce designs which are copies of the communication structures of these organizations</div><div class="line">    — M. Conway[3]</div></pre></td></tr></table></figure></p>
+<h2 id="What-is-Kubernetes"><a href="#What-is-Kubernetes" class="headerlink" title="What is Kubernetes?"></a>What is Kubernetes?</h2><p>將程式包成 container 只解決了 5% 的問題。真實的問題是</p>
+<ul>
+<li><strong>App Configuration</strong></li>
+<li><strong>Service Discovery</strong></li>
+<li><strong>Managing Updates</strong></li>
+<li><strong>Monitoring</strong></li>
+</ul>
+<p>Kubernetes 提供了新一層超乎 deployment 的 abstractions ，讓使用者可以專注於大局。<br>Kubernetes 可以讓我們將每台機器抽象起來，讓操作 cluster 起來就像邏輯上操作一台機器一樣。<br>在 Kubernetes 裡，我們可以描述一串 applications ，並如何讓他們互動，而 Kubernetes 將讓這些事情發生。</p>
+<h2 id="Setting-up-Kubernetes-for-this-course"><a href="#Setting-up-Kubernetes-for-this-course" class="headerlink" title="Setting up Kubernetes for this course"></a>Setting up Kubernetes for this course</h2><p>課程上是使用 Google Cloud Platform(GCP)，而我是準備好一台機器上面安裝好 Kubernetes 來進行這個課程。</p>
+<p><a href="https://github.com/udacity/ud615" target="_blank" rel="external">Course Repo</a></p>
+<h2 id="Get-started"><a href="#Get-started" class="headerlink" title="Get started"></a>Get started</h2><p><strong>Launch a single instance</strong><br><br><figure class="highlight sh"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ kubectl run nginx --image=nginx:1.10.0</div></pre></td></tr></table></figure></p>
+<p>將 nginx container 透過 kubectl 指令啟動</p>
+<p><strong>Get pods</strong><br><br><figure class="highlight sh"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ kubectl get pods</div></pre></td></tr></table></figure></p>
+<p>在 Kubernetes 裡，所有的 Containers 運行在 pod ，使用上述指令列出正在運行的 pods</p>
+<p><strong>Expose nginx</strong><br><br><figure class="highlight sh"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ kubectl expose deployment nginx --port 80 --type LoadBalancer</div></pre></td></tr></table></figure></p>
+<p>上面指令會建立出 load balancer 且派發一個 public IP 在上面，並將 80 port 暴露給外面。任何一個 Client 透過派發的 IP 連線將會經過 load balancer 傳送到內部 container，在這邊的例子是 nginx 。</p>
+<p><strong>List services</strong><br><br><figure class="highlight sh"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ kubectl get services</div></pre></td></tr></table></figure></p>
+<p>列出 services 資訊，像是 Public IP, expose port 。</p>
+<h2 id="Pods"><a href="#Pods" class="headerlink" title="Pods"></a>Pods</h2><p>Kubernetes 的核心是 Pods ，Pods 代表的是 Logical Application 。<br></p>
+<ul>
+<li><strong>One or more containers</strong> - 將具有依賴關係的 containers 包在同一個 pod 裡。</li>
+<li><strong>Volumes</strong> - containers 放置資料的地方，可以被所有在 pod 裡的 containers 使用</li>
+<li><strong>Shared namespace</strong> - Shared namespace 表示在相同 pod 裡的 containers 互相溝通，並分享相同的 Volumes</li>
+<li><strong>One IP per pod</strong> - 在同一個 pod 裡的 containers 共享相同的 public IP 。</li>
+</ul>
+<h3 id="Pods-Configuration"><a href="#Pods-Configuration" class="headerlink" title="Pods Configuration"></a>Pods Configuration</h3><p>在 Kubernetes 裡，建立 pods 是透過設定 yaml 格式的設定檔。如下 <code>monolith.yaml</code>：</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div></pre></td><td class="code"><pre><div class="line">$ cat pods/monolith.yaml</div><div class="line">apiVersion: v1</div><div class="line">kind: Pod</div><div class="line">metadata:</div><div class="line">  name: monolith</div><div class="line">  labels:</div><div class="line">    app: monolith</div><div class="line">spec:</div><div class="line">  containers:</div><div class="line">    - name: monolith</div><div class="line">      image: udacity/example-monolith:1.0.0</div><div class="line">      args:</div><div class="line">        - <span class="string">"-http=0.0.0.0:80"</span></div><div class="line">        - <span class="string">"-health=0.0.0.0:81"</span></div><div class="line">        - <span class="string">"-secret=secret"</span></div><div class="line">      ports:</div><div class="line">        - name: http</div><div class="line">          containerPort: 80</div><div class="line">        - name: health</div><div class="line">          containerPort: 81</div><div class="line">      resources:</div><div class="line">        limits:</div><div class="line">          cpu: 0.2</div><div class="line">          memory: <span class="string">"10Mi"</span></div></pre></td></tr></table></figure>
+<p>在 <code>contains:</code> 底下標示 container 的屬性。包含</p>
+<ul>
+<li><code>name:</code> : container 名稱</li>
+<li><code>image:</code> : 要使用的 container image</li>
+<li><code>args:</code> Application 執行時所需的參數</li>
+<li><code>port:</code> : 需要暴露給外面的 ports</li>
+<li><code>resources:</code> : 限制 cpu 和記憶體使用量。</li>
+</ul>
+<h3 id="Create-the-pod"><a href="#Create-the-pod" class="headerlink" title="Create the pod"></a>Create the pod</h3><p>將設定好的 <code>monolith.yaml</code> 透過底下指令將 monolith pod 建立出來。</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">$ kubectl create <span class="_">-f</span> pods/monolith.yaml</div><div class="line">pod <span class="string">"monolith"</span> created</div></pre></td></tr></table></figure>
+<h3 id="Examine-pods"><a href="#Examine-pods" class="headerlink" title="Examine pods"></a>Examine pods</h3><p>在 pod 剛建立出來時需要準備一段時間讓 container 啟動。透過以下指令觀察是否建立出來以及正在運行。</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">$ kubectl get pods</div><div class="line">NAME       READY     STATUS    RESTARTS   AGE</div><div class="line">monolith   1/1       Running   0          14s</div></pre></td></tr></table></figure>
+<h3 id="Describe-pods"><a href="#Describe-pods" class="headerlink" title="Describe pods"></a>Describe pods</h3><p>需要檢查詳細的資訊可以透過以下指令。</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ kubectl describe pods monolith</div></pre></td></tr></table></figure>
+<p>會列出 container 被指派的 IP，暴露的 port ，以及其他許多的 metadata 和發生的 events log。</p>
+<h3 id="Port-forward"><a href="#Port-forward" class="headerlink" title="Port forward"></a>Port forward</h3><p>設定一個或多個 local port 轉送到 pod 裡的 port。</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">$ kubectl port-forward monolith 10080:80</div><div class="line">Forwarding from 127.0.0.1:10080 -&gt; 80</div><div class="line">Forwarding from [::1]:10080 -&gt; 80</div></pre></td></tr></table></figure>
+<p>這道指令會處於 listen 狀態，開啟另一個 terminal 測試 monolith 連線。</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">$ curl http://127.0.0.1:10080</div><div class="line">&#123;<span class="string">"message"</span>:<span class="string">"Hello"</span>&#125;</div><div class="line">$ curl http://127.0.0.1:10080/secure</div><div class="line">authorization failed</div></pre></td></tr></table></figure>
+<p>測試 login。</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">$ curl -u user http://127.0.0.1:10080/login</div><div class="line">Enter host password <span class="keyword">for</span> user <span class="string">'user'</span>: password</div><div class="line">&#123;<span class="string">"token"</span>:<span class="string">"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InVzZXJAZXhhbXBsZS5jb20iLCJleHAiOjE0NzcxNTA3ODQsImlhdCI6MTQ3Njg5MTU4NCwiaXNzIjoiYXV0aC5zZXJ2aWNlIiwic3ViIjoidXNlciJ9.Rgm5BBG8VSiLH-u26Am1QAaXtz05nzvfWWZhHjOcaus"</span>&#125;</div><div class="line">$ curl -H <span class="string">"Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InVzZXJAZXhhbXBsZS5jb20iLCJleHAiOjE0NzcxNTA3ODQsImlhdCI6MTQ3Njg5MTU4NCwiaXNzIjoiYXV0aC5zZXJ2aWNlIiwic3ViIjoidXNlciJ9.Rgm5BBG8VSiLH-u26Am1QAaXtz05nzvfWWZhHjOcaus"</span> http://127.0.0.1:10080/secure</div><div class="line">&#123;<span class="string">"message"</span>:<span class="string">"Hello"</span>&#125;</div></pre></td></tr></table></figure>
+<h3 id="View-logs"><a href="#View-logs" class="headerlink" title="View logs"></a>View logs</h3><p>列出 pod 裡的 container log。</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">$ kubectl logs monolith</div><div class="line">2016/10/19 15:04:10 Starting server...</div><div class="line">2016/10/19 15:04:10 Health service listening on 0.0.0.0:81</div><div class="line">2016/10/19 15:04:10 HTTP service listening on 0.0.0.0:80</div><div class="line">127.0.0.1:59954 - - [Wed, 19 Oct 2016 15:22:34 UTC] <span class="string">"GET / HTTP/1.1"</span> curl/7.47.0</div><div class="line">127.0.0.1:59986 - - [Wed, 19 Oct 2016 15:22:48 UTC] <span class="string">"GET /secure HTTP/1.1"</span> curl/7.47.0</div><div class="line">127.0.0.1:33138 - - [Wed, 19 Oct 2016 15:38:29 UTC] <span class="string">"GET /login HTTP/1.1"</span> curl/7.47.0</div><div class="line">127.0.0.1:33226 - - [Wed, 19 Oct 2016 15:39:26 UTC] <span class="string">"GET /login HTTP/1.1"</span> curl/7.47.0</div><div class="line">127.0.0.1:33252 - - [Wed, 19 Oct 2016 15:39:43 UTC] <span class="string">"GET /login HTTP/1.1"</span> curl/7.47.0</div><div class="line">127.0.0.1:33430 - - [Wed, 19 Oct 2016 15:41:41 UTC] <span class="string">"GET /secure HTTP/1.1"</span> curl/7.47.0</div><div class="line">127.0.0.1:33492 - - [Wed, 19 Oct 2016 15:42:20 UTC] <span class="string">"GET /secure HTTP/1.1"</span> curl/7.47.0</div></pre></td></tr></table></figure>
+<p>加 <code>-f</code> 進入 stream 模式，監控即時 log 。</p>
+<h3 id="Enter-container"><a href="#Enter-container" class="headerlink" title="Enter container"></a>Enter container</h3><p>需要像 <code>docker exec</code> 進入 container 執行指令的話，透過底下指令。</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">$ kubectl <span class="built_in">exec</span> monolith --stdin --tty -c monolith /bin/sh</div><div class="line">/ <span class="comment">#</span></div></pre></td></tr></table></figure>
+<h2 id="Monitor-and-Health-Checks"><a href="#Monitor-and-Health-Checks" class="headerlink" title="Monitor and Health Checks"></a>Monitor and Health Checks</h2><p>Kubernetes 提供了 Health Checks 機制，讓使用者自訂檢查 applications 健康狀態和 readiness check。Readiness check 用來確認 pod 是否已經準備好可以提供服務，當 check failed 時，container 會被標記成 not ready 並從 load balancer 中移除。 Liveness probe 檢查 container 是否活著，如果檢查多次失敗， container 將會重啟。</p>
+<h3 id="問題練習"><a href="#問題練習" class="headerlink" title="問題練習"></a>問題練習</h3><figure class="highlight sh"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div></pre></td><td class="code"><pre><div class="line">$ cat pods/monolith.yaml</div><div class="line">...</div><div class="line">  livenessProbe:</div><div class="line">    httpGet:</div><div class="line">      path: /healthz</div><div class="line">      port: 81</div><div class="line">      scheme: HTTP</div><div class="line">    initialDelaySeconds: 5</div><div class="line">    periodSeconds: 15</div><div class="line">    timeoutSeconds: 5</div><div class="line">  readinessProbe:</div><div class="line">    httpGet:</div><div class="line">      path: /readiness</div><div class="line">      port: 81</div><div class="line">      scheme: HTTP</div><div class="line">    initialDelaySeconds: 5</div><div class="line">    timeoutSeconds: 1</div><div class="line"></div><div class="line"></div><div class="line">$ kubectl create <span class="_">-f</span> pods/monolith.yaml</div><div class="line">pod <span class="string">"healthy-monolith"</span> created</div><div class="line"></div><div class="line">$ kubectl describe pods healthy-monolith</div><div class="line">...</div><div class="line">  State:		Running</div><div class="line">    Started:		Fri, 21 Oct 2016 22:37:12 +0800</div><div class="line">  Ready:		True</div><div class="line">  Restart Count:	0</div><div class="line">  Liveness:		http-get http://:81/healthz delay=5s timeout=5s period=15s <span class="comment">#success=1 #failure=3</span></div><div class="line">  Readiness:		http-get http://:81/readiness delay=5s timeout=1s period=10s <span class="comment">#success=1 #failure=3</span></div><div class="line">...</div></pre></td></tr></table></figure>
+<p>使用 healthy-monolith pod，回答下面三個問題。</p>
+<ul>
+<li><p>How is the readiness probe performed?</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">readinessProbe:</div><div class="line">  httpGet:</div><div class="line">    path: /readiness</div><div class="line">    port: 81</div><div class="line">    scheme: HTTP</div><div class="line">  initialDelaySeconds: 5</div><div class="line">  timeoutSeconds: 1</div></pre></td></tr></table></figure>
+</li>
+<li><p>How often is the readiness checked?<br><code>period=10s</code></p>
+</li>
+<li>How often is the liveness probe checked?<br><code>period=15s</code></li>
+</ul>
+<h2 id="Secret-and-ConfigMap"><a href="#Secret-and-ConfigMap" class="headerlink" title="Secret and ConfigMap"></a>Secret and ConfigMap</h2><p>ConfigMap 和 Secret 相似，但是 ConfigMap 用來存放較不敏感的資料，而像密碼或金鑰之類的需要安全性的資料則使用 Secret。 Secret 會在 pod 建立時， mount 到 container 裡當作 volume，讓 container 擁有和使用。</p>
+<p><a href="http://kubernetes.io/docs/user-guide/configmap/" target="_blank" rel="external">ConfigMap</a><br><a href="http://kubernetes.io/docs/user-guide/secrets/" target="_blank" rel="external">Secrets</a></p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="comment"># Create secret</span></div><div class="line">$ kubectl create secret generic tls-certs --from-file=tls/</div><div class="line"><span class="comment"># Use secure-monolith pod</span></div><div class="line">$ kubectl create <span class="_">-f</span> pods/secure-monolith.yaml</div></pre></td></tr></table></figure>
+<p>以下使用 nginx reverse proxy 為例子，將 https(443 port) 連線轉送到 http(80 port)。</p>
+<h3 id="Create-secret"><a href="#Create-secret" class="headerlink" title="Create secret"></a>Create secret</h3><p>https 連線需要 Certificate ，使用 secret 將 Certificate 封裝起來。</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ kubectl create secret generic tls-certs --from-file=tls/</div></pre></td></tr></table></figure>
+<h3 id="Describe-secret"><a href="#Describe-secret" class="headerlink" title="Describe secret"></a>Describe secret</h3><p>kubectl will create a key for each file in the tls directory under the tls-certs secret bucket. Use the <code>kubectl describe</code> command to verify that:</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ kubectl describe secrets tls-certs</div></pre></td></tr></table></figure>
+<h3 id="Create-ConfigMap"><a href="#Create-ConfigMap" class="headerlink" title="Create ConfigMap"></a>Create ConfigMap</h3><p>將 nginx reverse proxy 的設定透過 ConfigMap 封裝起來。</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ kubectl create configmap nginx-proxy-conf --from-file=nginx/proxy.conf</div></pre></td></tr></table></figure>
+<h3 id="Describe-ConfigMap"><a href="#Describe-ConfigMap" class="headerlink" title="Describe ConfigMap"></a>Describe ConfigMap</h3><p>透過 <code>kubectl describe configmap</code> 獲得詳細的資訊。</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ kubectl describe configmap nginx-proxy-conf</div></pre></td></tr></table></figure>
+<h3 id="操作練習"><a href="#操作練習" class="headerlink" title="操作練習"></a>操作練習</h3><p>使用 secure-monolith pod 作為這次練習。</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div></pre></td><td class="code"><pre><div class="line">$ cat pods/secure-monolith.yaml</div><div class="line"></div><div class="line">apiVersion: v1</div><div class="line">kind: Pod</div><div class="line">metadata:</div><div class="line">  name: <span class="string">"secure-monolith"</span></div><div class="line">  labels:</div><div class="line">    app: monolith</div><div class="line">spec:</div><div class="line">  containers:</div><div class="line">    - name: nginx</div><div class="line">      image: <span class="string">"nginx:1.9.14"</span></div><div class="line">      lifecycle:</div><div class="line">        preStop:</div><div class="line">          <span class="built_in">exec</span>:</div><div class="line">            <span class="built_in">command</span>: [<span class="string">"/usr/sbin/nginx"</span>,<span class="string">"-s"</span>,<span class="string">"quit"</span>]</div><div class="line">      volumeMounts:</div><div class="line">        - name: <span class="string">"nginx-proxy-conf"</span></div><div class="line">          mountPath: <span class="string">"/etc/nginx/conf.d"</span></div><div class="line">        - name: <span class="string">"tls-certs"</span></div><div class="line">          mountPath: <span class="string">"/etc/tls"</span></div><div class="line">    - name: monolith</div><div class="line">      image: <span class="string">"udacity/example-monolith:1.0.0"</span></div><div class="line">      ports:</div><div class="line">        - name: http</div><div class="line">          containerPort: 80</div><div class="line">        - name: health</div><div class="line">          containerPort: 81</div><div class="line">      resources:</div><div class="line">        limits:</div><div class="line">          cpu: 0.2</div><div class="line">          memory: <span class="string">"10Mi"</span></div><div class="line">      livenessProbe:</div><div class="line">        httpGet:</div><div class="line">          path: /healthz</div><div class="line">          port: 81</div><div class="line">          scheme: HTTP</div><div class="line">        initialDelaySeconds: 5</div><div class="line">        periodSeconds: 15</div><div class="line">        timeoutSeconds: 5</div><div class="line">      readinessProbe:</div><div class="line">        httpGet:</div><div class="line">          path: /readiness</div><div class="line">          port: 81</div><div class="line">          scheme: HTTP</div><div class="line">        initialDelaySeconds: 5</div><div class="line">        timeoutSeconds: 1</div><div class="line">  volumes:</div><div class="line">    - name: <span class="string">"tls-certs"</span></div><div class="line">      secret:</div><div class="line">        secretName: <span class="string">"tls-certs"</span></div><div class="line">    - name: <span class="string">"nginx-proxy-conf"</span></div><div class="line">      configMap:</div><div class="line">        name: <span class="string">"nginx-proxy-conf"</span></div><div class="line">        items:</div><div class="line">          - key: <span class="string">"proxy.conf"</span></div><div class="line">            path: <span class="string">"proxy.conf"</span></div></pre></td></tr></table></figure>
+<p>在 secure-monolith pod 設定裡，可以看到使用兩個 container ，分別為 nginx 和 monolith ， nginx 會作為 reverse proxy 將連線導入 monolith 。</p>
+<p>在 nginx 設定裡，有設定 <code>lifecycle</code> 當 nginx container 要關閉時，先執行所設定的 command ，清理剩餘的工作。在 <code>volumeMounts</code> 裡，設定先前建立的 secret 和 ConfigMap ，將之 mount。</p>
+<h3 id="Create-secure-monolith-pod"><a href="#Create-secure-monolith-pod" class="headerlink" title="Create secure-monolith pod"></a>Create secure-monolith pod</h3><figure class="highlight sh"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">Create the secure-monolith Pod using kubectl.</div><div class="line"></div><div class="line">kubectl create <span class="_">-f</span> pods/secure-monolith.yaml</div><div class="line">kubectl get pods secure-monolith</div></pre></td></tr></table></figure>
+<h3 id="Check-connection"><a href="#Check-connection" class="headerlink" title="Check connection"></a>Check connection</h3><p>使用先前學過的 port-forward 指令，將 local 10443 port 開通到 nginx 443 port ，測試 TLS 連線能不能相通。</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">kubectl port-forward secure-monolith 10443:443</div><div class="line"></div><div class="line">curl --cacert tls/ca.pem https://127.0.0.1:10443</div><div class="line"></div><div class="line">kubectl logs -c nginx secure-monolith</div></pre></td></tr></table></figure>
+<h2 id="Services"><a href="#Services" class="headerlink" title="Services"></a>Services</h2><p>不管是使用 pod 還是 docker container ，都會遇到一個問題是，container 會因各種原因需要進行重啟，而重啟時 IP 會重新指派，因此無法仰賴固定的 IP 。因此 Kubernetes 引入 Services 當作 pod 的 abstraction ，由 Services 當作是 pods 前端，提供穩定的連接，因此後端的 pods 的更動，就不會影響整體。</p>
+<p>Persistent Endpoint for Pods<br></p>
+<ul>
+<li>Use labels to select pods</li>
+<li>Internal or External IP</li>
+</ul>
+<h3 id="Create-Services"><a href="#Create-Services" class="headerlink" title="Create Services"></a>Create Services</h3><figure class="highlight sh"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line">$ cat services/monolith.yaml</div><div class="line">kind: Service</div><div class="line">apiVersion: v1</div><div class="line">metadata:</div><div class="line">  name: <span class="string">"monolith"</span></div><div class="line">spec:</div><div class="line">  selector:</div><div class="line">    app: <span class="string">"monolith"</span></div><div class="line">    secure: <span class="string">"enabled"</span></div><div class="line">  ports:</div><div class="line">    - protocol: <span class="string">"TCP"</span></div><div class="line">      port: 443</div><div class="line">      targetPort: 443</div><div class="line">      nodePort: 31000</div><div class="line">  <span class="built_in">type</span>: NodePort</div></pre></td></tr></table></figure>
+<p>Services 設定裡透過 <code>selector</code> 將有符合 label 的 pods 選出來聚在一起。並把所有 pods 443 port 暴露出來，讓 local 31000 port 轉到 pods 443 port。</p>
+<p>接著建立 services 。<br><br><figure class="highlight sh"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ kubectl create <span class="_">-f</span> services/monolith.yaml</div></pre></td></tr></table></figure></p>
+<p>這時 services 沒有選擇到任何東西 ，因為沒有一個 pod 的 label 符合，可以透過以下指令檢查。<br><br><figure class="highlight sh"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ kubectl get pods <span class="_">-l</span> <span class="string">"app=monolith,secure=enabled"</span></div></pre></td></tr></table></figure></p>
+<p>將 secure-monolith pod 加入 label。 <br><br><figure class="highlight sh"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">$ kubectl label pods secure-monolith <span class="string">"secure=enabled"</span></div><div class="line">$ kubectl get pods <span class="_">-l</span> <span class="string">"app=monolith,secure=enabled"</span></div><div class="line">NAME              READY     STATUS    RESTARTS   AGE</div><div class="line">secure-monolith   2/2       Running   0          5h</div></pre></td></tr></table></figure></p>
+<p>此時 services 就可以接管 secure-monolith pod 。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://raix852.github.io/2016/10/22/Microservices/" data-id="ciuky5jc5000hdcpeugxh5u26" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Kubernetes/">Kubernetes</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Udacity/">Udacity</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/docker/">docker</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/學習筆記/">學習筆記</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-Microservices" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2016/10/12/Microservices/" class="article-date">
+  <time datetime="2016-10-12T15:00:00.000Z" itemprop="datePublished">2016-10-12</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2016/10/12/Microservices/">Scalable Microservices with Kubernetes - Lesson 2</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>第二節課在教 docker 觀念以及如何使用，內容對初心者而言非常簡易上手，對我來說也可當作複習的機會。</p>
+<h2 id="Why-docker"><a href="#Why-docker" class="headerlink" title="Why docker?"></a>Why docker?</h2><p>docker 所使用的 image 不只包含程式本身，所需要的 dependencies 和執行時所需的設定檔也都包含在內。docker 本身也提供良好的 API</p>
+<ul>
+<li><strong>create</strong></li>
+<li><strong>distribute</strong></li>
+<li><strong>run</strong></li>
+</ul>
+<p>container 在 server 上。目前支援的 OS 平台有 linux 和 windows。</p>
+<p>docker 可以幫助系統管理者作到</p>
+<ul>
+<li><strong>Reproducable</strong></li>
+<li><strong>Consistant</strong></li>
+</ul>
+<p>docker 可以提供類似 virtual machine 的功能，將執行程式從同一台機器上隔離出來，因此可不用擔心各種 dependencies 問題。</p>
+<h2 id="docker-擅長什麼？"><a href="#docker-擅長什麼？" class="headerlink" title="docker 擅長什麼？"></a>docker 擅長什麼？</h2><p>常見的 linux 發布版(Ex. Ubuntu, Redhat) ，擅長於</p>
+<ul>
+<li><strong>Installing Services</strong></li>
+<li><strong>Start and Stop Services</strong></li>
+</ul>
+<p>docker 在這之上，提供了</p>
+<ul>
+<li><strong>Installing Services</strong></li>
+<li><strong>Start and Stop Services</strong></li>
+<li><strong>Running multiple versions</strong></li>
+<li><strong>Running multiple instances</strong></li>
+</ul>
+<p>舉例，要使用 nginx 套件， linux 的套件管理程式可以方便下載，並透過 systemd 或舊的 init.d 將 nginx 啟動。但假設需要在同一台機器上啟動多個 nginx 服務或使用不同的版本，此時就會遇到瓶頸，因為同一時間只能跑一個。而 docker 則可以提供運行多個 instances 和多個版本的能力。</p>
+<h2 id="Containers"><a href="#Containers" class="headerlink" title="Containers"></a>Containers</h2><p>可以讓 applications 方便運行和發布到不同平台上的技術。</p>
+<ul>
+<li><strong>Independent packages</strong> - 將所需要的 dependencies 打包起來，發布到各種平台上。</li>
+<li><strong>Namespace isolation</strong> - 提供 filesystem 的 Iiolation 和 network isolatation，讓檔案名稱或 ip/port 不會衝突。</li>
+</ul>
+<p>與一般的 virtual machine 透過模擬整個 OS 層不同， container 是經由 linux kernel 由邏輯上分割出來，透過 Namespace 隔離和 cgroup 控制 resources 達成，因此可視為輕量級的 VM ，啟動和關閉都非常快速。</p>
+<h2 id="Dockerfile"><a href="#Dockerfile" class="headerlink" title="Dockerfile"></a>Dockerfile</h2><p>docker 用來建立 image 的檔案，裡面描述指令讓 docker 依指示要從哪個 base image 開始，逐漸將所需要的 dependencies 打包起來，最後完成一個包含所有套件和設定的 application image 來使用。</p>
+<p>以下是之前做過得小型 java 7 image，使用 centos 7.2 作為程式運行的環境。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line">FROM centos:7.2.1511</div><div class="line">MAINTAINER raix</div><div class="line"></div><div class="line">USER root</div><div class="line">RUN yum install -y wget \</div><div class="line">                git \</div><div class="line">                curl \</div><div class="line">                zip \</div><div class="line">                openssh-clients \</div><div class="line">                java-1.7.0-openjdk \</div><div class="line">                java-1.7.0-openjdk-devel \</div><div class="line">                java-1.7.0-openjdk-headless</div><div class="line"></div><div class="line">ENV LANG C.UTF-8</div></pre></td></tr></table></figure></p>
+<h2 id="Docker-Hub"><a href="#Docker-Hub" class="headerlink" title="Docker Hub"></a>Docker Hub</h2><p>做出來的 image 可以發布到 docker hub 上，公開讓所有人使用，直接從 docker hub 上下載完整的 image 下來，而不用從頭建置起來，方便用來做大量佈署的動作。除了 docker hub 這個公開存放 image 的地方，也有其他公開的服務可以使用，像是 gcr (Google Container Registry) ，或是建立私有 hub ，供企業內部使用。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://raix852.github.io/2016/10/12/Microservices/" data-id="ciuky5jc3000fdcpetcvknw6e" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Kubernetes/">Kubernetes</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Udacity/">Udacity</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/docker/">docker</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/學習筆記/">學習筆記</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-Microservices" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
     <a href="/2016/10/11/Microservices/" class="article-date">
   <time datetime="2016-10-11T15:00:00.000Z" itemprop="datePublished">2016-10-11</time>
 </a>
@@ -139,10 +348,10 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://raix852.github.io/2016/10/11/Microservices/" data-id="ciu72t7zg000qqfpeqga6nq48" class="article-share-link">Share</a>
+      <a data-url="http://raix852.github.io/2016/10/11/Microservices/" data-id="ciuky5jc1000ddcpeu9b2uycp" class="article-share-link">Share</a>
       
       
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Udacity/">Udacity</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/學習筆記/">學習筆記</a></li></ul>
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Kubernetes/">Kubernetes</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Udacity/">Udacity</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/docker/">docker</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/學習筆記/">學習筆記</a></li></ul>
 
     </footer>
   </div>
@@ -183,7 +392,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://raix852.github.io/2016/09/13/read-report/" data-id="ciu72t7zc000oqfpep6yei5hf" class="article-share-link">Share</a>
+      <a data-url="http://raix852.github.io/2016/09/13/read-report/" data-id="ciuky5jbr000bdcpejvvxjox4" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/讀書心得/">讀書心得</a></li></ul>
@@ -261,7 +470,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://raix852.github.io/2016/08/21/tensorflow-gpu-installation/" data-id="ciu72t7z8000nqfpe4wyzaxrl" class="article-share-link">Share</a>
+      <a data-url="http://raix852.github.io/2016/08/21/tensorflow-gpu-installation/" data-id="ciuky5jdc0024dcpe21yqzpiy" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/tensorflow/">tensorflow</a></li></ul>
@@ -310,7 +519,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://raix852.github.io/2016/08/14/PixHack2016/" data-id="ciu72t7z6000mqfpe9knoe3ek" class="article-share-link">Share</a>
+      <a data-url="http://raix852.github.io/2016/08/14/PixHack2016/" data-id="ciuky5jc7000jdcpexjnbf0tu" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Deep-Learning/">Deep Learning</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Machine-Learning/">Machine Learning</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/NLP/">NLP</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/tensorflow/">tensorflow</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/日記/">日記</a></li></ul>
@@ -356,7 +565,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://raix852.github.io/2016/07/29/PixHack2016/" data-id="ciu72t7z0000kqfpe5vk6zfkl" class="article-share-link">Share</a>
+      <a data-url="http://raix852.github.io/2016/07/29/PixHack2016/" data-id="ciuky5jbh0006dcpe2f0iy31w" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Deep-Learning/">Deep Learning</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Machine-Learning/">Machine Learning</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/NLP/">NLP</a></li></ul>
@@ -408,7 +617,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://raix852.github.io/2016/07/01/data-at-rest/" data-id="ciu72t7yx000jqfpe2iolgcrs" class="article-share-link">Share</a>
+      <a data-url="http://raix852.github.io/2016/07/01/data-at-rest/" data-id="ciuky5jbb0003dcpeqf0gvzdy" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Encryption/">Encryption</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Filesystem/">Filesystem</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Linux/">Linux</a></li></ul>
@@ -519,7 +728,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://raix852.github.io/2016/06/20/use-openssl-generate-certificate/" data-id="ciu72t7yn000fqfpeqh5ctm8z" class="article-share-link">Share</a>
+      <a data-url="http://raix852.github.io/2016/06/20/use-openssl-generate-certificate/" data-id="ciuky5jbk0007dcpercvoj0oq" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Linux/">Linux</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/TLS/">TLS</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/openssl/">openssl</a></li></ul>
@@ -570,149 +779,10 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://raix852.github.io/2016/06/04/Python-decorator-property/" data-id="ciu72t7yt000hqfpeuw2wpu5h" class="article-share-link">Share</a>
+      <a data-url="http://raix852.github.io/2016/06/04/Python-decorator-property/" data-id="ciuky5jb30001dcpewj3dtq57" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/python/">python</a></li></ul>
-
-    </footer>
-  </div>
-  
-</article>
-
-
-  
-    <article id="post-diary" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2016/05/31/diary/" class="article-date">
-  <time datetime="2016-05-31T15:10:37.000Z" itemprop="datePublished">2016-05-31</time>
-</a>
-    
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2016/05/31/diary/">5/31 日記</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>今天終於將 blog 上面的圖換掉，換成東方project中的三位魔女，左至右分別為魔理沙，帕秋莉和愛莉絲，Pixiv ID:<a href="http://www.pixiv.net/member_illust.php?mode=medium&amp;illust_id=51596801" target="_blank" rel="external">51596801</a> 。</p>
-<p>在一開始隨便將圖放上，效果其實是非常差的。因為上面呈現的範圍只有一小區塊，而且預設是置中呈現，會對原圖人物的頭部部份給切掉，而且色彩偏向明亮，對文字會干擾模糊。因此就要根據這張圖來調整網頁呈現。</p>
-<p>在準備開始調整時，其實我內心一點頭緒也沒有，對前端網頁呈現一丁點也不懂，這時候就只能先把 firefox 的網頁開發者工具開啟，觀察頁面元素，找出上頭呈現範圍所對應的 html 元素。如下圖：<br><img src="http://i.imgur.com/bOI6BGI.png" alt="Inspector"></p>
-<p>然後看到右邊分隔頁的 rule ，看起來是 css 設定，於是去找其他網頁來比對設定。接著就是開始 google 大法，找這些關鍵字要怎麼設定，再利用 firefox 提供的開發工具可以隨手改動數據，立刻顯出效果。經過幾番嘗試後，開始知道要怎麼調整了，後面就開始邊調邊想像我想要做成的畫面。結果就做出感覺還不錯的成果，這也歸功於於設計者先天設計良好，隨便調都好看。</p>
-<p>到這邊為止算是稍微撇到前端千變萬化的一小小部份，不過能改變別人寫好的程式，內心會開始沾沾自喜起來。接下來想要在右邊欄位放上個人簡介，將會是另一番工程要奮鬥。</p>
-
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="http://raix852.github.io/2016/05/31/diary/" data-id="ciu72t7y60003qfpe5x9mysz1" class="article-share-link">Share</a>
-      
-      
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/hexo/">hexo</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/日記/">日記</a></li></ul>
-
-    </footer>
-  </div>
-  
-</article>
-
-
-  
-    <article id="post-hexo" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2016/05/24/hexo/" class="article-date">
-  <time datetime="2016-05-24T13:47:01.000Z" itemprop="datePublished">2016-05-24</time>
-</a>
-    
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2016/05/24/hexo/">Hexo 安裝和佈署到 Github</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>Octopress 剛架設好後立刻使用 markdown 寫了一篇文章，滿心期待看到轉出來的成果，結果就是一連串格式不合無法轉出的錯誤發生。我現在使用的編輯是 Atom ，預覽呈現出來的排版都很美好，然而一旦要被 Octopress 轉出時，就會出現問題。無奈之下開始上 Github 查詢 issues ，這才發現 Octopress 目前開發進度有點處於停滯的情況，所以乾脆開始尋找另一套解決方案。就是本篇的 <a href="https://hexo.io/zh-tw/" target="_blank" rel="external">Hexo</a>。</p>
-<p>將為數不多的文章改用 Hexo 產生後，呈現上果然有比較好些。雖然還需要經過一些微調，但對於純粹使用上來說，是已經足以。以下紀錄我的安裝過程。</p>
-<h2 id="安裝"><a href="#安裝" class="headerlink" title="安裝"></a>安裝</h2><p>參照 <a href="https://hexo.io/zh-tw/docs/" target="_blank" rel="external">官網的文件</a> 上提供了詳細的步驟，而且動作也比起 Octopress 來說簡單。基本需求只有：</p>
-<ul>
-<li>Node.js</li>
-<li>Git</li>
-</ul>
-<p>Git 不用說，對程式開發者而言都是必裝的套件。而 Node.js 在目前使用的 Ubuntu 16.04 環境上沒有安裝，因此直覺得下 <code>apt-get install nodejs</code> 安裝。豈知之後要安裝 Hexo 就開始遇到麻煩。最後是照著官網建議的安裝 Node.js 方式才成功安裝。因此這邊就不誤人子弟，直接使用官網的方式安裝吧。</p>
-<h3 id="安裝-Node-js"><a href="#安裝-Node-js" class="headerlink" title="安裝 Node.js"></a>安裝 Node.js</h3><p>我這邊使用 wget 方式：</p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ wget -qO- https://raw.github.com/creationix/nvm/master/install.sh | sh</div></pre></td></tr></table></figure>
-<p>安裝完成後要重開終端機。接著在下：</p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ nvm install 4</div></pre></td></tr></table></figure>
-<p>以上指令查一下是安裝版號 4.x ，裝好之號看 Node.js 版號是 v4.4.4 。</p>
-<h3 id="安裝-Hexo"><a href="#安裝-Hexo" class="headerlink" title="安裝 Hexo"></a>安裝 Hexo</h3><p>安裝 Hexo 指令只須一行。</p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ npm install -g hexo-cli</div></pre></td></tr></table></figure>
-<p>之後就可以開始使用囉。</p>
-<h2 id="建立"><a href="#建立" class="headerlink" title="建立"></a>建立</h2><h3 id="建立網站範本"><a href="#建立網站範本" class="headerlink" title="建立網站範本"></a>建立網站範本</h3><p>Hexo 是透過指令來產生網站的範本，相比 Octopress 是先去 git clone 自己的 repo 下來做修改，簡潔不少。使用以下指令來建立範本：</p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">$ hexo init &lt;folder&gt;</div><div class="line">$ <span class="built_in">cd</span> &lt;folder&gt;</div><div class="line">$ npm install</div></pre></td></tr></table></figure>
-<p>建完之後會看到設定的資料夾下多了一些目錄和檔案。其中 _config.yml 是用來設定 Hexo 的配置，其他的目錄和檔案就請參考官網說明。</p>
-<h3 id="建立新文章"><a href="#建立新文章" class="headerlink" title="建立新文章"></a>建立新文章</h3><p>透過 Hexo 提供的指令一樣可以方便的建立出新文章樣本出來。</p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ hexo new [layout] &lt;title&gt;</div></pre></td></tr></table></figure>
-<p>其中 [layout] 提供了三種布局。</p>
-<table>
-<thead>
-<tr>
-<th>佈局</th>
-<th>路徑</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>post</td>
-<td>source/_posts/</td>
-</tr>
-<tr>
-<td>page</td>
-<td>source/</td>
-</tr>
-<tr>
-<td>draft</td>
-<td>source/_drafts/</td>
-</tr>
-</tbody>
-</table>
-<p>post 是一般要建立新文章使用的指令。<br><br>page 可以在網站中產生新的頁面出來，存放其他種類文章。像是拿來開一個頁面做 “About” 介紹。<br><br>draft 可以用來當作草稿使用，佈署的時候會忽略這裡面的內容。需要另外下指令 <code>hexo publish</code> 來發表。此外預覽時可以加參數來呈現。</p>
-<h2 id="佈署"><a href="#佈署" class="headerlink" title="佈署"></a>佈署</h2><h3 id="產生網頁"><a href="#產生網頁" class="headerlink" title="產生網頁"></a>產生網頁</h3><p>內容準備完成後，接下來就下指令來產生網頁。</p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ hexo generate</div></pre></td></tr></table></figure>
-<p>以上指令會依據使用者提供的內容和設定，產生想要的網站內容。</p>
-<h3 id="佈署到-Github-上"><a href="#佈署到-Github-上" class="headerlink" title="佈署到 Github 上"></a>佈署到 Github 上</h3><p>在佈署之前，需要先在 _config.yml 裡設定要採取 git 模式佈署。設定如下：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">deploy:</div><div class="line">  type: git</div><div class="line">  repo: &lt;repository url&gt;</div><div class="line">  branch: [branch]</div><div class="line">  message: [message]</div></pre></td></tr></table></figure>
-<p>repo 欄位上就填寫 Github repo 的 url 。<br><br>另外還須額外安裝 <a href="https://github.com/hexojs/hexo-deployer-git" target="_blank" rel="external">hexo-deployer-git</a>。</p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ npm install hexo-deployer-git --save</div></pre></td></tr></table></figure>
-<p>接下來就可以透過 Hexo 一行指令完成佈署囉。</p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ hexo deploy</div></pre></td></tr></table></figure>
-<p>另外如果想再產生網頁時同時佈署上去， Hexo 也有提供指令參數使用，不過我想還是先預覽看過再佈署上去比較明智。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">$ hexo generate --deploy</div><div class="line">$ hexo deploy --generate</div></pre></td></tr></table></figure>
-<h2 id="完成"><a href="#完成" class="headerlink" title="完成"></a>完成</h2><p>至此，我的網站就更新完成啦。真的和 Octopress 比起簡單快速不少。</p>
-<p>不過 Octopress 的管理模式還是值得學習一下， Hexo 預設只會把產生的網站 commit 到指定的 branch 上，但是本身的內容並沒有提供方式來做版本控制。而這部份 Octopress 就會切出 master 和 source 兩個 branch 出來， master 用來放置管理網站內容，而 source 用來對自身做版本管理。接下來目標是參照這種模式把</p>
-
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="http://raix852.github.io/2016/05/24/hexo/" data-id="ciu72t7xz0001qfpecb3vtfnj" class="article-share-link">Share</a>
-      
-      
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Github/">Github</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/hexo/">hexo</a></li></ul>
 
     </footer>
   </div>
@@ -737,7 +807,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">Tags</h3>
     <div class="widget">
-      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Deep-Learning/">Deep Learning</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Encryption/">Encryption</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Filesystem/">Filesystem</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Github/">Github</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Linux/">Linux</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Machine-Learning/">Machine Learning</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/NLP/">NLP</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Octopress/">Octopress</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/TLS/">TLS</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Udacity/">Udacity</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hexo/">hexo</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/openssl/">openssl</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/python/">python</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/tensorflow/">tensorflow</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/學習筆記/">學習筆記</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/日記/">日記</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/讀書心得/">讀書心得</a></li></ul>
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Deep-Learning/">Deep Learning</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Encryption/">Encryption</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Filesystem/">Filesystem</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Github/">Github</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Kubernetes/">Kubernetes</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Linux/">Linux</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Machine-Learning/">Machine Learning</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/NLP/">NLP</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/TLS/">TLS</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Udacity/">Udacity</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/docker/">docker</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hexo/">hexo</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/openssl/">openssl</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/python/">python</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/tensorflow/">tensorflow</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/學習筆記/">學習筆記</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/日記/">日記</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/讀書心得/">讀書心得</a></li></ul>
     </div>
   </div>
 
@@ -747,7 +817,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">Tag Cloud</h3>
     <div class="widget tagcloud">
-      <a href="/tags/Deep-Learning/" style="font-size: 20px;">Deep Learning</a> <a href="/tags/Encryption/" style="font-size: 10px;">Encryption</a> <a href="/tags/Filesystem/" style="font-size: 10px;">Filesystem</a> <a href="/tags/Github/" style="font-size: 20px;">Github</a> <a href="/tags/Linux/" style="font-size: 20px;">Linux</a> <a href="/tags/Machine-Learning/" style="font-size: 20px;">Machine Learning</a> <a href="/tags/NLP/" style="font-size: 20px;">NLP</a> <a href="/tags/Octopress/" style="font-size: 10px;">Octopress</a> <a href="/tags/TLS/" style="font-size: 10px;">TLS</a> <a href="/tags/Udacity/" style="font-size: 10px;">Udacity</a> <a href="/tags/hexo/" style="font-size: 20px;">hexo</a> <a href="/tags/openssl/" style="font-size: 10px;">openssl</a> <a href="/tags/python/" style="font-size: 10px;">python</a> <a href="/tags/tensorflow/" style="font-size: 20px;">tensorflow</a> <a href="/tags/學習筆記/" style="font-size: 10px;">學習筆記</a> <a href="/tags/日記/" style="font-size: 20px;">日記</a> <a href="/tags/讀書心得/" style="font-size: 10px;">讀書心得</a>
+      <a href="/tags/Deep-Learning/" style="font-size: 15px;">Deep Learning</a> <a href="/tags/Encryption/" style="font-size: 10px;">Encryption</a> <a href="/tags/Filesystem/" style="font-size: 10px;">Filesystem</a> <a href="/tags/Github/" style="font-size: 15px;">Github</a> <a href="/tags/Kubernetes/" style="font-size: 20px;">Kubernetes</a> <a href="/tags/Linux/" style="font-size: 15px;">Linux</a> <a href="/tags/Machine-Learning/" style="font-size: 15px;">Machine Learning</a> <a href="/tags/NLP/" style="font-size: 15px;">NLP</a> <a href="/tags/TLS/" style="font-size: 10px;">TLS</a> <a href="/tags/Udacity/" style="font-size: 20px;">Udacity</a> <a href="/tags/docker/" style="font-size: 20px;">docker</a> <a href="/tags/hexo/" style="font-size: 15px;">hexo</a> <a href="/tags/openssl/" style="font-size: 10px;">openssl</a> <a href="/tags/python/" style="font-size: 10px;">python</a> <a href="/tags/tensorflow/" style="font-size: 15px;">tensorflow</a> <a href="/tags/學習筆記/" style="font-size: 20px;">學習筆記</a> <a href="/tags/日記/" style="font-size: 15px;">日記</a> <a href="/tags/讀書心得/" style="font-size: 10px;">讀書心得</a>
     </div>
   </div>
 
@@ -769,6 +839,14 @@
       <ul>
         
           <li>
+            <a href="/2016/10/22/Microservices/">Scalable Microservices with Kubernetes - Lesson 3</a>
+          </li>
+        
+          <li>
+            <a href="/2016/10/12/Microservices/">Scalable Microservices with Kubernetes - Lesson 2</a>
+          </li>
+        
+          <li>
             <a href="/2016/10/11/Microservices/">Scalable Microservices with Kubernetes - Lesson 1</a>
           </li>
         
@@ -778,14 +856,6 @@
         
           <li>
             <a href="/2016/08/21/tensorflow-gpu-installation/">Tensorflow gtx 1060 installation</a>
-          </li>
-        
-          <li>
-            <a href="/2016/08/14/PixHack2016/">8/13 痞客邦克漏字比賽心得</a>
-          </li>
-        
-          <li>
-            <a href="/2016/07/29/PixHack2016/">7/29 痞客邦克漏字比賽紀錄</a>
           </li>
         
       </ul>
