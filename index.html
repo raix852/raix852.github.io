@@ -71,6 +71,252 @@
       <div class="outer">
         <section id="main">
   
+    <article id="post-ldap" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2016/11/01/ldap/" class="article-date">
+  <time datetime="2016-11-01T13:30:00.000Z" itemprop="datePublished">2016-11-01</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2016/11/01/ldap/">LDAP 介紹與架設</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="What-is-LDAP"><a href="#What-is-LDAP" class="headerlink" title="What is LDAP?"></a>What is LDAP?</h2><p>LDAP 全名為 Lightweight Directory Access Protocol (輕型目錄訪問協議)，目前應用在很多企業裡面，作為一個中央控管的帳號管理工具，可用來根據組織架構做權限的劃分。LDAP 可以透過網路連結多台電腦，或是串接各種有支援 LDAP 的 services，統一為帳號做驗證，因此能夠提供一致的帳號管理。</p>
+<h2 id="安裝"><a href="#安裝" class="headerlink" title="安裝"></a>安裝</h2><p>在 centos 7上安裝 ldap server / clients 套件。</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">yum install -y openldap openldap-servers openldap-clients openldap-devel</div></pre></td></tr></table></figure>
+<h2 id="設定-slapd"><a href="#設定-slapd" class="headerlink" title="設定 slapd"></a>設定 slapd</h2><p>slapd - Stand-alone LDAP Daemon，啟動後 listen LDAP connections ，處理和回應 LDAP 操作。</p>
+<ul>
+<li>OpenLDAP 在 2.3 之後不使用 <code>/etc/openldap/slapd.conf</code> ，但是有提供工具轉換成現在的格式，因此採取的作法是去找設定好的 slapd.conf 當做範例，之後再使用 openldap 提供的指令轉換過去。</li>
+<li><a href="http://www.openldap.org/doc/admin24/slapdconfig.html" target="_blank" rel="external">The slapd Configuration File</a></li>
+</ul>
+<p>以下做法是透過設定 slapd.conf 。</p>
+<h3 id="設定-slapd-conf"><a href="#設定-slapd-conf" class="headerlink" title="設定 slapd.conf"></a>設定 slapd.conf</h3><p>設定 <code>cn=admin,dc=example,dc=com</code> 為擁有最高權限的帳號。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div></pre></td><td class="code"><pre><div class="line">database config</div><div class="line">access to attrs=userPassword</div><div class="line">	by self write</div><div class="line">	by anonymous auth</div><div class="line">	by dn.base=&quot;cn=admin,dc=example,dc=com&quot; write</div><div class="line">	by * none</div><div class="line">access to *</div><div class="line">	by self write</div><div class="line">	by dn.base=&quot;cn=admin,dc=example,dc=com&quot; manage</div><div class="line">	by * read</div><div class="line"></div><div class="line">database	bdb</div><div class="line">  access to *</div><div class="line">      by self write</div><div class="line">      by dn.base=&quot;cn=admin,dc=example,dc=com&quot; manage</div><div class="line">      by * read</div><div class="line"></div><div class="line">suffix		&quot;dc=example,dc=com&quot;</div><div class="line">rootdn		&quot;cn=admin,dc=example,dc=com&quot;</div><div class="line">rootpw    secret</div></pre></td></tr></table></figure>
+<p>rootpw 這個欄位可以透過 <code>slappasswd -s secret</code> 產出 hash 值放進設定裡。<br>接著套用設定。</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">$ rm -rf /etc/openldap/slapd.d/*</div><div class="line">$ cp /usr/share/openldap-servers/DB_CONFIG.example /var/lib/ldap/DB_CONFIG</div><div class="line">$ slaptest <span class="_">-f</span> /etc/openldap/slapd.conf -F /etc/openldap/slapd.d</div><div class="line">$ chown ldap:ldap -R /etc/openldap/slapd.d/</div></pre></td></tr></table></figure>
+<p>透過 <code>systemctl</code> 啟動 slapd。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">systemctl enable slapd</div><div class="line">systemctl start slapd</div></pre></td></tr></table></figure>
+<h2 id="LDAP-帳號"><a href="#LDAP-帳號" class="headerlink" title="LDAP 帳號"></a>LDAP 帳號</h2><p>LDAP 帳號具有階層性，如下圖。</p>
+<p><img src="http://i.imgur.com/8LQCsAP.jpg" alt="LDAP Hierarchy"></p>
+<p>最上層是 Base ，下層是 children ，也就是組織裡的中間單位，而最下層就會是使用者的名稱，由下往上追朔可以知道使用隸屬哪個單位，哪個部門，哪個組織。</p>
+<h3 id="常見的縮寫"><a href="#常見的縮寫" class="headerlink" title="常見的縮寫"></a>常見的縮寫</h3><table>
+<thead>
+<tr>
+<th>String</th>
+<th>Attribute Type</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>dn</td>
+<td>Distinguished Name</td>
+</tr>
+<tr>
+<td>cn</td>
+<td>Common Name</td>
+</tr>
+<tr>
+<td>o</td>
+<td>Organisational Name</td>
+</tr>
+<tr>
+<td>ou</td>
+<td>Organisational Unit Name</td>
+</tr>
+<tr>
+<td>dc</td>
+<td>Domain Component</td>
+</tr>
+<tr>
+<td>uid</td>
+<td>User Identification</td>
+</tr>
+</tbody>
+</table>
+<h2 id="OpenLDAP-with-Linux"><a href="#OpenLDAP-with-Linux" class="headerlink" title="OpenLDAP with Linux"></a>OpenLDAP with Linux</h2><p>LDAP 帳號可以和 Linux 綁定，設定讓 LDAP 登入 Linux 。</p>
+<h3 id="User"><a href="#User" class="headerlink" title="User"></a>User</h3><ul>
+<li>posixAccount 對應到 <code>/etc/passwd</code></li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>/etc/passwd</th>
+<th>posixAccount</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>id</td>
+<td>uid</td>
+</tr>
+<tr>
+<td>password</td>
+<td>userPassword</td>
+</tr>
+<tr>
+<td>uid</td>
+<td>uidNumber</td>
+</tr>
+<tr>
+<td>gid</td>
+<td>gidNumber</td>
+</tr>
+<tr>
+<td>full_name</td>
+<td>gecos</td>
+</tr>
+<tr>
+<td>Home Directory</td>
+<td>homeDirectory</td>
+</tr>
+<tr>
+<td>Login Shell</td>
+<td>loginShell</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>shadowAccount 對應到 <code>/etc/shadow</code></li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>/etc/shadow</th>
+<th>shadowAccount</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>username</td>
+<td>uid</td>
+</tr>
+<tr>
+<td>password</td>
+<td>userPassword</td>
+</tr>
+<tr>
+<td>last</td>
+<td>shadowLastChange</td>
+</tr>
+<tr>
+<td>may</td>
+<td>shadowMin</td>
+</tr>
+<tr>
+<td>must</td>
+<td>shadowMax</td>
+</tr>
+<tr>
+<td>warn</td>
+<td>shadowWarning</td>
+</tr>
+<tr>
+<td>expire</td>
+<td>shadowExpire</td>
+</tr>
+<tr>
+<td>disable</td>
+<td>shadowInactive</td>
+</tr>
+<tr>
+<td>reservered</td>
+<td>shadowFlag</td>
+</tr>
+</tbody>
+</table>
+<h3 id="Group"><a href="#Group" class="headerlink" title="Group"></a>Group</h3><ul>
+<li>posixGroup 對應到 <code>/etc/group</code></li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>/etc/group</th>
+<th>posixGroup</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>group name</td>
+<td>cn</td>
+</tr>
+<tr>
+<td>password</td>
+<td>userPassword</td>
+</tr>
+<tr>
+<td>group id</td>
+<td>gidNumber</td>
+</tr>
+<tr>
+<td>other account</td>
+<td>memberUid</td>
+</tr>
+</tbody>
+</table>
+<h3 id="安裝套件"><a href="#安裝套件" class="headerlink" title="安裝套件"></a>安裝套件</h3><figure class="highlight sh"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ yum install -y nscd nss-pam-ldapd</div></pre></td></tr></table></figure>
+<h3 id="設定-ldap-conf"><a href="#設定-ldap-conf" class="headerlink" title="設定 ldap.conf"></a>設定 ldap.conf</h3><figure class="highlight sh"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">$ vim /etc/openldap/ldap.conf</div><div class="line"></div><div class="line"><span class="comment"># add at the last line</span></div><div class="line"><span class="comment"># LDAP server's URI</span></div><div class="line">URI ldap://localhost/</div><div class="line"></div><div class="line"><span class="comment"># specify Suffix</span></div><div class="line">BASE dc=example,dc=com</div></pre></td></tr></table></figure>
+<h3 id="設定-nslcd-conf"><a href="#設定-nslcd-conf" class="headerlink" title="設定 nslcd.conf"></a>設定 nslcd.conf</h3><figure class="highlight sh"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">$ vim /etc/nslcd.conf</div><div class="line"></div><div class="line">uri ldap://localhost/</div><div class="line">base dc=example,dc=com</div><div class="line">ssl no</div><div class="line">tls_cacertdir /etc/openldap/cacerts</div></pre></td></tr></table></figure>
+<h3 id="設定-PAM"><a href="#設定-PAM" class="headerlink" title="設定 PAM"></a>設定 PAM</h3><figure class="highlight sh"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">$ vim /etc/pam.d/system-auth</div><div class="line"></div><div class="line">auth        sufficient    pam_ldap.so use_first_pass</div><div class="line">account     [default=bad success=ok user_unknown=ignore] pam_ldap.so</div><div class="line">password   sufficient    pam_ldap.so use_authtok</div><div class="line">session     optional      pam_ldap.so</div><div class="line"><span class="comment"># add if you need ( create home directory automatically if it's none )</span></div><div class="line">session     optional      pam_mkhomedir.so skel=/etc/skel <span class="built_in">umask</span>=077</div></pre></td></tr></table></figure>
+<h3 id="設定-nsswitch-conf"><a href="#設定-nsswitch-conf" class="headerlink" title="設定 nsswitch.conf"></a>設定 nsswitch.conf</h3><figure class="highlight sh"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">$ vim /etc/nsswitch.conf</div><div class="line"></div><div class="line">passwd: files ldap</div><div class="line">shadow: files ldap</div><div class="line">group: files ldap</div><div class="line">netgroup: ldap</div><div class="line">automount: files ldap</div></pre></td></tr></table></figure>
+<h3 id="設定-authconfig"><a href="#設定-authconfig" class="headerlink" title="設定 authconfig"></a>設定 authconfig</h3><figure class="highlight sh"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">$ vim /etc/sysconfig/authconfig</div><div class="line"></div><div class="line">USELDAP= yes</div></pre></td></tr></table></figure>
+<h3 id="設定開機時啟動"><a href="#設定開機時啟動" class="headerlink" title="設定開機時啟動"></a>設定開機時啟動</h3><figure class="highlight sh"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ systemctl <span class="built_in">enable</span> nslcd</div></pre></td></tr></table></figure>
+<h2 id="建立和操作-LDAP-帳號"><a href="#建立和操作-LDAP-帳號" class="headerlink" title="建立和操作 LDAP 帳號"></a>建立和操作 LDAP 帳號</h2><p>以下是建立一個和 Linux 整合的帳號範例檔案 <code>user.ldif</code>。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div></pre></td><td class="code"><pre><div class="line"># Domain Name</div><div class="line">dn: dc=example,dc=com</div><div class="line">dc: example</div><div class="line">objectClass: dcObject</div><div class="line">objectClass: organizationalUnit</div><div class="line">ou: example Dot com</div><div class="line"></div><div class="line"></div><div class="line"># User Organization Unit</div><div class="line">dn: ou=user,dc=example,dc=com</div><div class="line">ou: user</div><div class="line">objectClass: organizationalUnit</div><div class="line"></div><div class="line"># User: user01</div><div class="line">dn: uid=user01,ou=user,dc=example,dc=com</div><div class="line">objectClass: inetOrgPerson</div><div class="line">objectClass: posixAccount</div><div class="line">objectClass: shadowAccount</div><div class="line">userPassword: raix</div><div class="line">cn: user01</div><div class="line">uid: user01</div><div class="line">sn: user01</div><div class="line">uidNumber: 1000</div><div class="line">gidNumber: 1000</div><div class="line">homeDirectory: /home/user01</div><div class="line">loginShell: /bin/bash</div><div class="line"></div><div class="line"># Group</div><div class="line">dn: ou=group,dc=example,dc=com</div><div class="line">ou: group</div><div class="line">objectClass: organizationalUnit</div><div class="line"></div><div class="line"># User group</div><div class="line">dn: cn=uesr01,ou=group,dc=example,dc=com</div><div class="line">objectClass: posixGroup</div><div class="line">cn: user01</div><div class="line">gidNumber: 1000</div><div class="line">memberUid: user01</div></pre></td></tr></table></figure>
+<ol>
+<li>一開始先建立最上層的 Domain Name： <code>dc=example,dc=com</code>。</li>
+<li>建立 <strong>user</strong> 組織單位，隸屬於 <code>dc=example,dc=com</code> domain 下。</li>
+<li>建立 <strong>user01</strong> 帳號名稱，屬於 <strong>user</strong> 這個組織單位下。</li>
+<li>接著建立出基本的使用者群組單位 <strong>group</strong></li>
+<li>在 <strong>group</strong> 下建立出和 <strong>user01</strong> 同名的個人群組</li>
+</ol>
+<h3 id="加入帳號"><a href="#加入帳號" class="headerlink" title="加入帳號"></a>加入帳號</h3><p>使用 <code>ldapadd</code> 將 <code>user.ldif</code> 設定好的使用者帳號加入 LDAP。</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ slapadd -v <span class="_">-l</span> /path/to/user.ldif</div></pre></td></tr></table></figure>
+<h3 id="查詢帳號"><a href="#查詢帳號" class="headerlink" title="查詢帳號"></a>查詢帳號</h3><p>使用 <code>ldapsearch</code> 查詢 LDAP 資訊。</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="comment"># Search all users</span></div><div class="line">$ ldapsearch -x -LLL <span class="string">'(uid=*)'</span></div><div class="line"></div><div class="line"><span class="comment"># Search domain subtree</span></div><div class="line">$ ldapsearch -x -b <span class="string">'dc=example,dc=com'</span></div></pre></td></tr></table></figure>
+<h3 id="更改帳號"><a href="#更改帳號" class="headerlink" title="更改帳號"></a>更改帳號</h3><p>使用 <code>ldapmodify</code> 更改 LDAP 資訊。<br>假設要將 <strong>user01</strong> 改名成 <strong>ldapuser</strong> ，建立一個 <code>modify_user.ldif</code> 檔案。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line">dn: uid=user01,ou=user,dc=example,dc=com</div><div class="line">changetype: modrdn</div><div class="line">newrdn: uid=ldapuser</div><div class="line">deleteoldrdn: 1</div><div class="line"></div><div class="line">dn: uid=ldapuser,ou=user,dc=example,dc=com</div><div class="line">changetype: modify</div><div class="line">replace: cn</div><div class="line">cn: ldapuser</div><div class="line">-</div><div class="line">replace: uid</div><div class="line">uid: ldapuser</div><div class="line">-</div><div class="line">replace: sn</div><div class="line">sn: ldapuser</div></pre></td></tr></table></figure>
+<p>接著套用這份設定檔。</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ ldapmodify -x <span class="_">-f</span> multichange.ldif</div></pre></td></tr></table></figure>
+<h3 id="更改帳號密碼"><a href="#更改帳號密碼" class="headerlink" title="更改帳號密碼"></a>更改帳號密碼</h3><p>使用 <code>ldappasswd</code> 更改密碼。</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">$ ldappasswd -x -D <span class="string">"uid=user01,ou=user,dc=example,dc=com"</span> -w old_passwd <span class="_">-a</span> old_passwd \</div><div class="line"> <span class="_">-s</span> new_passwd</div></pre></td></tr></table></figure>
+<h2 id="設定-ppolicy"><a href="#設定-ppolicy" class="headerlink" title="設定 ppolicy"></a>設定 ppolicy</h2><p>使用 <code>slapd.conf</code> 設定檔來設定 ppolicy。</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line">$ vim /etc/openldap/slapd.conf</div><div class="line"></div><div class="line"><span class="comment">#-- Load schema</span></div><div class="line">include         /etc/openldap/schema/ppolicy.schema</div><div class="line"></div><div class="line"><span class="comment">#-- Load module</span></div><div class="line">moduleload ppolicy.la</div><div class="line"></div><div class="line"><span class="comment">#-- Load overlay</span></div><div class="line">overlay ppolicy</div><div class="line">ppolicy_default <span class="string">"cn=default,ou=Policies,dc=example,dc=com"</span></div><div class="line">ppolicy_use_lockout</div><div class="line">ppolicy_<span class="built_in">hash</span>_cleartext</div></pre></td></tr></table></figure>
+<p>這樣表示預設的 policy 設定會落在 <code>cn=default,ou=Policies,dc=example,dc=com</code> 裡。<br>接著設定 ppolicy 規則。</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div></pre></td><td class="code"><pre><div class="line">$ vim pwdpolicy.ldif</div><div class="line"></div><div class="line"><span class="comment"># Creates a Policies OU (Organizational Unit)</span></div><div class="line">dn: ou=Policies,dc=example,dc=com</div><div class="line">objectClass: organizationalUnit</div><div class="line">ou: Policies</div><div class="line"></div><div class="line"><span class="comment"># Creates a Policy object in Policies OU (Organizational Unit)</span></div><div class="line">dn: cn=default,ou=Policies,dc=example,dc=com</div><div class="line">objectClass: top</div><div class="line">objectClass: device</div><div class="line">objectClass: <span class="built_in">pwd</span>Policy</div><div class="line">cn: default</div><div class="line"><span class="built_in">pwd</span>Attribute: userPassword</div><div class="line"><span class="built_in">pwd</span>MaxAge: 3888000</div><div class="line"><span class="built_in">pwd</span>ExpireWarning: 604800</div><div class="line"><span class="built_in">pwd</span>InHistory: 3</div><div class="line"><span class="built_in">pwd</span>CheckQuality: 1</div><div class="line"><span class="built_in">pwd</span>M<span class="keyword">in</span>Length: 8</div><div class="line"><span class="built_in">pwd</span>MaxFailure: 5</div><div class="line"><span class="built_in">pwd</span>Lockout: TRUE</div><div class="line"><span class="built_in">pwd</span>LockoutDuration: 86400</div><div class="line"><span class="built_in">pwd</span>GraceAuthNLimit: 0</div><div class="line"><span class="built_in">pwd</span>FailureCountInterval: 0</div><div class="line"><span class="built_in">pwd</span>MustChange: TRUE</div><div class="line"><span class="built_in">pwd</span>AllowUserChange: TRUE</div><div class="line"><span class="built_in">pwd</span>SafeModify: FALSE</div></pre></td></tr></table></figure>
+<p>加入 ppolicy 設定。</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ ldapadd -x -D <span class="string">"cn=admin,dc=example,dc=com"</span> -w secret <span class="_">-f</span> pwdpolicy.ldif</div></pre></td></tr></table></figure>
+<h3 id="unlock-account"><a href="#unlock-account" class="headerlink" title="unlock account"></a>unlock account</h3><p>套用 ppolicy 之後，照設定帳號密碼嘗試錯誤達 5 次後帳號會鎖起來。<br>查詢被鎖起來的帳號。</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">$ ldapsearch -x -D <span class="string">"cn=admin,dc=example,dc=com"</span> -w secret -x -b <span class="string">'dc=example,dc=com'</span> \</div><div class="line"> <span class="string">"pwdAccountLockedTime=*"</span> <span class="built_in">pwd</span>AccountLockedTime</div></pre></td></tr></table></figure>
+<p>修改屬性解鎖帳號。</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">dn: uid=user01,ou=user,dc=example,dc=com</div><div class="line">changetype: modify</div><div class="line">delete: <span class="built_in">pwd</span>AccountLockedTime</div></pre></td></tr></table></figure>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://raix852.github.io/2016/11/01/ldap/" data-id="civ0b6b2s0000n4pecyfggrxo" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/LDAP/">LDAP</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Linux/">Linux</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
     <article id="post-Microservices" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
     <a href="/2016/10/23/Microservices/" class="article-date">
@@ -132,7 +378,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://raix852.github.io/2016/10/23/Microservices/" data-id="ciulgksy1000ioape8ijt5oqe" class="article-share-link">Share</a>
+      <a data-url="http://raix852.github.io/2016/10/23/Microservices/" data-id="ciuqpocvu000gl9n4cbb7mfea" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Kubernetes/">Kubernetes</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Udacity/">Udacity</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/docker/">docker</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/學習筆記/">學習筆記</a></li></ul>
@@ -266,7 +512,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://raix852.github.io/2016/10/22/Microservices/" data-id="ciulgksy7000noapeoe9tce7d" class="article-share-link">Share</a>
+      <a data-url="http://raix852.github.io/2016/10/22/Microservices/" data-id="ciuqpocw5000ll9n451tvm3zx" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Kubernetes/">Kubernetes</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Udacity/">Udacity</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/docker/">docker</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/學習筆記/">學習筆記</a></li></ul>
@@ -340,7 +586,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://raix852.github.io/2016/10/12/Microservices/" data-id="ciulgksxy000goape1ifplecw" class="article-share-link">Share</a>
+      <a data-url="http://raix852.github.io/2016/10/12/Microservices/" data-id="ciuqpocvw000il9n48rmi3tk5" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Kubernetes/">Kubernetes</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Udacity/">Udacity</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/docker/">docker</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/學習筆記/">學習筆記</a></li></ul>
@@ -420,7 +666,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://raix852.github.io/2016/10/11/Microservices/" data-id="ciulgksxw000foapeqb3vz0e9" class="article-share-link">Share</a>
+      <a data-url="http://raix852.github.io/2016/10/11/Microservices/" data-id="ciuqpocvl000bl9n4lcpb67hv" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Kubernetes/">Kubernetes</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Udacity/">Udacity</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/docker/">docker</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/學習筆記/">學習筆記</a></li></ul>
@@ -464,7 +710,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://raix852.github.io/2016/09/13/read-report/" data-id="ciulgksxp000boapeciwqhgpq" class="article-share-link">Share</a>
+      <a data-url="http://raix852.github.io/2016/09/13/read-report/" data-id="ciuqpocvg0008l9n4zael4ia5" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/讀書心得/">讀書心得</a></li></ul>
@@ -542,7 +788,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://raix852.github.io/2016/08/21/tensorflow-gpu-installation/" data-id="ciulgksy4000koape9ms3b6jp" class="article-share-link">Share</a>
+      <a data-url="http://raix852.github.io/2016/08/21/tensorflow-gpu-installation/" data-id="ciuqpocvy000jl9n4keclvheg" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/tensorflow/">tensorflow</a></li></ul>
@@ -591,7 +837,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://raix852.github.io/2016/08/14/PixHack2016/" data-id="ciulgksxt000doape2w6j0lns" class="article-share-link">Share</a>
+      <a data-url="http://raix852.github.io/2016/08/14/PixHack2016/" data-id="ciuqpocvr000fl9n40awbtiz1" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Deep-Learning/">Deep Learning</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Machine-Learning/">Machine Learning</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/NLP/">NLP</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/tensorflow/">tensorflow</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/日記/">日記</a></li></ul>
@@ -637,7 +883,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://raix852.github.io/2016/07/29/PixHack2016/" data-id="ciulgksxi0007oapevt678bkz" class="article-share-link">Share</a>
+      <a data-url="http://raix852.github.io/2016/07/29/PixHack2016/" data-id="ciuqpocv50004l9n4p0adgjmi" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Deep-Learning/">Deep Learning</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Machine-Learning/">Machine Learning</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/NLP/">NLP</a></li></ul>
@@ -689,121 +935,10 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://raix852.github.io/2016/07/01/data-at-rest/" data-id="ciulgksxa0004oapeq6eodexw" class="article-share-link">Share</a>
+      <a data-url="http://raix852.github.io/2016/07/01/data-at-rest/" data-id="ciuqpocuw0001l9n4mnwhvwqm" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Encryption/">Encryption</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Filesystem/">Filesystem</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Linux/">Linux</a></li></ul>
-
-    </footer>
-  </div>
-  
-</article>
-
-
-  
-    <article id="post-use-openssl-generate-certificate" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2016/06/20/use-openssl-generate-certificate/" class="article-date">
-  <time datetime="2016-06-20T13:00:00.000Z" itemprop="datePublished">2016-06-20</time>
-</a>
-    
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2016/06/20/use-openssl-generate-certificate/">使用 Openssl 建立憑證</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>最近工作上需要建立程式之間的 TLS 連線，而 TLS 之間的連線步驟需要驗證憑證 (Certificate) ，讓之間的加密連線可以成立。不過由於處於測試階段，需要自己產生憑證出來。因此學習使用 Openssl 來產生憑證，也藉此讓自已對 TLS 連線和憑證機制有更清楚的了解。</p>
-<h2 id="TLS-介紹"><a href="#TLS-介紹" class="headerlink" title="TLS 介紹"></a>TLS 介紹</h2><p>傳輸層安全協議（Transport Layer Security，縮寫：TLS），前身為安全通訊協定（Secure Sockets Layer，縮寫：SSL），由網景公司 (Netscape) 開發出來用在 http 協定上，後來由 IETF 將 SSL 進行標準化，就是後來的 TLS 。</p>
-<p>TLS 在建立連線時，會經過以下的步驟：</p>
-<ol>
-<li>client 送出 ClientHello 訊息給 server ，裡面包含可支援的 TLS protocol，一個由 client 端隨機產生的數字(隨機數字只用在此次連線期間，避免被封包重播攻擊)，以及支援的加密和壓縮演算法。</li>
-<li>server 回應 ServerHello 訊息，提供要使用的 TLS protocol ，一個由 server 端隨機產生的數字，以及要使用的加密和壓縮演算法。</li>
-<li>server 根據上面選擇的 TLS protocol 和加密及壓縮演算法，提供憑證給 client</li>
-<li>client 驗證 server 提供的憑證，將憑證內的 public key 取出</li>
-<li>利用 server 提供的 public key ，將 client 的憑證，沒有憑證則隨機產生的 public key ，加密送回。</li>
-<li>雙方使用交換出來的資訊，產生一組通訊用的加解密方式，有對稱式或非對稱式，取決於採用哪種演算法。</li>
-<li>連線建立。</li>
-</ol>
-<h2 id="使用-Openssl-產生憑證"><a href="#使用-Openssl-產生憑證" class="headerlink" title="使用 Openssl 產生憑證"></a>使用 Openssl 產生憑證</h2><p>以下描述使用 openssl 來產生可供 TLS 連線所需的憑證，主要參考 <a href="https://jamielinux.com/docs/openssl-certificate-authority/index.html" target="_blank" rel="external">OpenSSL Certificate Authority</a> 這個網站的步驟來一步一步執行，根據自己的需求修改設定。</p>
-<h3 id="建立-root-憑證"><a href="#建立-root-憑證" class="headerlink" title="建立 root 憑證"></a>建立 root 憑證</h3><p>一般公開網路上憑證不會是自己產生的，因為網路傳輸過程中不能確保會不會被偽造或修改。因此為了有可靠的信任機制，於是就有了憑證機構 (Certificate Authority, CA) ，由憑證機構產生憑證。最上層憑證機構通常由被信任的第三方公正機關來擔任，然後對個人或公司團體產生憑證簽章，如此才能確保憑證可以不被修改。</p>
-<p>以瀏覽器為例，存有一串信任的憑證機構，藉由檢視連線網站的憑證是否由這些憑證機構產生，來判別網站可否受信任，不信任情況下就會出現不安全連線的提示。</p>
-<p>而對公司企業內的私人網路來說， 不需要透過第三方憑證機構，因此會由自己產生 root 憑證，往下建立一連串的認證階層。也因此 root 憑證必須保護好，放置在與網路隔絕的環境並只有特定人士可以存取。一般網路上的認證機構的 root 憑證會互相簽章，表示彼此信任，而自己產生的 root 憑證因沒有其他機關互相簽章，因此會是自我簽章的憑證。</p>
-<h4 id="步驟："><a href="#步驟：" class="headerlink" title="步驟："></a>步驟：</h4><ol>
-<li><p>產生 root key。</p>
- <figure class="highlight sh"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">mkdir /root/ca</div><div class="line"><span class="built_in">cd</span> /root/ca</div><div class="line">openssl genrsa -aes256 -out private/ca.key.pem 4096</div><div class="line">chmod 400 private/ca.key.pem</div></pre></td></tr></table></figure>
-</li>
-<li><p>參照 <a href="https://jamielinux.com/docs/openssl-certificate-authority/appendix/root-configuration-file.html" target="_blank" rel="external">config</a> 產生 openssl.cnf</p>
-</li>
-<li><p>產生自我簽章的 root 憑證。</p>
- <figure class="highlight sh"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">openssl req -config openssl.cnf \</div><div class="line">     -key private/ca.key.pem \</div><div class="line">     -new -x509 -days 7300 -sha256 -extensions v3_ca \</div><div class="line">     -subj <span class="string">"/C=TW/ST=Taipei/O=RAIX/OU=RAIX.IO/CN=raix.io.rootca/emailAddress=raix@mail.com"</span> \</div><div class="line">     -out certs/ca.cert.pem</div><div class="line">chmod 444 certs/ca.cert.pem</div></pre></td></tr></table></figure>
-<p> root 憑證過期日期建議設定長一點，因為是最重要的環節，不太適合頻繁的過期造成整串憑證失效。</p>
-<p> 另外因為是產生自我簽章的憑證，和接下來產生 intermediate 或 client/server 的 Certificate signing request (CSR) 指令多了 <code>-x509</code> 參數。</p>
-</li>
-<li><p>驗證 root 憑證</p>
- <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">openssl x509 -noout -text -in certs/ca.cert.pem</div></pre></td></tr></table></figure>
-</li>
-</ol>
-<h3 id="建立-intermediate-憑證"><a href="#建立-intermediate-憑證" class="headerlink" title="建立 intermediate 憑證"></a>建立 intermediate 憑證</h3><p>intermediate 憑證介於 root 和 client server 之間，可避免 root 憑證直接被使用，也可用來分群組，區分可使用的範圍。</p>
-<h4 id="步驟"><a href="#步驟" class="headerlink" title="步驟"></a>步驟</h4><ol>
-<li><p>設置相關資料夾和資訊</p>
- <figure class="highlight sh"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">mkdir /root/ca/intermediate</div><div class="line"><span class="built_in">cd</span> /root/ca/intermediate</div><div class="line">mkdir certs crl csr newcerts private</div><div class="line">chmod 744 private</div><div class="line">touch index.txt</div><div class="line"><span class="built_in">echo</span> 1000 &gt; serial</div><div class="line"><span class="built_in">echo</span> 1000 &gt; crlnumber</div></pre></td></tr></table></figure>
-</li>
-<li><p>產生 intermediate key</p>
- <figure class="highlight sh"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">openssl genrsa -aes256 \</div><div class="line">     -out private/intermediate.key.pem 4096</div><div class="line">chmod 400 private/intermediate.key.pem</div></pre></td></tr></table></figure>
-</li>
-<li><p>修改 openssl.cnf 產生 openssl-im.cnf</p>
- <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">[ CA_default ]</div><div class="line">dir             = /root/ca/intermediate</div><div class="line">private_key     = $dir/private/intermediate.key.pem</div><div class="line">certificate     = $dir/certs/intermediate.cert.pem</div><div class="line">crl             = $dir/crl/intermediate.crl.pem</div><div class="line">policy          = policy_loose</div></pre></td></tr></table></figure>
-</li>
-<li><p>產生 intermediate CSR</p>
- <figure class="highlight sh"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">openssl req -config openssl-im.cnf -new -sha256 \</div><div class="line">     -subj <span class="string">"/C=TW/ST=Taipei/O=RAIX/OU=RAIX.IO/CN=raix.io.imca/emailAddress=raix@mail.com"</span>\</div><div class="line">     -key private/intermediate.key.pem \</div><div class="line">     -out csr/intermediate.csr.pem</div></pre></td></tr></table></figure>
-<p> <a href="https://en.wikipedia.org/wiki/Certificate_signing_request" target="_blank" rel="external">Certificate signing request (CSR)</a> 裡紀錄個人或組織的資訊，並且提供給憑證機構簽章。</p>
-</li>
-<li><p>對 intermediate CSR 簽上 root 憑證，產生 intermediate 憑證</p>
- <figure class="highlight sh"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">openssl ca -config /root/ca/openssl.cnf -extensions v3_intermediate_ca \</div><div class="line">     -days 3650 -notext -md sha256 \</div><div class="line">     -in csr/intermediate.csr.pem \</div><div class="line">     -out certs/intermediate.cert.pem</div><div class="line">chmod 444 certs/intermediate.cert.pem</div></pre></td></tr></table></figure>
-</li>
-<li><p>驗證 intermediate 憑證</p>
- <figure class="highlight sh"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">openssl x509 -noout -text \</div><div class="line">     -in intermediate/certs/intermediate.cert.pem</div><div class="line">openssl verify -CAfile certs/ca.cert.pem \</div><div class="line">     intermediate/certs/intermediate.cert.pem</div></pre></td></tr></table></figure>
-</li>
-<li><p>產生憑證鍊 (certificate chain)</p>
- <figure class="highlight sh"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">cat intermediate/certs/intermediate.cert.pem \</div><div class="line">     certs/ca.cert.pem &gt; intermediate/certs/ca-chain.cert.pem</div><div class="line">chmod 444 intermediate/certs/ca-chain.cert.pem</div></pre></td></tr></table></figure>
-<p> 當應用程式要驗證 intermediate 憑證時，也需要同時驗證 root 憑證，因此需要產生憑證鍊來完成一整串驗證。</p>
-</li>
-</ol>
-<h3 id="建立-client-server-憑證"><a href="#建立-client-server-憑證" class="headerlink" title="建立 client/server 憑證"></a>建立 client/server 憑證</h3><p>最後就是對要使用的 client/server 產生憑證，讓彼此之間 TLS 連線可以成立，確保處於安全的連線下。</p>
-<h4 id="步驟-1"><a href="#步驟-1" class="headerlink" title="步驟"></a>步驟</h4><ol>
-<li><p>產生 client/server key</p>
- <figure class="highlight sh"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="built_in">cd</span> /root/ca/intermediate/</div><div class="line">openssl genrsa -out private/client.raix.io.key.pem 2048</div><div class="line">chmod 444 private/client.raix.io.key.pem</div></pre></td></tr></table></figure>
-</li>
-<li><p>產生 client/server CSR</p>
- <figure class="highlight sh"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">openssl req -config openssl-im.cnf \</div><div class="line">     -key intermediate/private/client.raix.io.key.pem \</div><div class="line">     -subj <span class="string">"/C=TW/ST=Taipei/O=RAIX/OU=RAIX.IO/CN=client.raix.io/emailAddress=raix@mail.com"</span> \</div><div class="line">     -new -sha256 -out client.raix.io.csr.pem</div></pre></td></tr></table></figure>
-</li>
-<li><p>產生 client/server 憑證</p>
- <figure class="highlight sh"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">openssl ca -config openssl-im.cnf \</div><div class="line">     -extensions server_cert -days 375 -notext -md sha256 \</div><div class="line">     -in intermediate/csr/client.raix.io.csr.pem \</div><div class="line">     -out intermediate/certs/client.raix.io.cert.pem</div><div class="line">chmod 444 certs/client.raix.io.cert.pem</div></pre></td></tr></table></figure>
-</li>
-<li><p>驗證憑證</p>
- <figure class="highlight sh"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">openssl x509 -noout -text \</div><div class="line">     -in certs/client.raix.io.cert.pem</div><div class="line">openssl verify -CAfile intermediate/certs/ca-chain.cert.pem \</div><div class="line">     certs/client.raix.io.cert.pem</div></pre></td></tr></table></figure>
-</li>
-</ol>
-<h2 id="參考資料"><a href="#參考資料" class="headerlink" title="參考資料"></a>參考資料</h2><p>Wiki: <a href="https://en.wikipedia.org/wiki/Transport_Layer_Security" target="_blank" rel="external">Transport Layer Security</a> <br><br>Wiki: <a href="https://en.wikipedia.org/wiki/Certificate_authority" target="_blank" rel="external">Certificate authority</a> <br><br>Wiki: <a href="https://en.wikipedia.org/wiki/Certificate_signing_request" target="_blank" rel="external">Certificate signing request</a> <br><br><a href="https://jamielinux.com/docs/openssl-certificate-authority/index.html" target="_blank" rel="external">OpenSSL Certificate Authority</a></p>
-
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="http://raix852.github.io/2016/06/20/use-openssl-generate-certificate/" data-id="ciulgksxj0008oape5czx3txr" class="article-share-link">Share</a>
-      
-      
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Linux/">Linux</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/TLS/">TLS</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/openssl/">openssl</a></li></ul>
 
     </footer>
   </div>
@@ -828,7 +963,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">Tags</h3>
     <div class="widget">
-      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Deep-Learning/">Deep Learning</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Encryption/">Encryption</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Filesystem/">Filesystem</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Github/">Github</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Kubernetes/">Kubernetes</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Linux/">Linux</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Machine-Learning/">Machine Learning</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/NLP/">NLP</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/TLS/">TLS</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Udacity/">Udacity</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/docker/">docker</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hexo/">hexo</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/openssl/">openssl</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/python/">python</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/tensorflow/">tensorflow</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/學習筆記/">學習筆記</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/日記/">日記</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/讀書心得/">讀書心得</a></li></ul>
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Deep-Learning/">Deep Learning</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Encryption/">Encryption</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Filesystem/">Filesystem</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Github/">Github</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Kubernetes/">Kubernetes</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/LDAP/">LDAP</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Linux/">Linux</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Machine-Learning/">Machine Learning</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/NLP/">NLP</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/TLS/">TLS</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Udacity/">Udacity</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/docker/">docker</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hexo/">hexo</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/openssl/">openssl</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/python/">python</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/tensorflow/">tensorflow</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/學習筆記/">學習筆記</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/日記/">日記</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/讀書心得/">讀書心得</a></li></ul>
     </div>
   </div>
 
@@ -838,7 +973,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">Tag Cloud</h3>
     <div class="widget tagcloud">
-      <a href="/tags/Deep-Learning/" style="font-size: 15px;">Deep Learning</a> <a href="/tags/Encryption/" style="font-size: 10px;">Encryption</a> <a href="/tags/Filesystem/" style="font-size: 10px;">Filesystem</a> <a href="/tags/Github/" style="font-size: 15px;">Github</a> <a href="/tags/Kubernetes/" style="font-size: 20px;">Kubernetes</a> <a href="/tags/Linux/" style="font-size: 15px;">Linux</a> <a href="/tags/Machine-Learning/" style="font-size: 15px;">Machine Learning</a> <a href="/tags/NLP/" style="font-size: 15px;">NLP</a> <a href="/tags/TLS/" style="font-size: 10px;">TLS</a> <a href="/tags/Udacity/" style="font-size: 20px;">Udacity</a> <a href="/tags/docker/" style="font-size: 20px;">docker</a> <a href="/tags/hexo/" style="font-size: 15px;">hexo</a> <a href="/tags/openssl/" style="font-size: 10px;">openssl</a> <a href="/tags/python/" style="font-size: 10px;">python</a> <a href="/tags/tensorflow/" style="font-size: 15px;">tensorflow</a> <a href="/tags/學習筆記/" style="font-size: 20px;">學習筆記</a> <a href="/tags/日記/" style="font-size: 15px;">日記</a> <a href="/tags/讀書心得/" style="font-size: 10px;">讀書心得</a>
+      <a href="/tags/Deep-Learning/" style="font-size: 13.33px;">Deep Learning</a> <a href="/tags/Encryption/" style="font-size: 10px;">Encryption</a> <a href="/tags/Filesystem/" style="font-size: 10px;">Filesystem</a> <a href="/tags/Github/" style="font-size: 13.33px;">Github</a> <a href="/tags/Kubernetes/" style="font-size: 20px;">Kubernetes</a> <a href="/tags/LDAP/" style="font-size: 10px;">LDAP</a> <a href="/tags/Linux/" style="font-size: 16.67px;">Linux</a> <a href="/tags/Machine-Learning/" style="font-size: 13.33px;">Machine Learning</a> <a href="/tags/NLP/" style="font-size: 13.33px;">NLP</a> <a href="/tags/TLS/" style="font-size: 10px;">TLS</a> <a href="/tags/Udacity/" style="font-size: 20px;">Udacity</a> <a href="/tags/docker/" style="font-size: 20px;">docker</a> <a href="/tags/hexo/" style="font-size: 13.33px;">hexo</a> <a href="/tags/openssl/" style="font-size: 10px;">openssl</a> <a href="/tags/python/" style="font-size: 10px;">python</a> <a href="/tags/tensorflow/" style="font-size: 13.33px;">tensorflow</a> <a href="/tags/學習筆記/" style="font-size: 20px;">學習筆記</a> <a href="/tags/日記/" style="font-size: 13.33px;">日記</a> <a href="/tags/讀書心得/" style="font-size: 10px;">讀書心得</a>
     </div>
   </div>
 
@@ -847,7 +982,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">Archives</h3>
     <div class="widget">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/10/">十月 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/09/">九月 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/08/">八月 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/07/">七月 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/06/">六月 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/05/">五月 2016</a></li></ul>
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/11/">十一月 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/10/">十月 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/09/">九月 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/08/">八月 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/07/">七月 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/06/">六月 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/05/">五月 2016</a></li></ul>
     </div>
   </div>
 
@@ -858,6 +993,10 @@
     <h3 class="widget-title">Recent Posts</h3>
     <div class="widget">
       <ul>
+        
+          <li>
+            <a href="/2016/11/01/ldap/">LDAP 介紹與架設</a>
+          </li>
         
           <li>
             <a href="/2016/10/23/Microservices/">Scalable Microservices with Kubernetes - Lesson 4</a>
@@ -873,10 +1012,6 @@
         
           <li>
             <a href="/2016/10/11/Microservices/">Scalable Microservices with Kubernetes - Lesson 1</a>
-          </li>
-        
-          <li>
-            <a href="/2016/09/13/read-report/">台灣史上最有梗的台灣史</a>
           </li>
         
       </ul>
