@@ -1,0 +1,24 @@
+---
+title: Kubernetes 介紹
+date: 2016-10-12 23:00:00
+tags: [Kubernetes]
+---
+
+這篇是根據 [Kubernetes: Up and Running](http://shop.oreilly.com/product/0636920043874.do) 所寫。
+
+## 觀念
+### Cluster
+### Pods
+### Replication Controllers
+### Services
+### Labels
+
+## The Kubernetes Control Plane
+### etcd
+### Kubernetes API Server
+### Scheduler
+### Controller Manager
+## The Kubernetes Node
+### Docker
+### Kubelet
+### Proxy

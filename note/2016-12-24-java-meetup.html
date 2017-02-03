@@ -3,18 +3,60 @@
 <head>
   <meta charset="utf-8">
   
-  <title>7/29 痞客邦克漏字比賽紀錄 | Raix&#39;s Blog</title>
+  <title>Raix&#39;s Blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="最近這陣子都熱心在學習 Deep learning 的東西，動機來自於和同事組隊參加 2016 PIXNET HACKATHON Cloze Contest。這個比賽會給出一句話，裡面會挖一個洞，並給出 4 個選項來選出符合這個洞的答案，也可以說是傳統的選擇題考試。對從小到大都是考試機器的我們來說是最常見不過的問題，因此都練出的一身本領來回答。但是對於機器來說，要選出正確答案還真不是件簡單的事，更">
-<meta property="og:type" content="article">
-<meta property="og:title" content="7/29 痞客邦克漏字比賽紀錄">
-<meta property="og:url" content="http://raix852.github.io/2016/07/29/PixHack2016/index.html">
+  <meta name="description" content="JWCUPG1GC減少 pause time
+
+較低的 throughput
+
+比起 CMS ，較不需要調整參數
+
+CMS 也被認為較不適合非常大 heap 的情況
+
+Region 根據 heap size 區分
+
+region 有分 young 和 old 
+
+Young GC 發生時
+
+依照狀況變成 survivor 或 old">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Raix's Blog">
+<meta property="og:url" content="http://raix852.github.io/note/2016-12-24-java-meetup.html">
 <meta property="og:site_name" content="Raix's Blog">
-<meta property="og:description" content="最近這陣子都熱心在學習 Deep learning 的東西，動機來自於和同事組隊參加 2016 PIXNET HACKATHON Cloze Contest。這個比賽會給出一句話，裡面會挖一個洞，並給出 4 個選項來選出符合這個洞的答案，也可以說是傳統的選擇題考試。對從小到大都是考試機器的我們來說是最常見不過的問題，因此都練出的一身本領來回答。但是對於機器來說，要選出正確答案還真不是件簡單的事，更">
-<meta property="og:updated_time" content="2016-08-22T06:44:29.000Z">
+<meta property="og:description" content="JWCUPG1GC減少 pause time
+
+較低的 throughput
+
+比起 CMS ，較不需要調整參數
+
+CMS 也被認為較不適合非常大 heap 的情況
+
+Region 根據 heap size 區分
+
+region 有分 young 和 old 
+
+Young GC 發生時
+
+依照狀況變成 survivor 或 old">
+<meta property="og:updated_time" content="2017-01-10T02:14:58.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="7/29 痞客邦克漏字比賽紀錄">
-<meta name="twitter:description" content="最近這陣子都熱心在學習 Deep learning 的東西，動機來自於和同事組隊參加 2016 PIXNET HACKATHON Cloze Contest。這個比賽會給出一句話，裡面會挖一個洞，並給出 4 個選項來選出符合這個洞的答案，也可以說是傳統的選擇題考試。對從小到大都是考試機器的我們來說是最常見不過的問題，因此都練出的一身本領來回答。但是對於機器來說，要選出正確答案還真不是件簡單的事，更">
+<meta name="twitter:title" content="Raix's Blog">
+<meta name="twitter:description" content="JWCUPG1GC減少 pause time
+
+較低的 throughput
+
+比起 CMS ，較不需要調整參數
+
+CMS 也被認為較不適合非常大 heap 的情況
+
+Region 根據 heap size 區分
+
+region 有分 young 和 old 
+
+Young GC 發生時
+
+依照狀況變成 survivor 或 old">
   
     <link rel="alternate" href="/atom.xml" title="Raix&#39;s Blog" type="application/atom+xml">
   
@@ -70,68 +112,45 @@
 </header>
 
       <div class="outer">
-        <section id="main"><article id="post-PixHack2016" class="article article-type-post" itemscope itemprop="blogPost">
+        <section id="main"><article id="page-undefined" class="article article-type-page" itemscope itemprop="blogPost">
   <div class="article-meta">
-    <a href="/2016/07/29/PixHack2016/" class="article-date">
-  <time datetime="2016-07-29T15:10:37.000Z" itemprop="datePublished">2016-07-29</time>
+    <a href="/note/2016-12-24-java-meetup.html" class="article-date">
+  <time datetime="2017-01-10T02:15:39.000Z" itemprop="datePublished">2017-01-10</time>
 </a>
     
   </div>
   <div class="article-inner">
     
     
-      <header class="article-header">
-        
-  
-    <h1 class="article-title" itemprop="name">
-      7/29 痞客邦克漏字比賽紀錄
-    </h1>
-  
-
-      </header>
-    
     <div class="article-entry" itemprop="articleBody">
       
-        <p>最近這陣子都熱心在學習 Deep learning 的東西，動機來自於和同事組隊參加 <code>2016 PIXNET HACKATHON Cloze Contest</code>。這個比賽會給出一句話，裡面會挖一個洞，並給出 4 個選項來選出符合這個洞的答案，也可以說是傳統的選擇題考試。對從小到大都是考試機器的我們來說是最常見不過的問題，因此都練出的一身本領來回答。但是對於機器來說，要選出正確答案還真不是件簡單的事，更可說是巨大的挑戰。</p>
-<p>因此為了可以讓機器有辦法回答，需要有一些技巧來使用。以下紀錄目前我和同事做到的進度。正式比賽是在8/13 日，離比賽還有兩星期。</p>
-<h2 id="爬取文章"><a href="#爬取文章" class="headerlink" title="爬取文章"></a>爬取文章</h2><p>在這個比賽裡，訓練資料集放出來是在 7/01 時，而我們準備的時間從 6 月初就開始，因此在沒有資料的情況下，我們就決定要開發爬網程式將痞客邦的文章抓取下來。這部分使用 <a href="http://scrapy.org/" target="_blank" rel="external">Scrapy</a> 來幫助我們開發爬網程式。</p>
-<p>目前做到的成果為針對每天有被痞客邦視為熱門的文章抓取下來，並且順便將這些文章的作者曾經寫過的文章也一併抓取。跑一次爬網程式需要花費半天的時間，目前累積了將近 2G 的資料。不過現在的機制只是堪用，要做進一步改善還有很大的空間，只是考慮到接下來還有更困難的問題要解決，因此先開發到這邊。</p>
-<h2 id="斷詞斷句"><a href="#斷詞斷句" class="headerlink" title="斷詞斷句"></a>斷詞斷句</h2><p>將文章抓取下來後，接下來使用 <a href="https://github.com/fxsjy/jieba" target="_blank" rel="external">Jieba</a> 來幫助我們做斷詞。這裏就直接使用現成的工具，因此不是太困難的工作。當然使用過程中會看到很多奇奇怪怪的字詞出現，這就需要人工介入將一些字詞濾掉。</p>
-<h2 id="Word2vec"><a href="#Word2vec" class="headerlink" title="Word2vec"></a>Word2vec</h2><p>將上面斷出來的字詞整理出一個字詞庫出來，接下來要做的動作是把字詞變成向量。根據 Word2vec 演算法，字詞轉成向量後會有一些有趣的相關性，像是 <code>國王 - 男人 + 女人 = 皇后</code>。因此要完成這次的競賽，其實用 Word2vec 就可以做到不錯的成果，把選項的向量拿去和題目比對相似度，把最高相似度的選項當作正確答案，就會是一個不錯的解題模型。目前有組員利用這個方法做到 6 成正確率。</p>
-<h2 id="RNN-LSTM"><a href="#RNN-LSTM" class="headerlink" title="RNN/LSTM"></a>RNN/LSTM</h2><p>這部分就是真正的挑戰啦，對於我這個初學者而言，要跟很多不熟悉的演算法和公式搏鬥。而且要處理部落格文章並拿去訓練也很不容易。基本上要面對龐大的字詞庫，動輒幾十萬的字詞，要算出每個字的機率出來，光想就覺得困難重重。目前這塊還在努力中，希望可以真的玩出一個模型出來。</p>
-<h2 id="感想"><a href="#感想" class="headerlink" title="感想"></a>感想</h2><p>在這個比賽裡，由於接觸到的東西很多且都頗有挑戰性，所以做起來其實滿快樂的。學到很多東西，感覺很過癮。在目前工作上覺得進展有點停滯的時刻，弄這些東西真的有如及時雨一般滋潤我的內心，邊做邊感到持續有在進步中。希望到時能做出不錯的結果出來！</p>
+        <h1 id="JWCUP"><a href="#JWCUP" class="headerlink" title="JWCUP"></a>JWCUP</h1><h2 id="G1GC"><a href="#G1GC" class="headerlink" title="G1GC"></a>G1GC</h2><p>減少 pause time</p>
+<ul>
+<li>較低的 throughput</li>
+</ul>
+<p>比起 CMS ，較不需要調整參數</p>
+<ul>
+<li>CMS 也被認為較不適合非常大 heap 的情況</li>
+</ul>
+<p>Region 根據 heap size 區分</p>
+<ul>
+<li>region 有分 young 和 old </li>
+</ul>
+<p>Young GC 發生時</p>
+<ul>
+<li>依照狀況變成 survivor 或 old</li>
+</ul>
 
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://raix852.github.io/2016/07/29/PixHack2016/" data-id="ciyp77p7h000aorpewakcmvx4" class="article-share-link">Partager</a>
+      <a data-url="http://raix852.github.io/note/2016-12-24-java-meetup.html" data-id="ciyp77p9z002qorpeksyzwkum" class="article-share-link">Partager</a>
       
       
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Deep-Learning/">Deep Learning</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Machine-Learning/">Machine Learning</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/NLP/">NLP</a></li></ul>
-
     </footer>
   </div>
   
     
-<nav id="article-nav">
-  
-    <a href="/2016/08/14/PixHack2016/" id="article-nav-newer" class="article-nav-link-wrap">
-      <strong class="article-nav-caption">Récent</strong>
-      <div class="article-nav-title">
-        
-          8/13 痞客邦克漏字比賽心得
-        
-      </div>
-    </a>
-  
-  
-    <a href="/2016/07/01/data-at-rest/" id="article-nav-older" class="article-nav-link-wrap">
-      <strong class="article-nav-caption">Ancien</strong>
-      <div class="article-nav-title">Data at rest encryption</div>
-    </a>
-  
-</nav>
-
   
 </article>
 
