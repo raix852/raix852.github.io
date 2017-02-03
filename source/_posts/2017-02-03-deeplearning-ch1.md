@@ -1,6 +1,6 @@
 ---
 title: Deep learning 讀書筆記 - CH. 1
-date: 2016-2-03 10:30:00
+date: 2017-2-03 10:30:00
 tags: [Machine Learning, Deep Learning]
 ---
 
