@@ -1,4 +1,9 @@
-# Deep learning 讀書筆記
+---
+title: Deep learning 讀書筆記 - CH. 1
+date: 2016-2-03 10:30:00
+tags: [Machine Learning, Deep Learning]
+---
+
 ## 目標
 
 今年的目標是進一步學習 Deep learning ，利用 [Deep Learning - An MIT Press Book](http://www.deeplearningbook.org/) 當作學習的教材。
