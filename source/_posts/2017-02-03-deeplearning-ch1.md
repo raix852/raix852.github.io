@@ -28,7 +28,7 @@ tags: [Machine Learning, Deep Learning]
 當設計 futures 或演算法去學習 features ，通常目標是區分出可以解釋 observed data 的 factors of variation 。 Factor 可簡單的解釋成對原始資料的影響力。每個 factor 影響程度可能存在未知的作用造成最後觀察的結果，無法輕易的量化或運算。因此對真實世界的 artificial intelligence 來說，有多少 factors of variation 影響每一小片段觀察的結果，是主要困難點的地方。當難以學習到 representation 時， representation learning 就無法提供有用的幫助。
 
 Deep learning 透過將 representations 轉成另一些較簡單的 representations 來解決這些困難的問題，可以經由較簡單的概念堆積成較複雜的概念。如下圖所示
-![Figure 1.2:Illustration of deep learning model - Deep Learning CH.1 P.6](http://imgur.com/a/CIVXX)
+![Figure 1.2:Illustration of deep learning model - Deep Learning CH.1 P.6](http://i.imgur.com/W18bldS.png)
 
 基礎的 Deep learning model 是 feedforward deep network 或稱為 multilayer perceptron (MLP) 。一個 multilayer perceptron 是經由一個數學函式將一組 input 對應到一組 output 。這個函式由許多簡單的函式組合而成，可以將之想像成不同的函式提供新的 representations 來表示 input 。
 
