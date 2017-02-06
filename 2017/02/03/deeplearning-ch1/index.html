@@ -15,12 +15,14 @@
 <meta property="og:description" content="目標今年的目標是進一步學習 Deep learning ，利用 Deep Learning - An MIT Press Book 當作學習的教材。
 第一章 - Introduction在早期 AI 發展的時代，電腦擅長於處理人們不擅長的事物，像是計算複雜的公式、重複許多次的作業。但是真正有挑戰的是對人們擅長的事物但是難以正規地描述，像是辨識物品、了解語言。
 要處理這些對人們擅長但是電腦難以描述的">
-<meta property="og:updated_time" content="2017-02-03T03:09:17.000Z">
+<meta property="og:image" content="http://imgur.com/a/CIVXX">
+<meta property="og:updated_time" content="2017-02-06T07:11:07.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Deep learning 讀書筆記 - CH. 1">
 <meta name="twitter:description" content="目標今年的目標是進一步學習 Deep learning ，利用 Deep Learning - An MIT Press Book 當作學習的教材。
 第一章 - Introduction在早期 AI 發展的時代，電腦擅長於處理人們不擅長的事物，像是計算複雜的公式、重複許多次的作業。但是真正有挑戰的是對人們擅長的事物但是難以正規地描述，像是辨識物品、了解語言。
 要處理這些對人們擅長但是電腦難以描述的">
+<meta name="twitter:image" content="http://imgur.com/a/CIVXX">
   
     <link rel="alternate" href="/atom.xml" title="Raix&#39;s Blog" type="application/atom+xml">
   
@@ -108,11 +110,15 @@
 <p>一個解決的方式是不只去發現問題的 representation 對應輸出結果的本身 ，而且也要自己學習出問題的 representation ，這種方式稱為 representation learning 。學習出來的 representation 通常會比人工設計出來的表現較佳，而且可以通用於較多的問題上，減少人為的介入。 Representation 對簡單的問題可以幾分鐘能就學習出一組好的 feature 出來，而人為設計則需花費無數倍的時間。</p>
 <p>典型的  案例是 autoencoder ， autoencoder 結合了 encoder 和 decoder ， encoder 負責將 input 轉成 representation ， decoder 負責將 representation 轉回原來的樣子。 Autoencoder 學習目標就是盡可能在這兩個轉換中減少資訊的損失，並且學習出一個好的 representation 涵蓋許多好的 properties 。</p>
 <p>當設計 futures 或演算法去學習 features ，通常目標是區分出可以解釋 observed data 的 factors of variation 。 Factor 可簡單的解釋成對原始資料的影響力。每個 factor 影響程度可能存在未知的作用造成最後觀察的結果，無法輕易的量化或運算。因此對真實世界的 artificial intelligence 來說，有多少 factors of variation 影響每一小片段觀察的結果，是主要困難點的地方。當難以學習到 representation 時， representation learning 就無法提供有用的幫助。</p>
+<p>Deep learning 透過將 representations 轉成另一些較簡單的 representations 來解決這些困難的問題，可以經由較簡單的概念堆積成較複雜的概念。如下圖所示<br><img src="http://imgur.com/a/CIVXX" alt="Figure 1.2:Illustration of deep learning model - Deep Learning CH.1 P.6"></p>
+<p>基礎的 Deep learning model 是 feedforward deep network 或稱為 multilayer perceptron (MLP) 。一個 multilayer perceptron 是經由一個數學函式將一組 input 對應到一組 output 。這個函式由許多簡單的函式組合而成，可以將之想像成不同的函式提供新的 representations 來表示 input 。</p>
+<p>學習正確的 representations 是一個觀點，另一個觀點是 depth 可以讓電腦學習出多步驟的程式，每一層產出的 representations 視為是一組指令執行完後所保留的 memory ，越多層可以執行的指令組越多。根據這樣的觀點，每一層的產出就不一定需要 encode 成 factors of variation 來解釋 input 。可以是儲存執行過程中的狀態。</p>
+<p>Deep learning 的深度有兩種計量方式。第一種是有多少在序列上的指令需要執行。可以想成是由 input 到 output 所經過的最常路徑長度。另一種是由 deep probabilistic models 使用，是根據有多少 concepts 彼此關聯，根據此種方式計算出來的 representations 有可能比 graph 上的 concepts 更深。比如說有一個 AI 系統想要偵測人眼，給一張被陰影遮住半邊的臉，此系統首先要先偵測人臉，接著找出一隻眼睛的位置，如此來推測出另一眼睛可能也存在。這種方式只有兩層，一層偵測人臉，一層偵測眼睛，但是每一層裡會有 n 層來計算這些特徵。因此以第一種方式來測會是 2n 的長度。因此對 Deep learning 深度並沒有一個正確的答案，但是 deep learning 可以被指稱為比傳統 machine learning 包含更多學習函式的組成或學習到的觀念。</p>
 
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://raix852.github.io/2017/02/03/deeplearning-ch1/" data-id="ciyp8fk4i000lkkpey4cexonx" class="article-share-link">Share</a>
+      <a data-url="http://raix852.github.io/2017/02/03/deeplearning-ch1/" data-id="ciytre8bx000kh2peigyyy1pk" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Deep-Learning/">Deep Learning</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Machine-Learning/">Machine Learning</a></li></ul>
