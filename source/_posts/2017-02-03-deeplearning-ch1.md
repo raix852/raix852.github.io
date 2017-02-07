@@ -17,9 +17,9 @@ tags: [Machine Learning, Deep Learning]
 
 有不少 AI project 是透過人工建立的知識庫，透過條件判斷和邏輯推導公式將知識編成一條條規則，這種方式稱為 knowledge base approach 。但是沒有一個取得巨大的成功。
 
-由於在 knowledge base 遇到的困難，產生了由 AI 自己學習自己的知識庫，脫離人工建立的模式，此種方式就稱為 Machine learning 。簡單的 logistic regression 可以用來是否推薦 cesarean delivery (查一下是剖腹產)，簡單的 navie Bayes 可以用來區分是否為垃圾郵件。這些簡單的 machine learning 演算法依賴於資料的 representation ，representation 裡所含有的部分資訊稱為 feature。在 Machine learning 裡，選擇好的 representation 對演算法的表現會有很大的影響。許多問題只要提供好的一組 feature 作為 representation ，就能被簡單的 Machine learning 演算法解決。
+由於在 knowledge base 遇到的困難，產生了由 AI 自己學習自己的知識庫，脫離人工建立的模式，此種方式就稱為 Machine learning 。簡單的 logistic regression 可以用來是否需要 cesarean delivery (查一下是剖腹產)，簡易的 navie Bayes 可以用來區分是否為垃圾郵件。這些簡單的 machine learning 演算法依賴於資料的 representation ，representation 裡所含有的部分資訊稱為 feature。在 Machine learning 裡，選擇好的 representation 對演算法的表現會有很大的影響。許多問題只要提供好的一組 features 作為 representation ，就能被簡單的 Machine learning 演算法解決。
 
-但是更多的問題是難以知道如何抽出 feature 出來。假如要設計出一個能辨識出車子的程式，我們知道車子有輪子，所以我們可以用輪子當作 feature ，不幸的是我們難以描述輪子看起來會是怎樣，畢竟在圖片上輪子會因角度不同呈現不同的幾何樣貌，以及會受到光影的影響，或是被擋泥板遮住部分，因此無法成功設計成一個 feature 使用。
+但是更多的問題是難以知道如何抽出 features 出來。假如要設計出一個能辨識出車子的程式，我們知道車子有輪子，所以我們可以用輪子當作 feature ，不幸的是我們難以描述輪子看起來會是怎樣，畢竟在圖片上輪子會因角度不同呈現不同的幾何樣貌，以及會受到光影的影響，或是被擋泥板遮住部分，因此無法成功設計成一個 feature 使用。
 
 一個解決的方式是不只去發現問題的 representation 對應輸出結果的本身 ，而且也要自己學習出問題的 representation ，這種方式稱為 representation learning 。學習出來的 representation 通常會比人工設計出來的表現較佳，而且可以通用於較多的問題上，減少人為的介入。 Representation 對簡單的問題可以幾分鐘能就學習出一組好的 feature 出來，而人為設計則需花費無數倍的時間。
 
@@ -35,3 +35,5 @@ Deep learning 透過將 representations 轉成另一些較簡單的 representati
 學習正確的 representations 是一個觀點，另一個觀點是 depth 可以讓電腦學習出多步驟的程式，每一層產出的 representations 視為是一組指令執行完後所保留的 memory ，越多層可以執行的指令組越多。根據這樣的觀點，每一層的產出就不一定需要 encode 成 factors of variation 來解釋 input 。可以是儲存執行過程中的狀態。
 
 Deep learning 的深度有兩種計量方式。第一種是有多少在序列上的指令需要執行。可以想成是由 input 到 output 所經過的最常路徑長度。另一種是由 deep probabilistic models 使用，是根據有多少 concepts 彼此關聯，根據此種方式計算出來的 representations 有可能比 graph 上的 concepts 更深。比如說有一個 AI 系統想要偵測人眼，給一張被陰影遮住半邊的臉，此系統首先要先偵測人臉，接著找出一隻眼睛的位置，如此來推測出另一眼睛可能也存在。這種方式只有兩層，一層偵測人臉，一層偵測眼睛，但是每一層裡會有 n 層來計算這些特徵。因此以第一種方式來測會是 2n 的長度。因此對 Deep learning 深度並沒有一個正確的答案，但是 deep learning 可以被指稱為比傳統 machine learning 包含更多學習函式的組成或學習到的觀念。
+
+總結來說，deep learning 是一種 AI 的方法，一種 machine learning 的類型，一種技術讓電腦可以從經驗中、從資料中學習。 Machine learning 是目前 AI 系統中，較可以適應於複雜的世界之上。 Deep learning 更是其中的佼佼者，可以展現出強大和具有彈性的能力學習複雜交錯的概念。
