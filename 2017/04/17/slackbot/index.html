@@ -3,39 +3,44 @@
 <head>
   <meta charset="utf-8">
   
-  <title>Scalable Microservices with Kubernetes - Lesson 2 | Raix&#39;s Blog</title>
+  <title>建立 Slack Bot | Raix&#39;s Blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="第二節課在教 docker 觀念以及如何使用，內容對初心者而言非常簡易上手，對我來說也可當作複習的機會。
-Why docker?docker 所使用的 image 不只包含程式本身，所需要的 dependencies 和執行時所需的設定檔也都包含在內。docker 本身也提供良好的 API
+  <meta name="description" content="註冊與建立 Slack App到 Building Slack apps 裡，點選 Create a Slack app 按鈕，輸入 App Name 和選擇在哪一個 Team ，如下圖。
 
-create
-distribute
-run
+接著點選 Bots ，進入加入 Bot User 頁面。
 
-container 在 server 上。目前支援的 OS">
+點選 Add Bot User 按鈕，輸入要給 Bot 的名稱。
+]
+回到 Basic Information 頁面來，下拉 Install you">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Scalable Microservices with Kubernetes - Lesson 2">
-<meta property="og:url" content="http://raix852.github.io/2016/10/12/Microservices/index.html">
+<meta property="og:title" content="建立 Slack Bot">
+<meta property="og:url" content="http://raix852.github.io/2017/04/17/slackbot/index.html">
 <meta property="og:site_name" content="Raix's Blog">
-<meta property="og:description" content="第二節課在教 docker 觀念以及如何使用，內容對初心者而言非常簡易上手，對我來說也可當作複習的機會。
-Why docker?docker 所使用的 image 不只包含程式本身，所需要的 dependencies 和執行時所需的設定檔也都包含在內。docker 本身也提供良好的 API
+<meta property="og:description" content="註冊與建立 Slack App到 Building Slack apps 裡，點選 Create a Slack app 按鈕，輸入 App Name 和選擇在哪一個 Team ，如下圖。
 
-create
-distribute
-run
+接著點選 Bots ，進入加入 Bot User 頁面。
 
-container 在 server 上。目前支援的 OS">
-<meta property="og:updated_time" content="2016-10-19T02:11:58.000Z">
+點選 Add Bot User 按鈕，輸入要給 Bot 的名稱。
+]
+回到 Basic Information 頁面來，下拉 Install you">
+<meta property="og:image" content="http://i.imgur.com/2Unug0m.jpg">
+<meta property="og:image" content="http://i.imgur.com/kgTeLoK.jpg">
+<meta property="og:image" content="http://i.imgur.com/p7RLg40.jpg">
+<meta property="og:image" content="http://i.imgur.com/YqhuM8F.jpg">
+<meta property="og:image" content="http://i.imgur.com/0Sz9G5t.jpg">
+<meta property="og:image" content="http://i.imgur.com/GTafSc1.jpg">
+<meta property="og:image" content="http://i.imgur.com/JyMOYbM.jpg">
+<meta property="og:updated_time" content="2017-04-17T07:22:18.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Scalable Microservices with Kubernetes - Lesson 2">
-<meta name="twitter:description" content="第二節課在教 docker 觀念以及如何使用，內容對初心者而言非常簡易上手，對我來說也可當作複習的機會。
-Why docker?docker 所使用的 image 不只包含程式本身，所需要的 dependencies 和執行時所需的設定檔也都包含在內。docker 本身也提供良好的 API
+<meta name="twitter:title" content="建立 Slack Bot">
+<meta name="twitter:description" content="註冊與建立 Slack App到 Building Slack apps 裡，點選 Create a Slack app 按鈕，輸入 App Name 和選擇在哪一個 Team ，如下圖。
 
-create
-distribute
-run
+接著點選 Bots ，進入加入 Bot User 頁面。
 
-container 在 server 上。目前支援的 OS">
+點選 Add Bot User 按鈕，輸入要給 Bot 的名稱。
+]
+回到 Basic Information 頁面來，下拉 Install you">
+<meta name="twitter:image" content="http://i.imgur.com/2Unug0m.jpg">
   
     <link rel="alternate" href="/atom.xml" title="Raix&#39;s Blog" type="application/atom+xml">
   
@@ -91,10 +96,10 @@ container 在 server 上。目前支援的 OS">
 </header>
 
       <div class="outer">
-        <section id="main"><article id="post-Microservices" class="article article-type-post" itemscope itemprop="blogPost">
+        <section id="main"><article id="post-slackbot" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
-    <a href="/2016/10/12/Microservices/" class="article-date">
-  <time datetime="2016-10-12T15:00:00.000Z" itemprop="datePublished">2016-10-12</time>
+    <a href="/2017/04/17/slackbot/" class="article-date">
+  <time datetime="2017-04-17T14:30:00.000Z" itemprop="datePublished">2017-04-17</time>
 </a>
     
   </div>
@@ -105,7 +110,7 @@ container 在 server 上。目前支援的 OS">
         
   
     <h1 class="article-title" itemprop="name">
-      Scalable Microservices with Kubernetes - Lesson 2
+      建立 Slack Bot
     </h1>
   
 
@@ -113,50 +118,36 @@ container 在 server 上。目前支援的 OS">
     
     <div class="article-entry" itemprop="articleBody">
       
-        <p>第二節課在教 docker 觀念以及如何使用，內容對初心者而言非常簡易上手，對我來說也可當作複習的機會。</p>
-<h2 id="Why-docker"><a href="#Why-docker" class="headerlink" title="Why docker?"></a>Why docker?</h2><p>docker 所使用的 image 不只包含程式本身，所需要的 dependencies 和執行時所需的設定檔也都包含在內。docker 本身也提供良好的 API</p>
-<ul>
-<li><strong>create</strong></li>
-<li><strong>distribute</strong></li>
-<li><strong>run</strong></li>
-</ul>
-<p>container 在 server 上。目前支援的 OS 平台有 linux 和 windows。</p>
-<p>docker 可以幫助系統管理者作到</p>
-<ul>
-<li><strong>Reproducable</strong></li>
-<li><strong>Consistant</strong></li>
-</ul>
-<p>docker 可以提供類似 virtual machine 的功能，將執行程式從同一台機器上隔離出來，因此可不用擔心各種 dependencies 問題。</p>
-<h2 id="docker-擅長什麼？"><a href="#docker-擅長什麼？" class="headerlink" title="docker 擅長什麼？"></a>docker 擅長什麼？</h2><p>常見的 linux 發布版(Ex. Ubuntu, Redhat) ，擅長於</p>
-<ul>
-<li><strong>Installing Services</strong></li>
-<li><strong>Start and Stop Services</strong></li>
-</ul>
-<p>docker 在這之上，提供了</p>
-<ul>
-<li><strong>Installing Services</strong></li>
-<li><strong>Start and Stop Services</strong></li>
-<li><strong>Running multiple versions</strong></li>
-<li><strong>Running multiple instances</strong></li>
-</ul>
-<p>舉例，要使用 nginx 套件， linux 的套件管理程式可以方便下載，並透過 systemd 或舊的 init.d 將 nginx 啟動。但假設需要在同一台機器上啟動多個 nginx 服務或使用不同的版本，此時就會遇到瓶頸，因為同一時間只能跑一個。而 docker 則可以提供運行多個 instances 和多個版本的能力。</p>
-<h2 id="Containers"><a href="#Containers" class="headerlink" title="Containers"></a>Containers</h2><p>可以讓 applications 方便運行和發布到不同平台上的技術。</p>
-<ul>
-<li><strong>Independent packages</strong> - 將所需要的 dependencies 打包起來，發布到各種平台上。</li>
-<li><strong>Namespace isolation</strong> - 提供 filesystem 的 Iiolation 和 network isolatation，讓檔案名稱或 ip/port 不會衝突。</li>
-</ul>
-<p>與一般的 virtual machine 透過模擬整個 OS 層不同， container 是經由 linux kernel 由邏輯上分割出來，透過 Namespace 隔離和 cgroup 控制 resources 達成，因此可視為輕量級的 VM ，啟動和關閉都非常快速。</p>
-<h2 id="Dockerfile"><a href="#Dockerfile" class="headerlink" title="Dockerfile"></a>Dockerfile</h2><p>docker 用來建立 image 的檔案，裡面描述指令讓 docker 依指示要從哪個 base image 開始，逐漸將所需要的 dependencies 打包起來，最後完成一個包含所有套件和設定的 application image 來使用。</p>
-<p>以下是之前做過得小型 java 7 image，使用 centos 7.2 作為程式運行的環境。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line">FROM centos:7.2.1511</div><div class="line">MAINTAINER raix</div><div class="line"></div><div class="line">USER root</div><div class="line">RUN yum install -y wget \</div><div class="line">                git \</div><div class="line">                curl \</div><div class="line">                zip \</div><div class="line">                openssh-clients \</div><div class="line">                java-1.7.0-openjdk \</div><div class="line">                java-1.7.0-openjdk-devel \</div><div class="line">                java-1.7.0-openjdk-headless</div><div class="line"></div><div class="line">ENV LANG C.UTF-8</div></pre></td></tr></table></figure></p>
-<h2 id="Docker-Hub"><a href="#Docker-Hub" class="headerlink" title="Docker Hub"></a>Docker Hub</h2><p>做出來的 image 可以發布到 docker hub 上，公開讓所有人使用，直接從 docker hub 上下載完整的 image 下來，而不用從頭建置起來，方便用來做大量佈署的動作。除了 docker hub 這個公開存放 image 的地方，也有其他公開的服務可以使用，像是 gcr (Google Container Registry) ，或是建立私有 hub ，供企業內部使用。</p>
+        <h2 id="註冊與建立-Slack-App"><a href="#註冊與建立-Slack-App" class="headerlink" title="註冊與建立 Slack App"></a>註冊與建立 Slack App</h2><p>到 <a href="https://api.slack.com/slack-apps" target="_blank" rel="external">Building Slack apps</a> 裡，點選 <strong>Create a Slack app</strong> 按鈕，輸入 <strong>App Name</strong> 和選擇在哪一個 Team ，如下圖。</p>
+<p><img src="http://i.imgur.com/2Unug0m.jpg" alt="Create an App"></p>
+<p>接著點選 <strong>Bots</strong> ，進入加入 Bot User 頁面。</p>
+<p><img src="http://i.imgur.com/kgTeLoK.jpg" alt="Bots"></p>
+<p>點選 <strong>Add Bot User</strong> 按鈕，輸入要給 Bot 的名稱。</p>
+<p><img src="http://i.imgur.com/p7RLg40.jpg" alt="Add Bot User">]</p>
+<p>回到 <strong>Basic Information</strong> 頁面來，下拉 <strong>Install your app to your team</strong> ，點選 <strong>Install App to Team</strong> 來產生 token 。點進去會進入確認頁面，點選 <strong>Authorize</strong> 。</p>
+<p><img src="http://i.imgur.com/YqhuM8F.jpg" alt="Install App to Team"></p>
+<p>安裝 App 完畢後回到 <strong>Basic Information</strong> ，在 <strong>Add features and functionality</strong> 裡 <strong>Permission</strong> 選項，點進去可以拿到 <strong>OAuth Access Token</strong> 和 <strong>Bot User OAuth Access Token</strong>。或者可以從左邊選項列表中的 <strong>Features</strong> 選擇 <strong>OAuth &amp; Permission</strong> 進去。</p>
+<p><img src="http://i.imgur.com/0Sz9G5t.jpg" alt="OAuth &amp; Permission"></p>
+<p>在 Slack 提供的 Api 裡，有些 method 只有擁有特定的權限才能使用，因此視開發的用途需要在 <strong>OAuth &amp; Permission</strong> 底下的 <strong>Permission Scopes</strong> 設定需要的權限。這些權限如果 App 需要公開給第三方使用時就會經過 Slack 審查是否合適，私人使用沒有限制。</p>
+<p><img src="http://i.imgur.com/GTafSc1.jpg" alt="Permission Scopes"></p>
+<p>以要建立聊天機器人來說，需要開通 <code>chat:write:bot</code> 權限才能送訊息到 slack channel。</p>
+<p>設定好 <strong>Permission Scopes</strong> 後，需要在底下按下 <strong>Revoke Tokens</strong> 按鈕。然後重新 install app ，產生新的 token ，設定的權限才會生效。</p>
+<p><img src="http://i.imgur.com/JyMOYbM.jpg" alt="Revoke Tokens"></p>
+<h2 id="使用-python-lib"><a href="#使用-python-lib" class="headerlink" title="使用 python lib"></a>使用 python lib</h2><p>使用 <a href="https://slackapi.github.io/python-slackclient/" target="_blank" rel="external">slackclient</a> 這套 lib 可以快速讓 bot 可以在頻道上發話。</p>
+<h3 id="安裝"><a href="#安裝" class="headerlink" title="安裝"></a>安裝</h3><figure class="highlight sh"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">pip install slackclient</div></pre></td></tr></table></figure>
+<h3 id="使用範例"><a href="#使用範例" class="headerlink" title="使用範例"></a>使用範例</h3><p>送訊息到 <code>#general</code> 頻道上。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">from</span> slackclient <span class="keyword">import</span> SlackClient</div><div class="line"></div><div class="line">slack_token = <span class="string">"OAuth Access Token"</span></div><div class="line"></div><div class="line">sc = SlackClient(slack_token)</div><div class="line"></div><div class="line">sc.api_call(</div><div class="line">  <span class="string">"chat.postMessage"</span>,</div><div class="line">  channel=<span class="string">"#general"</span>,</div><div class="line">  text=<span class="string">"Hello from Python! :tada:"</span></div><div class="line">)</div></pre></td></tr></table></figure>
+<p>簡單的幾段 code 就完成了一個可以發話的機器人。</p>
+<h2 id="使用官方-API-送訊息"><a href="#使用官方-API-送訊息" class="headerlink" title="使用官方 API 送訊息"></a>使用官方 API 送訊息</h2><p>這邊是使用官方提供的 api 來送訊息，並使用 <code>requests</code> 這套 http lib 來送出訊息。範例 code 如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">import</span> requests</div><div class="line"><span class="keyword">import</span> json</div><div class="line"></div><div class="line">slack_token = <span class="string">"OAuth Access Token"</span></div><div class="line"></div><div class="line">param = &#123;<span class="string">"token"</span>: slack_token, <span class="string">"channel"</span> : <span class="string">"#general"</span>, <span class="string">"text"</span>: <span class="string">"Hello from Python! :tada:"</span>&#125;</div><div class="line">r = requests.get(<span class="string">"https://slack.com/api/chat.postMessage"</span>, params=param)</div></pre></td></tr></table></figure>
 
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://raix852.github.io/2016/10/12/Microservices/" data-id="cj1m8xo1r000jgrr161x0ib60" class="article-share-link">Partager</a>
+      <a data-url="http://raix852.github.io/2017/04/17/slackbot/" data-id="cj1m8xo22000pgrr1wqt9y1qa" class="article-share-link">Partager</a>
       
       
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Kubernetes/">Kubernetes</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Udacity/">Udacity</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/docker/">docker</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/學習筆記/">學習筆記</a></li></ul>
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Bot/">Bot</a></li></ul>
 
     </footer>
   </div>
@@ -164,19 +155,10 @@ container 在 server 上。目前支援的 OS">
     
 <nav id="article-nav">
   
-    <a href="/2016/10/22/Microservices/" id="article-nav-newer" class="article-nav-link-wrap">
-      <strong class="article-nav-caption">Récent</strong>
-      <div class="article-nav-title">
-        
-          Scalable Microservices with Kubernetes - Lesson 3
-        
-      </div>
-    </a>
   
-  
-    <a href="/2016/10/11/Microservices/" id="article-nav-older" class="article-nav-link-wrap">
+    <a href="/2017/02/03/deeplearning-ch1/" id="article-nav-older" class="article-nav-link-wrap">
       <strong class="article-nav-caption">Ancien</strong>
-      <div class="article-nav-title">Scalable Microservices with Kubernetes - Lesson 1</div>
+      <div class="article-nav-title">Deep learning 讀書筆記 - CH. 1</div>
     </a>
   
 </nav>

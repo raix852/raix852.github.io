@@ -57,9 +57,9 @@
       </nav>
       <nav id="sub-nav">
         
-          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="Flux RSS"></a>
         
-        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+        <a id="nav-search-btn" class="nav-icon" title="Rechercher"></a>
       </nav>
       <div id="search-form-wrap">
         <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" results="0" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://raix852.github.io"></form>
@@ -70,6 +70,66 @@
 
       <div class="outer">
         <section id="main">
+  
+    <article id="post-slackbot" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2017/04/17/slackbot/" class="article-date">
+  <time datetime="2017-04-17T14:30:00.000Z" itemprop="datePublished">2017-04-17</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2017/04/17/slackbot/">建立 Slack Bot</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="註冊與建立-Slack-App"><a href="#註冊與建立-Slack-App" class="headerlink" title="註冊與建立 Slack App"></a>註冊與建立 Slack App</h2><p>到 <a href="https://api.slack.com/slack-apps" target="_blank" rel="external">Building Slack apps</a> 裡，點選 <strong>Create a Slack app</strong> 按鈕，輸入 <strong>App Name</strong> 和選擇在哪一個 Team ，如下圖。</p>
+<p><img src="http://i.imgur.com/2Unug0m.jpg" alt="Create an App"></p>
+<p>接著點選 <strong>Bots</strong> ，進入加入 Bot User 頁面。</p>
+<p><img src="http://i.imgur.com/kgTeLoK.jpg" alt="Bots"></p>
+<p>點選 <strong>Add Bot User</strong> 按鈕，輸入要給 Bot 的名稱。</p>
+<p><img src="http://i.imgur.com/p7RLg40.jpg" alt="Add Bot User">]</p>
+<p>回到 <strong>Basic Information</strong> 頁面來，下拉 <strong>Install your app to your team</strong> ，點選 <strong>Install App to Team</strong> 來產生 token 。點進去會進入確認頁面，點選 <strong>Authorize</strong> 。</p>
+<p><img src="http://i.imgur.com/YqhuM8F.jpg" alt="Install App to Team"></p>
+<p>安裝 App 完畢後回到 <strong>Basic Information</strong> ，在 <strong>Add features and functionality</strong> 裡 <strong>Permission</strong> 選項，點進去可以拿到 <strong>OAuth Access Token</strong> 和 <strong>Bot User OAuth Access Token</strong>。或者可以從左邊選項列表中的 <strong>Features</strong> 選擇 <strong>OAuth &amp; Permission</strong> 進去。</p>
+<p><img src="http://i.imgur.com/0Sz9G5t.jpg" alt="OAuth &amp; Permission"></p>
+<p>在 Slack 提供的 Api 裡，有些 method 只有擁有特定的權限才能使用，因此視開發的用途需要在 <strong>OAuth &amp; Permission</strong> 底下的 <strong>Permission Scopes</strong> 設定需要的權限。這些權限如果 App 需要公開給第三方使用時就會經過 Slack 審查是否合適，私人使用沒有限制。</p>
+<p><img src="http://i.imgur.com/GTafSc1.jpg" alt="Permission Scopes"></p>
+<p>以要建立聊天機器人來說，需要開通 <code>chat:write:bot</code> 權限才能送訊息到 slack channel。</p>
+<p>設定好 <strong>Permission Scopes</strong> 後，需要在底下按下 <strong>Revoke Tokens</strong> 按鈕。然後重新 install app ，產生新的 token ，設定的權限才會生效。</p>
+<p><img src="http://i.imgur.com/JyMOYbM.jpg" alt="Revoke Tokens"></p>
+<h2 id="使用-python-lib"><a href="#使用-python-lib" class="headerlink" title="使用 python lib"></a>使用 python lib</h2><p>使用 <a href="https://slackapi.github.io/python-slackclient/" target="_blank" rel="external">slackclient</a> 這套 lib 可以快速讓 bot 可以在頻道上發話。</p>
+<h3 id="安裝"><a href="#安裝" class="headerlink" title="安裝"></a>安裝</h3><figure class="highlight sh"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">pip install slackclient</div></pre></td></tr></table></figure>
+<h3 id="使用範例"><a href="#使用範例" class="headerlink" title="使用範例"></a>使用範例</h3><p>送訊息到 <code>#general</code> 頻道上。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">from</span> slackclient <span class="keyword">import</span> SlackClient</div><div class="line"></div><div class="line">slack_token = <span class="string">"OAuth Access Token"</span></div><div class="line"></div><div class="line">sc = SlackClient(slack_token)</div><div class="line"></div><div class="line">sc.api_call(</div><div class="line">  <span class="string">"chat.postMessage"</span>,</div><div class="line">  channel=<span class="string">"#general"</span>,</div><div class="line">  text=<span class="string">"Hello from Python! :tada:"</span></div><div class="line">)</div></pre></td></tr></table></figure>
+<p>簡單的幾段 code 就完成了一個可以發話的機器人。</p>
+<h2 id="使用官方-API-送訊息"><a href="#使用官方-API-送訊息" class="headerlink" title="使用官方 API 送訊息"></a>使用官方 API 送訊息</h2><p>這邊是使用官方提供的 api 來送訊息，並使用 <code>requests</code> 這套 http lib 來送出訊息。範例 code 如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">import</span> requests</div><div class="line"><span class="keyword">import</span> json</div><div class="line"></div><div class="line">slack_token = <span class="string">"OAuth Access Token"</span></div><div class="line"></div><div class="line">param = &#123;<span class="string">"token"</span>: slack_token, <span class="string">"channel"</span> : <span class="string">"#general"</span>, <span class="string">"text"</span>: <span class="string">"Hello from Python! :tada:"</span>&#125;</div><div class="line">r = requests.get(<span class="string">"https://slack.com/api/chat.postMessage"</span>, params=param)</div></pre></td></tr></table></figure>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://raix852.github.io/2017/04/17/slackbot/" data-id="cj1m8xo22000pgrr1wqt9y1qa" class="article-share-link">Partager</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Bot/">Bot</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
   
     <article id="post-deeplearning-ch1" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
@@ -112,7 +172,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://raix852.github.io/2017/02/03/deeplearning-ch1/" data-id="ciywbuvyq0015ugpezs92rf7n" class="article-share-link">Share</a>
+      <a data-url="http://raix852.github.io/2017/02/03/deeplearning-ch1/" data-id="cj1m8xo1z000ngrr17rcmpksv" class="article-share-link">Partager</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Deep-Learning/">Deep Learning</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Machine-Learning/">Machine Learning</a></li></ul>
@@ -358,7 +418,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://raix852.github.io/2016/11/01/ldap/" data-id="ciywbuvz5001cugpepeq97pcw" class="article-share-link">Share</a>
+      <a data-url="http://raix852.github.io/2016/11/01/ldap/" data-id="cj1m8xo24000rgrr17dgdplby" class="article-share-link">Partager</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/LDAP/">LDAP</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Linux/">Linux</a></li></ul>
@@ -431,7 +491,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://raix852.github.io/2016/10/23/Microservices/" data-id="ciywbuvz00019ugpe0lfranni" class="article-share-link">Share</a>
+      <a data-url="http://raix852.github.io/2016/10/23/Microservices/" data-id="cj1m8xo2c000vgrr1kg5kc0l5" class="article-share-link">Partager</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Kubernetes/">Kubernetes</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Udacity/">Udacity</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/docker/">docker</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/學習筆記/">學習筆記</a></li></ul>
@@ -565,7 +625,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://raix852.github.io/2016/10/22/Microservices/" data-id="ciywbuvyw0017ugpex1aulb6g" class="article-share-link">Share</a>
+      <a data-url="http://raix852.github.io/2016/10/22/Microservices/" data-id="cj1m8xo29000ugrr1vcadeymw" class="article-share-link">Partager</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Kubernetes/">Kubernetes</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Udacity/">Udacity</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/docker/">docker</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/學習筆記/">學習筆記</a></li></ul>
@@ -639,7 +699,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://raix852.github.io/2016/10/12/Microservices/" data-id="ciywbuvyn0014ugpe1tmh7u5b" class="article-share-link">Share</a>
+      <a data-url="http://raix852.github.io/2016/10/12/Microservices/" data-id="cj1m8xo1r000jgrr161x0ib60" class="article-share-link">Partager</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Kubernetes/">Kubernetes</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Udacity/">Udacity</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/docker/">docker</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/學習筆記/">學習筆記</a></li></ul>
@@ -719,7 +779,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://raix852.github.io/2016/10/11/Microservices/" data-id="ciywbuvyj0013ugpe16zzackl" class="article-share-link">Share</a>
+      <a data-url="http://raix852.github.io/2016/10/11/Microservices/" data-id="cj1m8xo1p000hgrr1pxeipxbg" class="article-share-link">Partager</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Kubernetes/">Kubernetes</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Udacity/">Udacity</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/docker/">docker</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/學習筆記/">學習筆記</a></li></ul>
@@ -763,7 +823,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://raix852.github.io/2016/09/13/read-report/" data-id="ciywbuvyh0011ugpeapmt83go" class="article-share-link">Share</a>
+      <a data-url="http://raix852.github.io/2016/09/13/read-report/" data-id="cj1m8xo1j000fgrr1hzs8nii3" class="article-share-link">Partager</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/讀書心得/">讀書心得</a></li></ul>
@@ -841,7 +901,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://raix852.github.io/2016/08/21/tensorflow-gpu-installation/" data-id="ciywbuvyd000zugpektto7xkx" class="article-share-link">Share</a>
+      <a data-url="http://raix852.github.io/2016/08/21/tensorflow-gpu-installation/" data-id="cj1m8xo1v000mgrr1yj455s14" class="article-share-link">Partager</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/tensorflow/">tensorflow</a></li></ul>
@@ -890,56 +950,10 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://raix852.github.io/2016/08/14/PixHack2016/" data-id="ciywbuvy9000wugpevwpi7qdk" class="article-share-link">Share</a>
+      <a data-url="http://raix852.github.io/2016/08/14/PixHack2016/" data-id="cj1m8xo1h000egrr12j1tsfmq" class="article-share-link">Partager</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Deep-Learning/">Deep Learning</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Machine-Learning/">Machine Learning</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/NLP/">NLP</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/tensorflow/">tensorflow</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/日記/">日記</a></li></ul>
-
-    </footer>
-  </div>
-  
-</article>
-
-
-  
-    <article id="post-PixHack2016" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2016/07/29/PixHack2016/" class="article-date">
-  <time datetime="2016-07-29T15:10:37.000Z" itemprop="datePublished">2016-07-29</time>
-</a>
-    
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2016/07/29/PixHack2016/">7/29 痞客邦克漏字比賽紀錄</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>最近這陣子都熱心在學習 Deep learning 的東西，動機來自於和同事組隊參加 <code>2016 PIXNET HACKATHON Cloze Contest</code>。這個比賽會給出一句話，裡面會挖一個洞，並給出 4 個選項來選出符合這個洞的答案，也可以說是傳統的選擇題考試。對從小到大都是考試機器的我們來說是最常見不過的問題，因此都練出的一身本領來回答。但是對於機器來說，要選出正確答案還真不是件簡單的事，更可說是巨大的挑戰。</p>
-<p>因此為了可以讓機器有辦法回答，需要有一些技巧來使用。以下紀錄目前我和同事做到的進度。正式比賽是在8/13 日，離比賽還有兩星期。</p>
-<h2 id="爬取文章"><a href="#爬取文章" class="headerlink" title="爬取文章"></a>爬取文章</h2><p>在這個比賽裡，訓練資料集放出來是在 7/01 時，而我們準備的時間從 6 月初就開始，因此在沒有資料的情況下，我們就決定要開發爬網程式將痞客邦的文章抓取下來。這部分使用 <a href="http://scrapy.org/" target="_blank" rel="external">Scrapy</a> 來幫助我們開發爬網程式。</p>
-<p>目前做到的成果為針對每天有被痞客邦視為熱門的文章抓取下來，並且順便將這些文章的作者曾經寫過的文章也一併抓取。跑一次爬網程式需要花費半天的時間，目前累積了將近 2G 的資料。不過現在的機制只是堪用，要做進一步改善還有很大的空間，只是考慮到接下來還有更困難的問題要解決，因此先開發到這邊。</p>
-<h2 id="斷詞斷句"><a href="#斷詞斷句" class="headerlink" title="斷詞斷句"></a>斷詞斷句</h2><p>將文章抓取下來後，接下來使用 <a href="https://github.com/fxsjy/jieba" target="_blank" rel="external">Jieba</a> 來幫助我們做斷詞。這裏就直接使用現成的工具，因此不是太困難的工作。當然使用過程中會看到很多奇奇怪怪的字詞出現，這就需要人工介入將一些字詞濾掉。</p>
-<h2 id="Word2vec"><a href="#Word2vec" class="headerlink" title="Word2vec"></a>Word2vec</h2><p>將上面斷出來的字詞整理出一個字詞庫出來，接下來要做的動作是把字詞變成向量。根據 Word2vec 演算法，字詞轉成向量後會有一些有趣的相關性，像是 <code>國王 - 男人 + 女人 = 皇后</code>。因此要完成這次的競賽，其實用 Word2vec 就可以做到不錯的成果，把選項的向量拿去和題目比對相似度，把最高相似度的選項當作正確答案，就會是一個不錯的解題模型。目前有組員利用這個方法做到 6 成正確率。</p>
-<h2 id="RNN-LSTM"><a href="#RNN-LSTM" class="headerlink" title="RNN/LSTM"></a>RNN/LSTM</h2><p>這部分就是真正的挑戰啦，對於我這個初學者而言，要跟很多不熟悉的演算法和公式搏鬥。而且要處理部落格文章並拿去訓練也很不容易。基本上要面對龐大的字詞庫，動輒幾十萬的字詞，要算出每個字的機率出來，光想就覺得困難重重。目前這塊還在努力中，希望可以真的玩出一個模型出來。</p>
-<h2 id="感想"><a href="#感想" class="headerlink" title="感想"></a>感想</h2><p>在這個比賽裡，由於接觸到的東西很多且都頗有挑戰性，所以做起來其實滿快樂的。學到很多東西，感覺很過癮。在目前工作上覺得進展有點停滯的時刻，弄這些東西真的有如及時雨一般滋潤我的內心，邊做邊感到持續有在進步中。希望到時能做出不錯的結果出來！</p>
-
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="http://raix852.github.io/2016/07/29/PixHack2016/" data-id="ciywbuvy5000uugpewlz9fjda" class="article-share-link">Share</a>
-      
-      
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Deep-Learning/">Deep Learning</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Machine-Learning/">Machine Learning</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/NLP/">NLP</a></li></ul>
 
     </footer>
   </div>
@@ -962,9 +976,9 @@
   
     
   <div class="widget-wrap">
-    <h3 class="widget-title">Tags</h3>
+    <h3 class="widget-title">Mot-clés</h3>
     <div class="widget">
-      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Deep-Learning/">Deep Learning</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Encryption/">Encryption</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Filesystem/">Filesystem</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Github/">Github</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Kubernetes/">Kubernetes</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/LDAP/">LDAP</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Linux/">Linux</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Machine-Learning/">Machine Learning</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/NLP/">NLP</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/TLS/">TLS</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Udacity/">Udacity</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/docker/">docker</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hexo/">hexo</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/openssl/">openssl</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/python/">python</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/tensorflow/">tensorflow</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/學習筆記/">學習筆記</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/日記/">日記</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/讀書心得/">讀書心得</a></li></ul>
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Bot/">Bot</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Deep-Learning/">Deep Learning</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Encryption/">Encryption</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Filesystem/">Filesystem</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Github/">Github</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Kubernetes/">Kubernetes</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/LDAP/">LDAP</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Linux/">Linux</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Machine-Learning/">Machine Learning</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/NLP/">NLP</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/TLS/">TLS</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Udacity/">Udacity</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/docker/">docker</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hexo/">hexo</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/openssl/">openssl</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/python/">python</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/tensorflow/">tensorflow</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/學習筆記/">學習筆記</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/日記/">日記</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/讀書心得/">讀書心得</a></li></ul>
     </div>
   </div>
 
@@ -972,9 +986,9 @@
   
     
   <div class="widget-wrap">
-    <h3 class="widget-title">Tag Cloud</h3>
+    <h3 class="widget-title">Nuage de mot-clés</h3>
     <div class="widget tagcloud">
-      <a href="/tags/Deep-Learning/" style="font-size: 16.67px;">Deep Learning</a> <a href="/tags/Encryption/" style="font-size: 10px;">Encryption</a> <a href="/tags/Filesystem/" style="font-size: 10px;">Filesystem</a> <a href="/tags/Github/" style="font-size: 13.33px;">Github</a> <a href="/tags/Kubernetes/" style="font-size: 20px;">Kubernetes</a> <a href="/tags/LDAP/" style="font-size: 10px;">LDAP</a> <a href="/tags/Linux/" style="font-size: 16.67px;">Linux</a> <a href="/tags/Machine-Learning/" style="font-size: 16.67px;">Machine Learning</a> <a href="/tags/NLP/" style="font-size: 13.33px;">NLP</a> <a href="/tags/TLS/" style="font-size: 10px;">TLS</a> <a href="/tags/Udacity/" style="font-size: 20px;">Udacity</a> <a href="/tags/docker/" style="font-size: 20px;">docker</a> <a href="/tags/hexo/" style="font-size: 13.33px;">hexo</a> <a href="/tags/openssl/" style="font-size: 10px;">openssl</a> <a href="/tags/python/" style="font-size: 10px;">python</a> <a href="/tags/tensorflow/" style="font-size: 13.33px;">tensorflow</a> <a href="/tags/學習筆記/" style="font-size: 20px;">學習筆記</a> <a href="/tags/日記/" style="font-size: 13.33px;">日記</a> <a href="/tags/讀書心得/" style="font-size: 10px;">讀書心得</a>
+      <a href="/tags/Bot/" style="font-size: 10px;">Bot</a> <a href="/tags/Deep-Learning/" style="font-size: 16.67px;">Deep Learning</a> <a href="/tags/Encryption/" style="font-size: 10px;">Encryption</a> <a href="/tags/Filesystem/" style="font-size: 10px;">Filesystem</a> <a href="/tags/Github/" style="font-size: 13.33px;">Github</a> <a href="/tags/Kubernetes/" style="font-size: 20px;">Kubernetes</a> <a href="/tags/LDAP/" style="font-size: 10px;">LDAP</a> <a href="/tags/Linux/" style="font-size: 16.67px;">Linux</a> <a href="/tags/Machine-Learning/" style="font-size: 16.67px;">Machine Learning</a> <a href="/tags/NLP/" style="font-size: 13.33px;">NLP</a> <a href="/tags/TLS/" style="font-size: 10px;">TLS</a> <a href="/tags/Udacity/" style="font-size: 20px;">Udacity</a> <a href="/tags/docker/" style="font-size: 20px;">docker</a> <a href="/tags/hexo/" style="font-size: 13.33px;">hexo</a> <a href="/tags/openssl/" style="font-size: 10px;">openssl</a> <a href="/tags/python/" style="font-size: 10px;">python</a> <a href="/tags/tensorflow/" style="font-size: 13.33px;">tensorflow</a> <a href="/tags/學習筆記/" style="font-size: 20px;">學習筆記</a> <a href="/tags/日記/" style="font-size: 13.33px;">日記</a> <a href="/tags/讀書心得/" style="font-size: 10px;">讀書心得</a>
     </div>
   </div>
 
@@ -983,7 +997,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">Archives</h3>
     <div class="widget">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/02/">二月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/11/">十一月 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/10/">十月 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/09/">九月 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/08/">八月 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/07/">七月 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/06/">六月 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/05/">五月 2016</a></li></ul>
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/04/">四月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/02/">二月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/11/">十一月 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/10/">十月 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/09/">九月 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/08/">八月 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/07/">七月 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/06/">六月 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/05/">五月 2016</a></li></ul>
     </div>
   </div>
 
@@ -991,9 +1005,13 @@
   
     
   <div class="widget-wrap">
-    <h3 class="widget-title">Recent Posts</h3>
+    <h3 class="widget-title">Articles récents</h3>
     <div class="widget">
       <ul>
+        
+          <li>
+            <a href="/2017/04/17/slackbot/">建立 Slack Bot</a>
+          </li>
         
           <li>
             <a href="/2017/02/03/deeplearning-ch1/">Deep learning 讀書筆記 - CH. 1</a>
@@ -1011,10 +1029,6 @@
             <a href="/2016/10/22/Microservices/">Scalable Microservices with Kubernetes - Lesson 3</a>
           </li>
         
-          <li>
-            <a href="/2016/10/12/Microservices/">Scalable Microservices with Kubernetes - Lesson 2</a>
-          </li>
-        
       </ul>
     </div>
   </div>
@@ -1028,7 +1042,7 @@
   <div class="outer">
     <div id="footer-info" class="inner">
       &copy; 2017 Raix<br>
-      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+      Propulsé by <a href="http://hexo.io/" target="_blank">Hexo</a>
     </div>
   </div>
 </footer>
