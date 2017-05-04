@@ -30,7 +30,7 @@
 <meta property="og:image" content="http://i.imgur.com/0Sz9G5t.jpg">
 <meta property="og:image" content="http://i.imgur.com/GTafSc1.jpg">
 <meta property="og:image" content="http://i.imgur.com/JyMOYbM.jpg">
-<meta property="og:updated_time" content="2017-04-28T08:10:33.000Z">
+<meta property="og:updated_time" content="2017-05-04T02:14:48.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="建立 Slack Bot">
 <meta name="twitter:description" content="註冊與建立 Slack App到 Building Slack apps 裡，點選 Create a Slack app 按鈕，輸入 App Name 和選擇在哪一個 Team ，如下圖。
@@ -138,13 +138,14 @@
 <h3 id="使用範例"><a href="#使用範例" class="headerlink" title="使用範例"></a>使用範例</h3><p>送訊息到 <code>#general</code> 頻道上。</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">from</span> slackclient <span class="keyword">import</span> SlackClient</div><div class="line"></div><div class="line">slack_token = <span class="string">"OAuth Access Token"</span></div><div class="line"></div><div class="line">sc = SlackClient(slack_token)</div><div class="line"></div><div class="line">sc.api_call(</div><div class="line">  <span class="string">"chat.postMessage"</span>,</div><div class="line">  channel=<span class="string">"#general"</span>,</div><div class="line">  text=<span class="string">"Hello from Python! :tada:"</span></div><div class="line">)</div></pre></td></tr></table></figure>
 <p>簡單的幾段 code 就完成了一個可以發話的機器人。</p>
-<h2 id="使用官方-API-送訊息"><a href="#使用官方-API-送訊息" class="headerlink" title="使用官方 API 送訊息"></a>使用官方 API 送訊息</h2><p>這邊是使用官方提供的 api 來送訊息，並使用 <code>requests</code> 這套 http lib 來送出訊息。範例 code 如下：</p>
+<h2 id="使用官方-API-送訊息"><a href="#使用官方-API-送訊息" class="headerlink" title="使用官方 API 送訊息"></a>使用官方 API 送訊息</h2><p>這邊是使用官方提供的 api 來送訊息，參閱網頁為:<a href="https://api.slack.com/methods" target="_blank" rel="external">API Methods</a>，並使用 <code>requests</code> 這套 http lib 來送出訊息。範例 code 如下：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">import</span> requests</div><div class="line"><span class="keyword">import</span> json</div><div class="line"></div><div class="line">slack_token = <span class="string">"OAuth Access Token"</span></div><div class="line"></div><div class="line">param = &#123;<span class="string">"token"</span>: slack_token, <span class="string">"channel"</span> : <span class="string">"#general"</span>, <span class="string">"text"</span>: <span class="string">"Hello from Python! :tada:"</span>&#125;</div><div class="line">r = requests.get(<span class="string">"https://slack.com/api/chat.postMessage"</span>, params=param)</div></pre></td></tr></table></figure>
+<h2 id="結論"><a href="#結論" class="headerlink" title="結論"></a>結論</h2><p>如要做個發話機器人，slack 提供的資源可以簡單地讓開發者快速有個雛形。要繼續深入使用各種 API 來做功能的話，就需要開始注意各個 API 所需要的權限，以及了解 API 回應的資料格式，這部分就需要細心研究了。</p>
 
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://raix852.github.io/2017/04/17/slackbot/" data-id="cj28gehvu002c78r1je7qnd1l" class="article-share-link">Share</a>
+      <a data-url="http://raix852.github.io/2017/04/17/slackbot/" data-id="cj29s583j000qsfr1bi5d98o2" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Bot/">Bot</a></li></ul>
